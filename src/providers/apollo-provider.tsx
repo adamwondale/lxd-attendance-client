@@ -26,7 +26,7 @@ function makeClient() {
   const authLink = setContext(async (_, { headers }) => {
     // getSession reads the Auth.js session from the client
     const session = await getSession();
-    const token = session?.user?.accessToken;
+    const token = (session?.user as any)?.accessToken;
     
     return {
       headers: {
