@@ -6,21 +6,42 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "next lint",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
+    "@apollo/client": "^4.2.12",
+    "@apollo/experimental-nextjs-app-support": "^0.14.5",
+    "@react-oauth/google": "^0.13.5",
+    "clsx": "^2.1.1",
+    "framer-motion": "^13.1.1",
+    "graphql": "^16.14.2",
+    "graphql-ws": "^6.2.1",
+    "html5-qrcode": "^2.3.8",
+    "lucide-react": "^1.34.0",
     "next": "16.3.3",
+    "next-auth": "^5.0.0-beta.32",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "react-qr-code": "^2.2.0",
+    "rxjs": "^7.8.2",
+    "sonner": "^2.0.8",
+    "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.3",
+    "jest": "^30.4.2",
+    "jest-environment-jsdom": "^30.4.1",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }

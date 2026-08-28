@@ -1,26 +1,39 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --font-serif: "Instrument Serif", serif;
+  --font-sans: "DM Sans", sans-serif;
+  --font-mono: "Space Mono", monospace;
+
+  --color-primary: #0A0A0A;
+  --color-background: #F5F5F3; /* Warmer, sophisticated cream/grey */
+  --color-surface: #FFFFFF;
+  --color-text: #1C1C1C;
+  --color-muted: #878786;
+  --color-accent: #E54D2E;
+  --color-border: #E8E8E6;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --ease-studio: cubic-bezier(0.23, 1, 0.32, 1);
+    --duration-fast: 150ms;
+    --duration-smooth: 400ms;
+    --radius-none: 0px;
+    --spacing-base: 4px;
+  }
+  
+  body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Button Active Scale as per Emil */
+.button:active {
+  transform: scale(0.97);
+  transition: transform 160ms var(--ease-studio);
 }
