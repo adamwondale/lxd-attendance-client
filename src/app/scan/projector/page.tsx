@@ -22,14 +22,14 @@ export default function ProjectorView({ searchParams }: { searchParams: Promise<
   const unwrappedParams = use(searchParams)
   const sessionId = unwrappedParams.sessionId || "SESSION1"
 
-  const { data: qrData, refetch } = useQuery(GENERATE_SESSION_QR, {
+  const { data: qrData, refetch } = useQuery<{ generateSessionQr: string }>(GENERATE_SESSION_QR, {
     variables: { sessionId },
     fetchPolicy: "network-only"
   })
 
   // We are not passing full user details in the subscription yet, so we mock names based on the log ID.
   // In a full implementation, the subscription should return the user's name.
-  const { data: subData } = useSubscription(ATTENDANCE_LOGGED, {
+  const { data: subData } = useSubscription<{ attendanceLogged: string }>(ATTENDANCE_LOGGED, {
     variables: { sessionId }
   })
 

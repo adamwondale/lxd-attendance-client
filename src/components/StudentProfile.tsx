@@ -29,8 +29,8 @@ const UPDATE_PROFILE = gql`
 `
 
 export function StudentProfile() {
-  const { data, loading, error } = useQuery(ME_QUERY)
-  const [updateProfile, { loading: saving }] = useMutation(UPDATE_PROFILE)
+  const { data, loading, error } = useQuery<{ me: any }>(ME_QUERY)
+  const [updateProfile, { loading: saving }] = useMutation<{ updateProfile: any }>(UPDATE_PROFILE)
   
   const [isEditing, setIsEditing] = useState(false)
   const [editName, setEditName] = useState("")

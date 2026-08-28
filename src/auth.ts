@@ -157,9 +157,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async session({ session, token }) {
       // Expose on the client session object
-      session.user.role        = (token.role as string) || "STUDENT"
-      session.user.accessToken = token.accessToken as string | null
-      return session
+      ;(session.user as any).role        = (token.role as string) || "STUDENT";
+      ;(session.user as any).accessToken = token.accessToken as string | null;
+      return session;
     },
   },
 
