@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { signIn } from "next-auth/react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
@@ -281,6 +281,14 @@ function TabBar({ active, onChange }: { active: Tab; onChange: (t: Tab) => void 
 // Page
 // ------------------------------------------------------------------
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#F9F9F8]" />}>
+      <LoginContent />
+    </Suspense>
+  )
+}
+
+function LoginContent() {
   const [tab, setTab] = useState<Tab>("admin")
   const searchParams  = useSearchParams()
 
