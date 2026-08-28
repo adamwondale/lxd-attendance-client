@@ -30,7 +30,7 @@ export default function SignupPage() {
 
     try {
       // 1. Call Backend GraphQL to Register
-      const registerRes = await fetch("http://localhost:9000/graphql", {
+      const registerRes = await fetch(process.env.NEXT_PUBLIC_GRAPHQL_URL || "http://localhost:9000/graphql", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

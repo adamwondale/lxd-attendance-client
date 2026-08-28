@@ -13,7 +13,7 @@ const MY_QR_QUERY = gql`
 `
 
 export default function StudentDashboardPage() {
-  const { data: qrData, loading: qrLoading } = useQuery(MY_QR_QUERY)
+  const { data: qrData, loading: qrLoading } = useQuery<{ myQrBadge: string }>(MY_QR_QUERY)
 
   const handleDownload = () => {
     const svg = document.getElementById("student-qr-code")

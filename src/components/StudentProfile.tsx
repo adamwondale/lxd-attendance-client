@@ -58,10 +58,11 @@ export function StudentProfile() {
           name: editName.trim() || undefined,
           username: editUsername.trim() || undefined
         },
-        update: (cache, { data: { updateProfile } }) => {
+        update: (cache, { data: mutationData }) => {
+          if (!mutationData?.updateProfile) return;
           cache.writeQuery({
             query: ME_QUERY,
-            data: { me: { ...data.me, name: updateProfile.name, username: updateProfile.username } }
+            data: { me: { ...(data as any).me, name: mutationData.updateProfile.name, username: mutationData.updateProfile.username } }
           })
         }
       })

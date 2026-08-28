@@ -44,8 +44,8 @@ const ON_COHORTS_UPDATED = gql`
 `
 
 export default function StudentCohortsPage() {
-  const { data: myCohortsData, loading: myCohortsLoading, refetch: refetchMyCohorts } = useQuery(MY_COHORTS, { fetchPolicy: "network-only" })
-  const { data: availableCohortsData, loading: availableCohortsLoading, refetch: refetchAvailableCohorts } = useQuery(AVAILABLE_COHORTS, { fetchPolicy: "network-only" })
+  const { data: myCohortsData, loading: myCohortsLoading, refetch: refetchMyCohorts } = useQuery<{ myCohorts: any[] }>(MY_COHORTS, { fetchPolicy: "network-only" })
+  const { data: availableCohortsData, loading: availableCohortsLoading, refetch: refetchAvailableCohorts } = useQuery<{ availableCohorts: any[] }>(AVAILABLE_COHORTS, { fetchPolicy: "network-only" })
   
   useSubscription(ON_COHORTS_UPDATED, {
     onData: () => {

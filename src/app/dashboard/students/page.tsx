@@ -43,7 +43,7 @@ const ON_STUDENTS_UPDATED = gql`
 `
 
 export default function StudentsPage() {
-  const { data, loading, refetch } = useQuery(LIST_STUDENTS, { fetchPolicy: "network-only" })
+  const { data, loading, refetch } = useQuery<{ listStudents: any[] }>(LIST_STUDENTS, { fetchPolicy: "network-only" })
   const [updateStudent, { loading: updating }] = useMutation(UPDATE_STUDENT)
   const [deleteStudent, { loading: deleting }] = useMutation(DELETE_STUDENT)
 
