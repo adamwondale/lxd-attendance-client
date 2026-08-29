@@ -5,7 +5,8 @@ import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { setContext } from "@apollo/client/link/context";
-import { getSession } from "next-auth/react";
+import { onError } from "@apollo/client/link/error";
+import { getSession, signOut } from "next-auth/react";
 import {
   ApolloNextAppProvider,
   ApolloClient,
@@ -36,6 +37,27 @@ function makeClient() {
     };
   });
 
+  const errorLink = onError(({ graphQLErrors, networkError }) => {
+    if (graphQLErrors) {
+      for (let err of graphQLErrors) {
+        if (
+          err.extensions?.code === "UNAUTHENTICATED" ||
+          err.message.includes("Unauthorized")
+        ) {
+          // Token expired or invalid, log out the user
+          if (typeof window !== "undefined") {
+            signOut({ callbackUrl: "/login" });
+          }
+        }
+      }
+    }
+    if (networkError && 'statusCode' in networkError && networkError.statusCode === 401) {
+      if (typeof window !== "undefined") {
+        signOut({ callbackUrl: "/login" });
+      }
+    }
+  });
+
   const splitLink = typeof window !== "undefined" && wsLink
     ? split(
         ({ query }) => {
@@ -46,9 +68,9 @@ function makeClient() {
           );
         },
         wsLink,
-        authLink.concat(httpLink)
+        errorLink.concat(authLink).concat(httpLink)
       )
-    : authLink.concat(httpLink);
+    : errorLink.concat(authLink).concat(httpLink);
 
   return new ApolloClient({
     cache: new InMemoryCache(),

@@ -13,8 +13,12 @@ const MY_COHORTS = gql`
       id
       name
       startDate
-      durationMonths
+      endDate
       isActive
+      joinedSession {
+        id
+        name
+      }
     }
   }
 `
@@ -25,15 +29,20 @@ const AVAILABLE_COHORTS = gql`
       id
       name
       startDate
-      durationMonths
+      endDate
       isActive
+      sessions {
+        id
+        name
+        startTime
+      }
     }
   }
 `
 
 const JOIN_COHORT = gql`
-  mutation JoinCohort($cohortId: String!, $pin: String!) {
-    joinCohort(cohortId: $cohortId, pin: $pin)
+  mutation JoinCohort($cohortId: String!, $sessionId: String!, $pin: String!) {
+    joinCohort(cohortId: $cohortId, sessionId: $sessionId, pin: $pin)
   }
 `
 
@@ -57,16 +66,21 @@ export default function StudentCohortsPage() {
   const [joinCohort, { loading: joining }] = useMutation(JOIN_COHORT)
   
   const [joiningCohort, setJoiningCohort] = useState<any>(null)
+  const [selectedSessionId, setSelectedSessionId] = useState<string>("")
   const [pin, setPin] = useState("")
 
   const handleJoinSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!joiningCohort) return
+    if (!joiningCohort || !selectedSessionId) {
+      toast.error("Please select a session.")
+      return
+    }
 
     try {
-      await joinCohort({ variables: { cohortId: joiningCohort.id, pin } })
+      await joinCohort({ variables: { cohortId: joiningCohort.id, sessionId: selectedSessionId, pin } })
       toast.success(`Successfully joined ${joiningCohort.name}!`)
       setJoiningCohort(null)
+      setSelectedSessionId("")
       setPin("")
       refetchMyCohorts()
       refetchAvailableCohorts()
@@ -99,7 +113,9 @@ export default function StudentCohortsPage() {
                 <li key={cohort.id} className="p-4 flex items-center justify-between hover:bg-black/[0.02] transition-colors">
                   <div>
                     <h4 className="font-medium text-[15px]">{cohort.name}</h4>
-                    <p className="text-[13px] text-[var(--color-muted)] mt-0.5">Started: {new Date(cohort.startDate).toLocaleDateString()}</p>
+                    <p className="text-[13px] text-[var(--color-muted)] mt-0.5">
+                      {cohort.joinedSession ? `Session: ${cohort.joinedSession.name}` : `Started: ${new Date(cohort.startDate).toLocaleDateString()}`}
+                    </p>
                   </div>
                   <span className="text-[10px] font-mono tracking-widest uppercase bg-green-50 text-green-700 px-2 py-1 rounded-full border border-green-100">
                     Active
@@ -133,7 +149,7 @@ export default function StudentCohortsPage() {
                 <li key={cohort.id} className="p-4 flex items-center justify-between hover:bg-black/[0.02] transition-colors group">
                   <div>
                     <h4 className="font-medium text-[15px]">{cohort.name}</h4>
-                    <p className="text-[13px] text-[var(--color-muted)] mt-0.5">{cohort.durationMonths} Months Duration</p>
+                    <p className="text-[13px] text-[var(--color-muted)] mt-0.5">{cohort.sessions?.length || 0} Sessions Available</p>
                   </div>
                   <button 
                     onClick={() => setJoiningCohort(cohort)}
@@ -180,11 +196,26 @@ export default function StudentCohortsPage() {
 
               <div className="mb-6">
                 <p className="text-[14px] text-[var(--color-muted)] leading-relaxed">
-                  You are about to join <strong className="text-black">{joiningCohort.name}</strong>. Please enter the secure PIN provided by your instructor.
+                  You are about to join <strong className="text-black">{joiningCohort.name}</strong>. Please select a session and enter the secure PIN.
                 </p>
               </div>
 
               <form onSubmit={handleJoinSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-[12px] font-mono uppercase tracking-widest text-black/50">Select Session</label>
+                  <select 
+                    value={selectedSessionId}
+                    onChange={(e) => setSelectedSessionId(e.target.value)}
+                    required
+                    className="w-full h-14 px-4 text-sm border border-black/10 rounded-xl focus:border-black outline-none transition-colors bg-white"
+                  >
+                    <option value="" disabled>Choose a session...</option>
+                    {joiningCohort.sessions?.map((s: any) => (
+                      <option key={s.id} value={s.id}>{s.name} ({s.startTime})</option>
+                    ))}
+                  </select>
+                </div>
+
                 <div className="space-y-2">
                   <label className="text-[12px] font-mono uppercase tracking-widest text-black/50">Secure PIN</label>
                   <input 
@@ -193,7 +224,6 @@ export default function StudentCohortsPage() {
                     value={pin}
                     onChange={(e) => setPin(e.target.value)}
                     required
-                    autoFocus
                     placeholder="Enter PIN"
                     className="w-full h-14 px-4 text-lg border border-black/10 rounded-xl focus:border-black outline-none transition-colors text-center tracking-widest"
                   />

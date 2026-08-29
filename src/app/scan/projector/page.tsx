@@ -6,31 +6,31 @@ import QRCode from "react-qr-code"
 import { useQuery, useSubscription } from "@apollo/client/react/index.js"
 import { gql } from "@apollo/client/core/index.js"
 
-const GENERATE_SESSION_QR = gql`
-  query GenerateSessionQr($sessionId: String!) {
-    generateSessionQr(sessionId: $sessionId)
+const GENERATE_COHORT_QR = gql`
+  query GenerateCohortQr($cohortId: String!) {
+    generateCohortQr(cohortId: $cohortId)
   }
 `
 
 const ATTENDANCE_LOGGED = gql`
-  subscription OnAttendanceLogged($sessionId: String!) {
-    attendanceLogged(sessionId: $sessionId)
+  subscription OnAttendanceLogged($cohortId: String!) {
+    attendanceLogged(cohortId: $cohortId)
   }
 `
 
-export default function ProjectorView({ searchParams }: { searchParams: Promise<{ sessionId?: string }> }) {
+export default function ProjectorView({ searchParams }: { searchParams: Promise<{ cohortId?: string }> }) {
   const unwrappedParams = use(searchParams)
-  const sessionId = unwrappedParams.sessionId || "SESSION1"
+  const cohortId = unwrappedParams.cohortId || "COHORT1"
 
-  const { data: qrData, refetch } = useQuery<{ generateSessionQr: string }>(GENERATE_SESSION_QR, {
-    variables: { sessionId },
+  const { data: qrData, refetch } = useQuery<{ generateCohortQr: string }>(GENERATE_COHORT_QR, {
+    variables: { cohortId },
     fetchPolicy: "network-only"
   })
 
   // We are not passing full user details in the subscription yet, so we mock names based on the log ID.
   // In a full implementation, the subscription should return the user's name.
   const { data: subData } = useSubscription<{ attendanceLogged: string }>(ATTENDANCE_LOGGED, {
-    variables: { sessionId }
+    variables: { cohortId }
   })
 
   const [timeLeft, setTimeLeft] = useState(15)
@@ -73,7 +73,7 @@ export default function ProjectorView({ searchParams }: { searchParams: Promise<
 
   // Ensure this uses absolute URL so mobile devices can open it.
   const hostUrl = typeof window !== 'undefined' ? window.location.origin : 'https://lxd-attendance.vercel.app'
-  const qrString = qrData?.generateSessionQr || ""
+  const qrString = qrData?.generateCohortQr || ""
   const scanUrl = `${hostUrl}/attend?code=${qrString}`
 
   return (
