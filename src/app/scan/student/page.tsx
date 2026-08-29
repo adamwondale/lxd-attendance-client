@@ -1,162 +1,209 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState, useEffect, use } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { CheckCircle2, AlertCircle, X, Loader2 } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { useMutation } from "@apollo/client/react/index.js"
+import { gql } from "@apollo/client/core/index.js"
+import { Scan, CheckCircle2, AlertCircle, Loader2, Camera, RefreshCcw } from "lucide-react"
+import { useQRScanner } from "@caffeineai/qr-code"
 
-export default function StudentScanner() {
-  const [scanStatus, setScanStatus] = useState<"idle" | "success" | "error">("idle")
+const LOG_ATTENDANCE = gql`
+  mutation LogAttendance($qrCode: String!) {
+    logAttendance(qrCode: $qrCode)
+  }
+`
+
+export default function StudentScanPage() {
+  const [logAttendance] = useMutation(LOG_ATTENDANCE)
+  
+  const [scanStatus, setScanStatus] = useState<"idle" | "success" | "error" | "loading">("idle")
   const [errorMsg, setErrorMsg] = useState("")
-  const [isClient, setIsClient] = useState(false)
-  const router = useRouter()
 
+  const {
+    qrResults,
+    isScanning,
+    isActive,
+    isSupported,
+    error: cameraError,
+    isLoading: isCameraLoading,
+    canStartScanning,
+    startScanning,
+    stopScanning,
+    switchCamera,
+    clearResults,
+    videoRef,
+    canvasRef
+  } = useQRScanner({
+    facingMode: 'environment',
+    scanInterval: 100,
+    maxResults: 1
+  });
+
+  // Handle scanned results
   useEffect(() => {
-    setIsClient(true)
-  }, [])
-
-  useEffect(() => {
-    if (!isClient) return
-
-    let html5QrcodeScanner: any;
-
-    const startScanner = async () => {
-      // Dynamic import since html5-qrcode is a client-side library
-      const { Html5QrcodeScanner } = await import("html5-qrcode")
+    if (qrResults.length > 0 && scanStatus === "idle") {
+      const decodedText = qrResults[0].data;
       
-      html5QrcodeScanner = new Html5QrcodeScanner(
-        "reader",
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        /* verbose= */ false
-      )
-
-      html5QrcodeScanner.render(
-        (decodedText: string) => {
-          // Verify it's a URL and has the attend code
-          if (decodedText.includes('/attend?code=')) {
-            // Vibrate device if supported
-            if (typeof navigator !== "undefined" && navigator.vibrate) {
-              navigator.vibrate([100, 50, 100])
-            }
-            setScanStatus("success")
-            
-            // Redirect to the parsed URL
-            try {
-              const url = new URL(decodedText)
-              // We just push the path + search params instead of full URL to stay within Next.js router
-              router.push(url.pathname + url.search)
-            } catch {
-              router.push(decodedText)
-            }
-            
-            html5QrcodeScanner.clear()
-          } else {
-            // Vibrate device if supported
-            if (typeof navigator !== "undefined" && navigator.vibrate) {
-              navigator.vibrate([300])
-            }
-            setScanStatus("error")
-            setErrorMsg("Invalid QR format")
-            setTimeout(() => setScanStatus("idle"), 3000)
-          }
-        },
-        (error: any) => {
-          // ignored, happens on every frame when no QR code is found
-        }
-      )
-    }
-
-    startScanner()
-
-    return () => {
-      if (html5QrcodeScanner) {
-        try { html5QrcodeScanner.clear() } catch {}
+      let parsedCode = decodedText;
+      try {
+        const url = new URL(decodedText);
+        const codeParam = url.searchParams.get("code");
+        if (codeParam) parsedCode = codeParam;
+      } catch {
+        // Not a URL, use as is
       }
+      
+      setScanStatus("loading");
+      logAttendance({ variables: { qrCode: parsedCode } })
+        .then(() => {
+          setScanStatus("success");
+          if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate([100, 50, 100]);
+          setTimeout(() => {
+            setScanStatus("idle");
+            clearResults();
+          }, 3000);
+        })
+        .catch((err: any) => {
+          setScanStatus("error");
+          setErrorMsg(err.message || "Invalid QR Code");
+          if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate([300]);
+          setTimeout(() => {
+            setScanStatus("idle");
+            clearResults();
+          }, 4000);
+        });
     }
-  }, [isClient, router])
+  }, [qrResults, logAttendance, scanStatus, clearResults]);
 
-  if (!isClient) {
-    return <div className="min-h-screen bg-black flex items-center justify-center text-white font-mono">Loading camera...</div>
+
+  if (isSupported === false) {
+    return (
+      <div className="p-10 space-y-8 h-full flex flex-col items-center justify-center">
+        <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
+        <h2 className="font-serif text-2xl">Camera Not Supported</h2>
+        <p className="font-mono text-sm text-[var(--color-muted)]">Your device does not support camera access.</p>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-primary)] flex flex-col relative overflow-hidden">
-      
-      {/* Top Navigation */}
-      <div className="absolute top-0 left-0 right-0 z-50 p-6 flex justify-between items-center bg-gradient-to-b from-black/50 to-transparent">
-        <Link href="/dashboard/student" className="text-white hover:opacity-80 transition-opacity">
-          <X className="w-8 h-8" />
-        </Link>
-        <div className="font-mono text-sm tracking-widest uppercase text-white opacity-80">
-          Studio Check-In
-        </div>
-      </div>
-      
-      {/* Scanner Viewfinder overlay */}
-      <div className="flex-1 relative bg-black flex flex-col items-center justify-center pt-20">
-        
-        <div id="reader" className="w-full max-w-sm rounded-xl overflow-hidden shadow-2xl border-2 border-white/20 bg-black">
-          {/* html5-qrcode injects its UI here */}
-        </div>
-        
-        <p className="text-white/50 font-mono text-xs mt-8 text-center px-8 uppercase tracking-widest">
-          Point camera at the projector screen<br/>to log your attendance
-        </p>
-
+    <div className="p-10 space-y-8 h-full flex flex-col">
+      <div>
+        <h1 className="font-serif text-4xl mb-2">Check In</h1>
+        <p className="font-mono text-[13px] text-[var(--color-muted)] uppercase">Scan the QR code on the projector to mark attendance.</p>
       </div>
 
-      {/* Multimodal Feedback Overlay */}
-      <AnimatePresence>
-        {scanStatus !== "idle" && (
-          <motion.div
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 20, stiffness: 200 }}
-            className={`absolute bottom-0 left-0 right-0 p-8 z-50 ${
-              scanStatus === "success" 
-                ? "bg-green-500 text-white" 
-                : "bg-[var(--color-accent)] text-white"
-            }`}
-          >
-            <div className="flex items-center gap-4">
-              {scanStatus === "success" ? (
-                <CheckCircle2 className="w-8 h-8" />
-              ) : (
-                <AlertCircle className="w-8 h-8" />
-              )}
-              <div>
-                <h3 className="font-serif text-2xl">
-                  {scanStatus === "success" ? "Validating..." : "Invalid QR Code"}
-                </h3>
-                <p className="font-mono text-sm uppercase mt-1 opacity-90">
-                  {scanStatus === "success" ? "Redirecting..." : errorMsg}
-                </p>
+      <div className="flex-1 flex flex-col gap-6 max-w-lg mx-auto w-full">
+        <Card className="flex-1 bg-black overflow-hidden flex flex-col border-black relative rounded-xl shadow-2xl min-h-[450px]">
+          <CardContent className="p-0 flex-1 flex flex-col items-center justify-center relative w-full h-full">
+            
+            {cameraError && (
+              <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/80 text-white p-6 text-center">
+                <AlertCircle className="w-10 h-10 mb-4 text-red-500" />
+                <p className="font-sans font-medium mb-2">{cameraError.message}</p>
+                <p className="font-mono text-[10px] uppercase opacity-70">Please check camera permissions.</p>
               </div>
+            )}
+
+            <div className="w-full h-full relative flex items-center justify-center bg-zinc-950 overflow-hidden">
+              <video 
+                ref={videoRef}
+                className="absolute w-full h-full object-cover z-0"
+                playsInline
+                muted
+                autoPlay
+              />
+              <canvas ref={canvasRef} style={{ display: 'none' }} />
+              
+              {/* Overlay Scanner Frame */}
+              <div className="absolute inset-0 pointer-events-none border-[40px] border-black/40 z-10" />
+              
+              {!isActive && !isCameraLoading && (
+                <div className="absolute z-10 flex flex-col items-center text-white/50">
+                  <Scan className="w-16 h-16 mb-4 opacity-50" />
+                  <p className="font-mono text-[11px] uppercase tracking-widest">Camera is Paused</p>
+                </div>
+              )}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      
-      <style dangerouslySetInnerHTML={{__html: `
-        /* Hide HTML5 QR Code Scanner ugly default UI elements */
-        #reader__dashboard_section_csr span { display: none; }
-        #reader__dashboard_section_swaplink { display: none; }
-        #reader button {
-          background-color: white !important;
-          color: black !important;
-          border: none !important;
-          padding: 8px 16px !important;
-          font-family: inherit !important;
-          text-transform: uppercase !important;
-          font-size: 12px !important;
-          letter-spacing: 1px !important;
-          margin-top: 10px !important;
-          border-radius: 4px !important;
-          cursor: pointer !important;
-        }
-      `}} />
+            
+            <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-30 drop-shadow-md">
+              <div className="text-white/80 font-mono text-[10px] uppercase tracking-widest bg-black/50 px-3 py-1 rounded-full backdrop-blur-md">
+                {isActive ? "Active Camera" : "Ready"}
+              </div>
+              
+              {/* Switch camera on mobile */}
+              {typeof navigator !== 'undefined' && /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent) && (
+                <button 
+                  onClick={switchCamera} 
+                  disabled={isCameraLoading || !isActive}
+                  className="bg-black/50 p-2 rounded-full backdrop-blur-md text-white/80 hover:text-white disabled:opacity-50"
+                >
+                  <RefreshCcw className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            <AnimatePresence>
+              {scanStatus !== "idle" && (
+                <motion.div
+                  initial={{ y: "100%" }}
+                  animate={{ y: 0 }}
+                  exit={{ y: "100%" }}
+                  transition={{ type: "spring", damping: 20, stiffness: 200 }}
+                  className={`absolute bottom-0 left-0 right-0 p-6 z-50 flex items-center justify-between ${
+                    scanStatus === "success" 
+                      ? "bg-green-500 text-white" 
+                      : scanStatus === "loading"
+                      ? "bg-black text-white border-t border-white/20"
+                      : "bg-[var(--color-accent)] text-white"
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    {scanStatus === "success" ? (
+                      <CheckCircle2 className="w-6 h-6" />
+                    ) : scanStatus === "loading" ? (
+                      <Loader2 className="w-6 h-6 animate-spin" />
+                    ) : (
+                      <AlertCircle className="w-6 h-6" />
+                    )}
+                    <div>
+                      <h3 className="font-serif text-lg">
+                        {scanStatus === "success" ? "Success!" : scanStatus === "loading" ? "Validating..." : "Scan Failed"}
+                      </h3>
+                      <p className="font-mono text-[10px] uppercase mt-1 opacity-90">
+                        {scanStatus === "success" ? "Attendance Logged" : scanStatus === "loading" ? "Please wait..." : errorMsg}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </CardContent>
+        </Card>
+
+        {/* Controls */}
+        <div className="flex gap-4 pb-10">
+          {!isActive ? (
+            <Button 
+              onClick={startScanning} 
+              disabled={!canStartScanning}
+              className="flex-1 h-12 bg-black text-white hover:bg-black/80 font-sans text-[14px]"
+            >
+              {isCameraLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Camera className="w-4 h-4 mr-2" />}
+              Start Scanner
+            </Button>
+          ) : (
+            <Button 
+              onClick={stopScanning}
+              className="flex-1 h-12 bg-white text-black border border-black/20 hover:bg-black/5 font-sans text-[14px]"
+            >
+              Stop Scanner
+            </Button>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
