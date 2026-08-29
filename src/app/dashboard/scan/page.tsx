@@ -133,7 +133,7 @@ export default function AdminScanPage() {
             <div className="w-full h-full relative flex items-center justify-center bg-zinc-950 overflow-hidden">
               <video 
                 ref={videoRef}
-                className="absolute w-full h-full object-cover z-0"
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 playsInline
                 muted
                 autoPlay
