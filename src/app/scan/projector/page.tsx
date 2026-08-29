@@ -71,8 +71,10 @@ export default function ProjectorView({ searchParams }: { searchParams: Promise<
   const circumference = 2 * Math.PI * radius
   const strokeDashoffset = circumference - (timeLeft / 15) * circumference
 
-  // Ensure this uses absolute URL so mobile devices can open it.
-  const hostUrl = typeof window !== 'undefined' ? window.location.origin : 'https://lxd-attendance.vercel.app'
+  // Ensure this uses the absolute production URL so mobile devices can open it.
+  // Locally, if NEXT_PUBLIC_HOST_URL is set (e.g. to your local IP), use that. Otherwise fallback to origin.
+  const envHost = process.env.NEXT_PUBLIC_HOST_URL;
+  const hostUrl = envHost || (typeof window !== 'undefined' ? window.location.origin : 'https://attendance.vercel.app');
   const qrString = qrData?.generateCohortQr || ""
   const scanUrl = `${hostUrl}/attend?code=${qrString}`
 

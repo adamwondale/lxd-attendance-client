@@ -13,6 +13,8 @@
   "dependencies": {
     "@apollo/client": "^4.2.12",
     "@apollo/experimental-nextjs-app-support": "^0.14.5",
+    "@caffeineai/camera": "^0.1.1",
+    "@caffeineai/qr-code": "^0.1.2",
     "@react-oauth/google": "^0.13.5",
     "clsx": "^2.1.1",
     "framer-motion": "^13.1.1",
