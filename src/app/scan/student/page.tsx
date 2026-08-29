@@ -110,14 +110,15 @@ export default function StudentScanPage() {
             <div className="w-full h-full relative flex items-center justify-center bg-zinc-950 overflow-hidden">
               <video 
                 ref={videoRef}
-                className="absolute w-full h-full object-cover"
+                className="absolute w-full h-full object-cover z-0"
                 playsInline
                 muted
+                autoPlay
               />
               <canvas ref={canvasRef} style={{ display: 'none' }} />
               
               {/* Overlay Scanner Frame */}
-              <div className="absolute inset-0 pointer-events-none border-[40px] border-black/40 mix-blend-hard-light" />
+              <div className="absolute inset-0 pointer-events-none border-[40px] border-black/40 z-10" />
               
               {!isActive && !isCameraLoading && (
                 <div className="absolute z-10 flex flex-col items-center text-white/50">
