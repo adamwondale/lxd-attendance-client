@@ -71,11 +71,14 @@ export default function ProjectorView({ searchParams }: { searchParams: Promise<
   const circumference = 2 * Math.PI * radius
   const strokeDashoffset = circumference - (timeLeft / 15) * circumference
 
-  // Ensure this uses the absolute production URL so mobile devices can open it.
-  // Locally, if NEXT_PUBLIC_HOST_URL is set (e.g. to your local IP), use that. Otherwise fallback to origin.
-  const hostUrl = process.env.NEXT_PUBLIC_HOST_URL || "https://lxd-attendance.vercel.app";
-  const qrString = qrData?.generateCohortQr || ""
-  const scanUrl = qrString ? `${hostUrl}/attend?code=${qrString}` : "";
+  // Dynamically grab the exact URL you are viewing the projector on (so the QR code always matches your real Vercel URL)
+  const [hostUrl, setHostUrl] = useState("");
+  useEffect(() => {
+    setHostUrl(process.env.NEXT_PUBLIC_HOST_URL || window.location.origin);
+  }, []);
+
+  const qrString = qrData?.generateCohortQr || "";
+  const scanUrl = hostUrl && qrString ? `${hostUrl}/attend?code=${qrString}` : "";
 
   return (
     <div className="min-h-screen bg-[var(--color-primary)] text-[var(--color-surface)] flex flex-row relative overflow-hidden">
