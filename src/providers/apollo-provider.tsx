@@ -46,14 +46,14 @@ function makeClient() {
         ) {
           // Token expired or invalid, log out the user
           if (typeof window !== "undefined") {
-            signOut({ callbackUrl: "/login" });
+            signOut({ callbackUrl: "/student/login" });
           }
         }
       }
     }
     if (networkError && 'statusCode' in networkError && networkError.statusCode === 401) {
       if (typeof window !== "undefined") {
-        signOut({ callbackUrl: "/login" });
+        signOut({ callbackUrl: "/student/login" });
       }
     }
   });

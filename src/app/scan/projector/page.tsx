@@ -116,6 +116,7 @@ export default function ProjectorView({ searchParams }: { searchParams: Promise<
               className="stroke-[var(--color-surface)] fill-none"
               strokeWidth="4"
               strokeDasharray={circumference}
+              initial={{ strokeDashoffset: circumference }}
               animate={{ strokeDashoffset }}
               transition={{ duration: 1, ease: "linear" }}
               strokeLinecap="square"

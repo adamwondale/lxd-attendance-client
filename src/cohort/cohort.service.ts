@@ -1,0 +1,436 @@
+import { Injectable, BadRequestException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+
+@Injectable()
+export class CohortService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async createCohort(
+    userId: string,
+    name: string,
+    pin: string,
+    startDate: Date,
+    endDate: Date,
+    durationMonths?: number,
+  ) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { tenants: true },
+    });
+    const tenantId = user?.tenants?.[0]?.tenantId;
+    if (!tenantId) throw new BadRequestException('User has no active tenant');
+    if (durationMonths !== undefined && ![3, 6].includes(durationMonths))
+      throw new BadRequestException('Cohort duration must be 3 or 6 months');
+
+    const existing = await this.prisma.cohort.findUnique({ where: { pin } });
+    if (existing) {
+      throw new BadRequestException('A cohort with this PIN already exists');
+    }
+
+    return await this.prisma.cohort.create({
+      data: {
+        tenantId,
+        name,
+        pin,
+        startDate,
+        endDate,
+        isActive: true,
+        durationMonths: durationMonths ?? undefined,
+      },
+    });
+  }
+
+  async updateCohort(
+    cohortId: string,
+    name?: string,
+    pin?: string,
+    startDate?: Date,
+    endDate?: Date,
+    isActive?: boolean,
+    durationMonths?: number,
+  ) {
+    const cohort = await this.prisma.cohort.findUnique({
+      where: { id: cohortId },
+    });
+    if (!cohort) throw new BadRequestException('Cohort not found');
+
+    return this.prisma.cohort.update({
+      where: { id: cohortId },
+      data: {
+        ...(name !== undefined && { name }),
+        ...(pin !== undefined && { pin }),
+        ...(startDate !== undefined && { startDate }),
+        ...(endDate !== undefined && { endDate }),
+        ...(isActive !== undefined && { isActive }),
+        ...(durationMonths !== undefined && { durationMonths }),
+      },
+    });
+  }
+
+  async deleteCohort(cohortId: string) {
+    const cohort = await this.prisma.cohort.findUnique({
+      where: { id: cohortId },
+    });
+    if (!cohort) throw new BadRequestException('Cohort not found');
+
+    // Soft delete cohort
+    await this.prisma.cohort.update({
+      where: { id: cohortId },
+      data: { isActive: false },
+    });
+
+    return true;
+  }
+
+  async createCohortSession(
+    cohortId: string,
+    name: string,
+    startTime: string,
+    gracePeriodMinutes: number,
+    recurrenceDays: string[],
+    latePenaltyAmount: number,
+    escalationThresholdMinutes = 15,
+    escalationRate = 5,
+    escalationIntervalMinutes = 5,
+  ) {
+    const cohort = await this.prisma.cohort.findUnique({
+      where: { id: cohortId },
+    });
+    if (!cohort) throw new BadRequestException('Cohort not found');
+
+    return this.prisma.cohortSession.create({
+      data: {
+        cohortId,
+        name,
+        startTime,
+        gracePeriodMinutes,
+        recurrenceDays,
+        latePenaltyAmount,
+        escalationThresholdMinutes,
+        escalationRate,
+        escalationIntervalMinutes,
+      },
+    });
+  }
+
+  async updateCohortSession(
+    sessionId: string,
+    name?: string,
+    startTime?: string,
+    gracePeriodMinutes?: number,
+    recurrenceDays?: string[],
+    latePenaltyAmount?: number,
+    escalationThresholdMinutes?: number,
+    escalationRate?: number,
+    escalationIntervalMinutes?: number,
+  ) {
+    const session = await this.prisma.cohortSession.findUnique({
+      where: { id: sessionId },
+    });
+    if (!session) throw new BadRequestException('Session not found');
+
+    return this.prisma.cohortSession.update({
+      where: { id: sessionId },
+      data: {
+        ...(name !== undefined && { name }),
+        ...(startTime !== undefined && { startTime }),
+        ...(gracePeriodMinutes !== undefined && { gracePeriodMinutes }),
+        ...(recurrenceDays !== undefined && { recurrenceDays }),
+        ...(latePenaltyAmount !== undefined && { latePenaltyAmount }),
+        ...(escalationThresholdMinutes !== undefined && {
+          escalationThresholdMinutes,
+        }),
+        ...(escalationRate !== undefined && { escalationRate }),
+        ...(escalationIntervalMinutes !== undefined && {
+          escalationIntervalMinutes,
+        }),
+      },
+    });
+  }
+
+  async deleteCohortSession(sessionId: string) {
+    const session = await this.prisma.cohortSession.findUnique({
+      where: { id: sessionId },
+    });
+    if (!session) throw new BadRequestException('Session not found');
+
+    await this.prisma.cohortSession.delete({ where: { id: sessionId } });
+    return true;
+  }
+
+  async listCohorts(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { tenants: true },
+    });
+    const tenantId = user?.tenants?.[0]?.tenantId;
+    if (!tenantId) throw new BadRequestException('User has no active tenant');
+
+    return this.prisma.cohort.findMany({
+      where: { tenantId, isActive: true },
+      orderBy: { startDate: 'desc' },
+      include: { sessions: true },
+    });
+  }
+
+  async getDashboardMetrics(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { tenants: true },
+    });
+    const tenantId = user?.tenants?.[0]?.tenantId;
+    if (!tenantId) throw new BadRequestException('User has no active tenant');
+
+    const activeCohorts = await this.prisma.cohort.count({
+      where: { tenantId, isActive: true },
+    });
+    const totalStudents = await this.prisma.user.count({
+      where: { tenants: { some: { tenantId, role: 'STUDENT' } } },
+    });
+
+    const today = new Date();
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+    });
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: tenant?.timezone || 'Africa/Addis_Ababa',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(today);
+    const get = (type: string) =>
+      parts.find((p) => p.type === type)?.value || '';
+    const dateStr = `${get('year')}-${get('month')}-${get('day')}`;
+
+    const activeMemberships = await this.prisma.cohortMembership.findMany({
+      where: { status: 'ACTIVE', cohort: { tenantId, isActive: true } },
+      select: { userId: true },
+    });
+    const logs = await this.prisma.attendanceLog.findMany({
+      where: {
+        date: dateStr,
+        session: { cohort: { tenantId, isActive: true } },
+      },
+      select: { userId: true, isLate: true, calculatedPenalty: true },
+    });
+    const presentIds = new Set(logs.map((l) => l.userId));
+    const lateIds = new Set(logs.filter((l) => l.isLate).map((l) => l.userId));
+    const todayRevenue = logs.reduce(
+      (sum, l) => sum + (l.calculatedPenalty || 0),
+      0,
+    );
+
+    return {
+      activeCohorts,
+      totalStudents,
+      presentToday: presentIds.size,
+      absentToday: new Set(
+        activeMemberships
+          .map((m) => m.userId)
+          .filter((id) => !presentIds.has(id)),
+      ).size,
+      lateToday: lateIds.size,
+      todayRevenue,
+    };
+  }
+
+  async getCompanyProfile(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        tenants: {
+          include: { tenant: true },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    const role = user.tenants?.find((t) =>
+      ['SUPER_ADMIN', 'COORDINATOR'].includes(t.role),
+    );
+
+    if (!role) {
+      throw new BadRequestException('User has no active company profile');
+    }
+
+    const tenant = role.tenant;
+
+    return {
+      id: tenant.id,
+      companyName: tenant.name,
+      companyEmail: tenant.companyEmail || user.email,
+      companyPhone: tenant.companyPhone || user.phone,
+      adminName: tenant.adminName || user.name,
+      username: user.username,
+      timezone: tenant.timezone,
+    };
+  }
+
+  async updateCompanyProfile(
+    userId: string,
+    companyName?: string,
+    companyEmail?: string,
+    companyPhone?: string,
+    adminName?: string,
+    username?: string,
+  ) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { tenants: true },
+    });
+    const tenantId = user?.tenants?.[0]?.tenantId;
+    if (!tenantId) throw new BadRequestException('User has no active tenant');
+    if (username && username !== user?.username) {
+      const duplicate = await this.prisma.user.findFirst({
+        where: { username, NOT: { id: userId } },
+      });
+      if (duplicate)
+        throw new BadRequestException('Username is already in use');
+    }
+    await this.prisma.tenant.update({
+      where: { id: tenantId },
+      data: {
+        ...(companyName !== undefined && { name: companyName }),
+        ...(companyEmail !== undefined && { companyEmail }),
+        ...(companyPhone !== undefined && { companyPhone }),
+        ...(adminName !== undefined && { adminName }),
+      },
+    });
+    if (
+      adminName !== undefined ||
+      username !== undefined ||
+      companyPhone !== undefined ||
+      companyEmail !== undefined
+    ) {
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          ...(adminName !== undefined && { name: adminName }),
+          ...(username !== undefined && { username }),
+          ...(companyPhone !== undefined && { phone: companyPhone }),
+          ...(companyEmail !== undefined && { email: companyEmail }),
+        },
+      });
+    }
+    return this.getCompanyProfile(userId);
+  }
+
+  async getCohortDetails(cohortId: string) {
+    return this.prisma.cohort.findUnique({
+      where: { id: cohortId },
+      include: {
+        sessions: true,
+        memberships: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+  }
+
+  async publicActiveCohorts() {
+    return this.prisma.cohort.findMany({
+      where: { isActive: true, endDate: { gte: new Date() } },
+      include: { sessions: true },
+      orderBy: { startDate: 'desc' },
+    });
+  }
+
+  async availableCohorts(userId: string) {
+    // Return all active cohorts that the user is NOT already a member of
+    return this.prisma.cohort.findMany({
+      where: {
+        isActive: true,
+        memberships: {
+          none: { userId },
+        },
+      },
+      include: { sessions: true },
+      orderBy: { startDate: 'desc' },
+    });
+  }
+
+  async myCohorts(userId: string) {
+    // Return all cohorts the user IS a member of
+    const memberships = await this.prisma.cohortMembership.findMany({
+      where: { userId, status: 'ACTIVE' },
+      include: {
+        cohort: {
+          include: { sessions: true },
+        },
+      },
+      orderBy: { joinedAt: 'desc' },
+    });
+    return memberships.map((m) => m.cohort);
+  }
+
+  async joinCohort(
+    userId: string,
+    cohortId: string,
+    sessionId: string,
+    pin: string,
+  ) {
+    const cohort = await this.prisma.cohort.findUnique({
+      where: { id: cohortId },
+    });
+
+    if (!cohort) throw new BadRequestException('Cohort not found');
+    if (cohort.pin !== pin) throw new BadRequestException('Invalid PIN');
+    if (!cohort.isActive)
+      throw new BadRequestException('Cohort is no longer active');
+
+    const session = await this.prisma.cohortSession.findUnique({
+      where: { id: sessionId },
+    });
+    if (!session || session.cohortId !== cohortId) {
+      throw new BadRequestException('Invalid Session ID');
+    }
+
+    const existingMembership = await this.prisma.cohortMembership.findUnique({
+      where: { cohortId_userId: { cohortId, userId } },
+    });
+
+    if (existingMembership) {
+      throw new BadRequestException('You are already enrolled in this cohort');
+    }
+
+    // 1. Create the Cohort Membership
+    await this.prisma.cohortMembership.create({
+      data: {
+        cohortId,
+        userId,
+        sessionId,
+        status: 'ACTIVE',
+      },
+    });
+
+    // 2. Add the user to the Cohort's Tenant (if not already there)
+    const existingTenantRole = await this.prisma.userTenantRole.findUnique({
+      where: { userId_tenantId: { userId, tenantId: cohort.tenantId } },
+    });
+
+    if (!existingTenantRole) {
+      await this.prisma.userTenantRole.create({
+        data: {
+          userId,
+          tenantId: cohort.tenantId,
+          role: 'STUDENT',
+        },
+      });
+    }
+
+    return true;
+  }
+
+  async getJoinedSession(userId: string, cohortId: string) {
+    const membership = await this.prisma.cohortMembership.findUnique({
+      where: { cohortId_userId: { cohortId, userId } },
+      include: { session: true },
+    });
+    return membership?.session || null;
+  }
+}
