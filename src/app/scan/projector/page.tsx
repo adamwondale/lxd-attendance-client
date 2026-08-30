@@ -74,7 +74,10 @@ export default function ProjectorView({ searchParams }: { searchParams: Promise<
   // Ensure this uses the absolute production URL so mobile devices can open it.
   // Locally, if NEXT_PUBLIC_HOST_URL is set (e.g. to your local IP), use that. Otherwise fallback to origin.
   const envHost = process.env.NEXT_PUBLIC_HOST_URL;
-  const hostUrl = envHost || (typeof window !== 'undefined' ? window.location.origin : 'https://attendance.vercel.app');
+  const [hostUrl, setHostUrl] = useState("");
+  useEffect(() => {
+    setHostUrl(envHost || window.location.origin);
+  }, [envHost]);
   const qrString = qrData?.generateCohortQr || ""
   const scanUrl = `${hostUrl}/attend?code=${qrString}`
 
