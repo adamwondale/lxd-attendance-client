@@ -20,6 +20,9 @@ export default function StudentScanPage() {
   
   const [scanStatus, setScanStatus] = useState<"idle" | "success" | "error" | "loading">("idle")
   const [errorMsg, setErrorMsg] = useState("")
+  
+  // Aggressive Debouncing State
+  const [lastScannedCode, setLastScannedCode] = useState<{ code: string, time: number } | null>(null);
 
   const {
     qrResults,
@@ -37,7 +40,7 @@ export default function StudentScanPage() {
     canvasRef
   } = useQRScanner({
     facingMode: 'environment',
-    scanInterval: 100,
+    scanInterval: 150, // Optimized interval to prevent mobile overheating
     maxResults: 1
   });
 
@@ -55,6 +58,21 @@ export default function StudentScanPage() {
         // Not a URL, use as is
       }
       
+      // 1. Aggressive Debouncing
+      const now = Date.now();
+      if (lastScannedCode && lastScannedCode.code === parsedCode && now - lastScannedCode.time < 5000) {
+        // Ignore the exact same code if scanned within the last 5 seconds
+        clearResults();
+        return;
+      }
+      
+      setLastScannedCode({ code: parsedCode, time: now });
+
+      // 2. Instant Haptic Feedback
+      if (typeof navigator !== "undefined" && navigator.vibrate) {
+        navigator.vibrate([100]); // Vibrate immediately so student knows it was captured
+      }
+
       setScanStatus("loading");
       logAttendance({ variables: { qrCode: parsedCode } })
         .then(() => {
@@ -67,7 +85,14 @@ export default function StudentScanPage() {
         })
         .catch((err: any) => {
           setScanStatus("error");
-          setErrorMsg(err.message || "Invalid QR Code");
+          // 3. Graceful Expiration Handling
+          const errorMessage = err.message || "Invalid QR Code";
+          if (errorMessage.toLowerCase().includes("expired")) {
+            setErrorMsg("Code expired. Please scan the new code on the projector.");
+          } else {
+            setErrorMsg(errorMessage);
+          }
+          
           if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate([300]);
           setTimeout(() => {
             setScanStatus("idle");
@@ -75,7 +100,7 @@ export default function StudentScanPage() {
           }, 4000);
         });
     }
-  }, [qrResults, logAttendance, scanStatus, clearResults]);
+  }, [qrResults, logAttendance, scanStatus, clearResults, lastScannedCode]);
 
 
   if (isSupported === false) {

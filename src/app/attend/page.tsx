@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useState, use } from "react"
+import { useEffect, useState, Suspense } from "react"
+import { useSearchParams } from "next/navigation"
 import { useSession, signIn } from "next-auth/react"
 import { useMutation } from "@apollo/client/react/index.js"
 import { gql } from "@apollo/client/core/index.js"
@@ -14,8 +15,10 @@ const LOG_ATTENDANCE = gql`
   }
 `
 
-export default function AttendPage({ searchParams }: { searchParams: Promise<{ code?: string }> }) {
-  const { code } = use(searchParams)
+function AttendContent() {
+  const searchParams = useSearchParams()
+  const code = searchParams.get('code')
+  
   const { status } = useSession()
   const [logAttendance, { loading }] = useMutation(LOG_ATTENDANCE)
   
@@ -134,5 +137,19 @@ export default function AttendPage({ searchParams }: { searchParams: Promise<{ c
         </Card>
       </motion.div>
     </div>
+  )
+}
+
+export default function AttendPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center p-6 bg-[#F9F9F8]">
+        <div className="animate-pulse font-mono uppercase tracking-widest text-sm text-[var(--color-muted)]">
+          Loading...
+        </div>
+      </div>
+    }>
+      <AttendContent />
+    </Suspense>
   )
 }
