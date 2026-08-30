@@ -14,6 +14,10 @@ const GET_ATTENDANCE_LOGS = gql`
       id
       scannedAt
       isLate
+      latenessMinutes
+      calculatedPenalty
+      date
+      isManualScan
       user {
         id
         name
@@ -73,7 +77,7 @@ export default function AttendancePage() {
     }
 
     const logs = data.getAttendanceLogs
-    const headers = ["Student Name", "Email", "Date", "Time", "Status", "Penalty Amount", "Penalty Status"]
+    const headers = ["Student Name", "Email", "Date", "Time", "Status", "Late Minutes", "Penalty Amount", "Penalty Status"]
     
     const rows = logs.map((log: any) => {
       const date = new Date(log.scannedAt).toLocaleDateString()
@@ -88,6 +92,7 @@ export default function AttendancePage() {
         date, 
         time, 
         status, 
+        log.latenessMinutes || 0,
         penaltyAmount, 
         penaltyStatus
       ].join(",")
@@ -141,7 +146,7 @@ export default function AttendancePage() {
                     <div className="text-[13px] text-[var(--color-muted)]">{log.user.email}</div>
                   </div>
                   <div className="text-[14px]">
-                    <div>{new Date(log.scannedAt).toLocaleDateString()}</div>
+                    <div>{log.date || new Date(log.scannedAt).toLocaleDateString()}</div>
                     <div className="text-[12px] text-[var(--color-muted)] font-mono">{new Date(log.scannedAt).toLocaleTimeString()}</div>
                   </div>
                   <div>
@@ -150,7 +155,7 @@ export default function AttendancePage() {
                         ? 'border-[var(--color-accent)] text-[var(--color-accent)]' 
                         : 'border-green-600 text-green-700'
                     }`}>
-                      {log.isLate ? 'Late' : 'Present'}
+                      {log.isLate ? `Late · ${log.latenessMinutes || 0} min` : 'Present'}
                     </span>
                     {log.penalty && (
                       <div className="text-[11px] font-mono mt-1 text-[var(--color-muted)]">

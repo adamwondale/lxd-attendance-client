@@ -343,8 +343,8 @@ function LoginContent() {
           
           <div className="p-4 text-center font-sans text-[13px] text-[#878786] border-t border-[#E5E5E4] bg-[#F9F9F8]">
             Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-[#1C1C1C] hover:underline underline-offset-4">
-              Sign Up
+            <Link href={tab === "admin" ? "/admin/signup" : "/signup"} className="text-[#1C1C1C] hover:underline underline-offset-4">
+              {tab === "admin" ? "Create company account" : "Student Sign Up"}
             </Link>
           </div>
         </motion.div>

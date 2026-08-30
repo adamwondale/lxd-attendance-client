@@ -8,10 +8,11 @@ import { useMutation } from "@apollo/client/react/index.js"
 import { gql } from "@apollo/client/core/index.js"
 import { Scan, CheckCircle2, AlertCircle, Loader2, Camera, RefreshCcw } from "lucide-react"
 import { useQRScanner } from "@caffeineai/qr-code"
+import { getDeviceSignature } from "@/lib/device"
 
 const LOG_ATTENDANCE = gql`
-  mutation LogAttendance($qrCode: String!) {
-    logAttendance(qrCode: $qrCode)
+  mutation LogAttendance($qrCode: String!, $deviceSignature: String) {
+    logAttendance(qrCode: $qrCode, deviceSignature: $deviceSignature)
   }
 `
 
@@ -74,7 +75,7 @@ export default function StudentScanPage() {
       }
 
       setScanStatus("loading");
-      logAttendance({ variables: { qrCode: parsedCode } })
+      logAttendance({ variables: { qrCode: parsedCode, deviceSignature: getDeviceSignature() } })
         .then(() => {
           setScanStatus("success");
           if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate([100, 50, 100]);

@@ -5,7 +5,7 @@ import { useQuery, useMutation, useSubscription } from "@apollo/client/react/ind
 import { gql } from "@apollo/client/core/index.js"
 import { Card, CardHeader, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Loader2, Edit2, Trash2, X, Plus } from "lucide-react"
+import { Loader2, Edit2, Trash2, X, Plus, Search, ChevronLeft, ChevronRight } from "lucide-react"
 import { toast } from "sonner"
 import { AnimatePresence, motion } from "framer-motion"
 
@@ -41,6 +41,12 @@ const LIST_COHORTS = gql`
         name
       }
     }
+  }
+`
+
+const CREATE_STUDENT = gql`
+  mutation AdminCreateStudent($name:String!,$email:String!,$phone:String!,$username:String!,$password:String!,$cohortId:String,$sessionId:String) {
+    adminCreateStudent(name:$name,email:$email,phone:$phone,username:$username,password:$password,cohortId:$cohortId,sessionId:$sessionId) { id name email username }
   }
 `
 
@@ -88,6 +94,7 @@ export default function StudentsPage() {
   const { data, loading, refetch } = useQuery<{ listStudents: any[] }>(LIST_STUDENTS, { fetchPolicy: "network-only" })
   const { data: cohortData } = useQuery(LIST_COHORTS, { fetchPolicy: "network-only" })
   
+  const [createStudent, { loading: creatingStudent }] = useMutation(CREATE_STUDENT)
   const [updateStudent, { loading: updating }] = useMutation(UPDATE_STUDENT)
   const [deleteStudent, { loading: deleting }] = useMutation(DELETE_STUDENT)
   const [enrollStudent] = useMutation(ENROLL_STUDENT)
@@ -99,10 +106,18 @@ export default function StudentsPage() {
   const [editingStudent, setEditingStudent] = useState<any>(null)
   const [editForm, setEditForm] = useState({ name: "", email: "" })
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [showCreate, setShowCreate] = useState(false)
+  const [createForm, setCreateForm] = useState({name:"",email:"",phone:"",username:"",password:"",cohortId:"",sessionId:""})
 
   const [newEnrollment, setNewEnrollment] = useState(false)
   const [selectedCohort, setSelectedCohort] = useState("")
   const [selectedSession, setSelectedSession] = useState("")
+  const [search, setSearch] = useState("")
+  const [page, setPage] = useState(1)
+  const PAGE_SIZE = 7
+  const filteredStudents = (data?.listStudents || []).filter((student: any) => `${student.name} ${student.email} ${student.username || ""}`.toLowerCase().includes(search.toLowerCase()))
+  const totalPages = Math.max(1, Math.ceil(filteredStudents.length / PAGE_SIZE))
+  const pagedStudents = filteredStudents.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
   const handleEditClick = (student: any) => {
     setEditingStudent(student)
@@ -192,9 +207,11 @@ export default function StudentsPage() {
         <h1 className="font-serif text-4xl mb-2">Students</h1>
         <p className="font-mono text-[13px] text-[var(--color-muted)] uppercase">Manage all enrolled students</p>
       </div>
+      <Button onClick={()=>setShowCreate(true)} className="bg-black text-white rounded-xl"><Plus className="w-4 h-4 mr-2"/> Register Student</Button>
 
       <Card>
-        <CardHeader className="border-b border-[var(--color-border)]">
+        <CardHeader className="border-b border-[var(--color-border)] space-y-4">
+          <div className="relative max-w-md"><Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black/30"/><input value={search} onChange={e=>{setSearch(e.target.value);setPage(1)}} placeholder="Search students…" className="w-full h-10 pl-10 pr-3 rounded-xl border border-black/10 bg-[#F9F9F8] outline-none focus:border-black text-sm"/></div>
           <div className="grid grid-cols-4 text-[13px] font-mono text-[var(--color-muted)] uppercase">
             <div className="col-span-2">Name & Email</div>
             <div>Enrolled Cohorts</div>
@@ -206,9 +223,10 @@ export default function StudentsPage() {
             <div className="p-10 flex justify-center">
               <Loader2 className="w-6 h-6 animate-spin text-[var(--color-muted)]" />
             </div>
-          ) : data?.listStudents?.length > 0 ? (
+          ) : filteredStudents.length > 0 ? (
+            <>
             <ul className="divide-y divide-[var(--color-border)]">
-              {data.listStudents.map((student: any) => (
+              {pagedStudents.map((student: any) => (
                 <li key={student.id} className="grid grid-cols-4 p-4 items-center hover:bg-black/[0.02]">
                   <div className="col-span-2">
                     <div className="font-medium text-[15px]">{student.name}</div>
@@ -251,6 +269,11 @@ export default function StudentsPage() {
                 </li>
               ))}
             </ul>
+            {totalPages > 1 && <div className="flex items-center justify-between p-4 border-t border-black/5">
+              <span className="text-xs text-black/40">Page {page} of {totalPages} · {filteredStudents.length} students</span>
+              <div className="flex gap-2"><button disabled={page===1} onClick={()=>setPage(p=>Math.max(1,p-1))} className="h-9 w-9 rounded-lg border border-black/10 flex items-center justify-center disabled:opacity-30 hover:bg-black hover:text-white transition-colors"><ChevronLeft className="w-4 h-4"/></button><button disabled={page===totalPages} onClick={()=>setPage(p=>Math.min(totalPages,p+1))} className="h-9 w-9 rounded-lg border border-black/10 flex items-center justify-center disabled:opacity-30 hover:bg-black hover:text-white transition-colors"><ChevronRight className="w-4 h-4"/></button></div>
+            </div>}
+            </>
           ) : (
             <div className="p-10 text-center text-[var(--color-muted)] font-mono text-[13px] uppercase">
               No students found.
@@ -258,6 +281,10 @@ export default function StudentsPage() {
           )}
         </CardContent>
       </Card>
+
+      <AnimatePresence>
+        {showCreate && <div className="fixed inset-0 z-50 flex items-center justify-center p-4"><motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={()=>setShowCreate(false)}/><motion.div initial={{opacity:0,scale:.96,y:12}} animate={{opacity:1,scale:1,y:0}} exit={{opacity:0,scale:.96,y:12}} className="relative bg-white rounded-3xl shadow-2xl p-6 w-full max-w-lg"><div className="flex justify-between items-center mb-5"><div><h2 className="font-serif text-2xl">Register Student</h2><p className="text-xs text-black/40 mt-1">Create the trainee account and optional assignment.</p></div><button onClick={()=>setShowCreate(false)}><X className="w-5 h-5 text-black/50"/></button></div><form className="grid sm:grid-cols-2 gap-3" onSubmit={async e=>{e.preventDefault();try{await createStudent({variables:{...createForm,cohortId:createForm.cohortId||undefined,sessionId:createForm.sessionId||undefined}});toast.success("Student registered");setShowCreate(false);setCreateForm({name:"",email:"",phone:"",username:"",password:"",cohortId:"",sessionId:""});refetch()}catch(err:any){toast.error(err.message||"Registration failed")}}}><input required placeholder="Full name" value={createForm.name} onChange={e=>setCreateForm({...createForm,name:e.target.value})} className="input w-full"/><input required type="email" placeholder="Email" value={createForm.email} onChange={e=>setCreateForm({...createForm,email:e.target.value})} className="input w-full"/><input required placeholder="Phone" value={createForm.phone} onChange={e=>setCreateForm({...createForm,phone:e.target.value})} className="input w-full"/><input required placeholder="Username" value={createForm.username} onChange={e=>setCreateForm({...createForm,username:e.target.value})} className="input w-full"/><input required type="password" placeholder="Temporary password" value={createForm.password} onChange={e=>setCreateForm({...createForm,password:e.target.value})} className="input w-full sm:col-span-2"/><select value={createForm.cohortId} onChange={e=>setCreateForm({...createForm,cohortId:e.target.value,sessionId:""})} className="input w-full"><option value="">Assign cohort later</option>{cohortData?.listCohorts?.map((c:any)=><option key={c.id} value={c.id}>{c.name}</option>)}</select><select value={createForm.sessionId} disabled={!createForm.cohortId} onChange={e=>setCreateForm({...createForm,sessionId:e.target.value})} className="input w-full"><option value="">Assign session</option>{cohortData?.listCohorts?.find((c:any)=>c.id===createForm.cohortId)?.sessions?.map((ss:any)=><option key={ss.id} value={ss.id}>{ss.name}</option>)}</select><Button disabled={creatingStudent} className="sm:col-span-2 h-12 rounded-xl bg-black text-white">{creatingStudent?<Loader2 className="w-4 h-4 animate-spin"/>:"Create Student"}</Button></form></motion.div></div>}
+      </AnimatePresence>
 
       {/* Edit Modal Overlay */}
       <AnimatePresence>

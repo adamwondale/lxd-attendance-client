@@ -12,8 +12,27 @@ const MY_QR_QUERY = gql`
   }
 `
 
+const MY_ATTENDANCE_SUMMARY = gql`
+  query MyAttendanceSummary {
+    myAttendanceSummary {
+      presentDays
+      lateDays
+      totalPenalty
+      lateLogs {
+        id
+        date
+        scannedAt
+        latenessMinutes
+        calculatedPenalty
+        penalty { amount status }
+      }
+    }
+  }
+`
+
 export default function StudentDashboardPage() {
   const { data: qrData, loading: qrLoading } = useQuery<{ myQrBadge: string }>(MY_QR_QUERY)
+  const { data: summaryData, loading: summaryLoading } = useQuery(MY_ATTENDANCE_SUMMARY, { fetchPolicy: "network-only" })
 
   const handleDownload = () => {
     const svg = document.getElementById("student-qr-code")
@@ -46,6 +65,38 @@ export default function StudentDashboardPage() {
   return (
     <div className="p-6 max-w-lg mx-auto space-y-8">
       
+      <section className="grid grid-cols-3 gap-3">
+        {[
+          ['Present', summaryData?.myAttendanceSummary?.presentDays ?? 0],
+          ['Late', summaryData?.myAttendanceSummary?.lateDays ?? 0],
+          ['Penalties', `${summaryData?.myAttendanceSummary?.totalPenalty ?? 0} ETB`],
+        ].map(([label, value]) => (
+          <div key={String(label)} className="surface-lift rounded-2xl border border-black/5 bg-white p-4">
+            <p className="text-[10px] uppercase tracking-widest text-black/45 font-mono">{label}</p>
+            <p className="text-xl font-semibold mt-2">{summaryLoading ? '—' : value}</p>
+          </div>
+        ))}
+      </section>
+
+      <section className="space-y-3">
+        <div className="flex items-center justify-between px-1">
+          <h3 className="font-medium text-[16px]">Late Attendance & Penalties</h3>
+          <span className="text-[10px] uppercase tracking-widest font-mono text-black/40">ETB</span>
+        </div>
+        <div className="bg-white border border-black/5 rounded-2xl overflow-hidden shadow-sm">
+          {(summaryData?.myAttendanceSummary?.lateLogs || []).length ? (
+            <div className="divide-y divide-black/5">
+              {summaryData.myAttendanceSummary.lateLogs.slice(0, 8).map((log: any) => (
+                <div key={log.id} className="p-4 flex items-center justify-between gap-4 hover:bg-black/[.02] transition-colors">
+                  <div><p className="font-medium text-sm">{new Date(log.scannedAt).toLocaleDateString()}</p><p className="text-xs text-black/45 mt-1">{log.latenessMinutes} minutes late</p></div>
+                  <div className="text-right"><p className="font-semibold text-sm text-[var(--color-accent)]">{log.penalty?.amount ?? log.calculatedPenalty ?? 0} ETB</p><p className="text-[10px] uppercase font-mono text-black/40">{log.penalty?.status ?? 'UNPAID'}</p></div>
+                </div>
+              ))}
+            </div>
+          ) : <div className="p-8 text-center text-sm text-black/45">No late attendance records yet.</div>}
+        </div>
+      </section>
+
       {/* QR Code Section */}
       <section className="space-y-4">
         <div className="flex items-baseline justify-between px-2">

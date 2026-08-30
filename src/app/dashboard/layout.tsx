@@ -1,4 +1,4 @@
-import { Users, LayoutDashboard, QrCode, LogOut, Calendar, GraduationCap, Scan } from "lucide-react"
+import { Users, LayoutDashboard, QrCode, LogOut, Calendar, GraduationCap, Scan, FileBarChart2, Building2 } from "lucide-react"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import Link from "next/link"
@@ -78,7 +78,11 @@ export default async function DashboardLayout({
             <Calendar className="w-4 h-4" />
             <span>Attendance</span>
           </Link>
-          <Link href="/dashboard/scan" className="flex items-center space-x-3 px-3 py-2 rounded-[var(--radius-none)] text-[var(--color-text)] hover:bg-black/5 font-medium text-[14px] transition-colors">
+          <Link href="/dashboard/reports" className="flex items-center space-x-3 px-3 py-2 rounded-xl text-[var(--color-text)] hover:bg-black/5 font-medium text-[14px] transition-colors">
+            <FileBarChart2 className="w-4 h-4" />
+            <span>Reports</span>
+          </Link>
+          <Link href="/dashboard/scan" className="flex items-center space-x-3 px-3 py-2 rounded-xl text-[var(--color-text)] hover:bg-black/5 font-medium text-[14px] transition-colors">
             <Scan className="w-4 h-4" />
             <span>Scan Badge</span>
           </Link>
@@ -117,6 +121,10 @@ export default async function DashboardLayout({
         <Link href="/dashboard/cohorts" className="flex flex-col items-center justify-center w-full h-full text-[var(--color-muted)] hover:text-black transition-colors focus:text-black border-l border-black/5">
           <Users className="w-5 h-5 mb-1" />
           <span className="text-[10px] font-medium tracking-wide">Cohorts</span>
+        </Link>
+        <Link href="/dashboard/reports" className="flex flex-col items-center justify-center w-full h-full text-[var(--color-muted)] hover:text-black transition-colors focus:text-black border-l border-black/5">
+          <FileBarChart2 className="w-5 h-5 mb-1" />
+          <span className="text-[10px] font-medium tracking-wide">Reports</span>
         </Link>
         <Link href="/dashboard/scan" className="flex flex-col items-center justify-center w-full h-full text-[var(--color-text)] hover:text-black transition-colors focus:text-black border-l border-black/5 relative">
           <div className="absolute -top-6 bg-black text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg border-4 border-[var(--color-background)]">

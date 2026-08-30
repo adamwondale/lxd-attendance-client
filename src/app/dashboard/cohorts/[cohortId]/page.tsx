@@ -22,20 +22,23 @@ const COHORT_DETAILS = gql`
         gracePeriodMinutes
         recurrenceDays
         latePenaltyAmount
+        escalationThresholdMinutes
+        escalationRate
+        escalationIntervalMinutes
       }
     }
   }
 `
 
 const CREATE_SESSION = gql`
-  mutation CreateCohortSession($cohortId: String!, $name: String!, $startTime: String!, $gracePeriodMinutes: Int!, $recurrenceDays: [String!]!, $latePenaltyAmount: Int!) {
-    createCohortSession(cohortId: $cohortId, name: $name, startTime: $startTime, gracePeriodMinutes: $gracePeriodMinutes, recurrenceDays: $recurrenceDays, latePenaltyAmount: $latePenaltyAmount)
+  mutation CreateCohortSession($cohortId: String!, $name: String!, $startTime: String!, $gracePeriodMinutes: Int!, $recurrenceDays: [String!]!, $latePenaltyAmount: Int!, $escalationThresholdMinutes: Int, $escalationRate: Int, $escalationIntervalMinutes: Int) {
+    createCohortSession(cohortId: $cohortId, name: $name, startTime: $startTime, gracePeriodMinutes: $gracePeriodMinutes, recurrenceDays: $recurrenceDays, latePenaltyAmount: $latePenaltyAmount, escalationThresholdMinutes: $escalationThresholdMinutes, escalationRate: $escalationRate, escalationIntervalMinutes: $escalationIntervalMinutes)
   }
 `
 
 const UPDATE_SESSION = gql`
-  mutation UpdateCohortSession($sessionId: String!, $name: String, $startTime: String, $gracePeriodMinutes: Int, $recurrenceDays: [String!], $latePenaltyAmount: Int) {
-    updateCohortSession(sessionId: $sessionId, name: $name, startTime: $startTime, gracePeriodMinutes: $gracePeriodMinutes, recurrenceDays: $recurrenceDays, latePenaltyAmount: $latePenaltyAmount)
+  mutation UpdateCohortSession($sessionId: String!, $name: String, $startTime: String, $gracePeriodMinutes: Int, $recurrenceDays: [String!], $latePenaltyAmount: Int, $escalationThresholdMinutes: Int, $escalationRate: Int, $escalationIntervalMinutes: Int) {
+    updateCohortSession(sessionId: $sessionId, name: $name, startTime: $startTime, gracePeriodMinutes: $gracePeriodMinutes, recurrenceDays: $recurrenceDays, latePenaltyAmount: $latePenaltyAmount, escalationThresholdMinutes: $escalationThresholdMinutes, escalationRate: $escalationRate, escalationIntervalMinutes: $escalationIntervalMinutes)
   }
 `
 
@@ -61,6 +64,9 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
   const [startTime, setStartTime] = useState("09:00")
   const [lateTime, setLateTime] = useState("09:15")
   const [latePenaltyAmount, setLatePenaltyAmount] = useState(25)
+  const [escalationThresholdMinutes, setEscalationThresholdMinutes] = useState(15)
+  const [escalationRate, setEscalationRate] = useState(5)
+  const [escalationIntervalMinutes, setEscalationIntervalMinutes] = useState(5)
   const [recurrenceDays, setRecurrenceDays] = useState<string[]>(['EVERYDAY'])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
@@ -74,6 +80,9 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
     const lateM = totalM % 60
     setLateTime(`${lateH.toString().padStart(2, '0')}:${lateM.toString().padStart(2, '0')}`)
     setLatePenaltyAmount(session.latePenaltyAmount ?? 25)
+    setEscalationThresholdMinutes(session.escalationThresholdMinutes ?? 15)
+    setEscalationRate(session.escalationRate ?? 5)
+    setEscalationIntervalMinutes(session.escalationIntervalMinutes ?? 5)
     setRecurrenceDays(session.recurrenceDays || ['EVERYDAY'])
     setIsDialogOpen(true)
   }
@@ -85,6 +94,9 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
     setStartTime("09:00")
     setLateTime("09:15")
     setLatePenaltyAmount(25)
+    setEscalationThresholdMinutes(15)
+    setEscalationRate(5)
+    setEscalationIntervalMinutes(5)
     setRecurrenceDays(['EVERYDAY'])
   }
 
@@ -124,6 +136,9 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
             gracePeriodMinutes: gracePeriodMinutes,
             recurrenceDays: recurrenceDays,
             latePenaltyAmount: latePenaltyAmount,
+            escalationThresholdMinutes,
+            escalationRate,
+            escalationIntervalMinutes,
           }
         })
       } else {
@@ -135,6 +150,9 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
             gracePeriodMinutes: gracePeriodMinutes,
             recurrenceDays: recurrenceDays,
             latePenaltyAmount: latePenaltyAmount,
+            escalationThresholdMinutes,
+            escalationRate,
+            escalationIntervalMinutes,
           }
         })
       }
@@ -233,6 +251,12 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
                       className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
                     />
                   </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <label className="space-y-2"><span className="text-[10px] font-mono uppercase text-[#878786]">Threshold</span><input type="number" min="0" value={escalationThresholdMinutes} onChange={e=>setEscalationThresholdMinutes(Number(e.target.value))} className="h-10 w-full rounded-md border border-gray-200 px-3 text-sm" /></label>
+                    <label className="space-y-2"><span className="text-[10px] font-mono uppercase text-[#878786]">+ ETB</span><input type="number" min="0" value={escalationRate} onChange={e=>setEscalationRate(Number(e.target.value))} className="h-10 w-full rounded-md border border-gray-200 px-3 text-sm" /></label>
+                    <label className="space-y-2"><span className="text-[10px] font-mono uppercase text-[#878786]">Every min</span><input type="number" min="1" value={escalationIntervalMinutes} onChange={e=>setEscalationIntervalMinutes(Number(e.target.value))} className="h-10 w-full rounded-md border border-gray-200 px-3 text-sm" /></label>
+                  </div>
+                  <p className="text-xs text-black/45">After the threshold, the penalty increases by the configured amount for each interval.</p>
                   <div className="space-y-2">
                     <label className="text-sm font-mono uppercase text-[#878786]">Recurrence</label>
                     <div className="flex flex-wrap gap-2">
