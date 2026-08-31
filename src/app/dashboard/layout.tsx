@@ -128,13 +128,7 @@ export default async function DashboardLayout({
             <span>Scan Badge</span>
           </ActiveNavLink>
           <div className="mt-auto flex flex-col space-y-2 pt-8">
-            <ActiveNavLink
-              href="/scan/projector"
-              className="flex items-center space-x-3 px-3 py-2 rounded-(--radius-none) text-text hover:bg-black/5 font-medium text-[14px] transition-colors"
-            >
-              <QrCode className="w-4 h-4" />
-              <span>Launch Projector</span>
-            </ActiveNavLink>
+
             <a
               href="/api/auth/signout"
               className="flex items-center space-x-3 px-3 py-2 rounded-(--radius-none) text-muted hover:text-black hover:bg-black/5 font-medium text-[14px] transition-colors"
