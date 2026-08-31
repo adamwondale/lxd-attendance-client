@@ -1,8 +1,13 @@
 "use client"
 
+<<<<<<< Updated upstream
 import { useState, useEffect, use, useSyncExternalStore } from "react"
+=======
+import { Suspense, useState, useEffect } from "react"
+>>>>>>> Stashed changes
 import { motion, AnimatePresence } from "framer-motion"
 import QRCode from "react-qr-code"
+import { useSearchParams } from "next/navigation"
 import { useQuery, useSubscription } from "@apollo/client/react/index.js"
 import { gql } from "@apollo/client/core/index.js"
 
@@ -26,20 +31,37 @@ const ATTENDANCE_LOGGED = gql`
   }
 `
 
+<<<<<<< Updated upstream
 export default function ProjectorView({ searchParams }: { searchParams: Promise<{ cohortId?: string }> }) {
   const unwrappedParams = use(searchParams)
   const cohortId = unwrappedParams.cohortId || ""
+=======
+function ProjectorContent() {
+  const searchParams = useSearchParams()
+  const cohortId = searchParams.get("cohortId") || "COHORT1"
+>>>>>>> Stashed changes
 
-  const { data: qrData, refetch } = useQuery<{ generateCohortQr: string }>(GENERATE_COHORT_QR, {
+  const { data: qrData, refetch, error } = useQuery<{ generateCohortQr: string }>(GENERATE_COHORT_QR, {
     variables: { cohortId },
     fetchPolicy: "network-only",
     skip: !cohortId
   })
 
+<<<<<<< Updated upstream
   const sessionId = unwrappedParams.sessionId
   const { data: subData } = useSubscription<any>(ATTENDANCE_LOGGED, {
     variables: { sessionId },
     skip: !sessionId
+=======
+  if (error) {
+    console.error("GraphQL Error in generateCohortQr:", error);
+  }
+
+  // We are not passing full user details in the subscription yet, so we mock names based on the log ID.
+  // In a full implementation, the subscription should return the user's name.
+  const { data: subData } = useSubscription<{ attendanceLogged: string }>(ATTENDANCE_LOGGED, {
+    variables: { cohortId }
+>>>>>>> Stashed changes
   })
 
   const [timeLeft, setTimeLeft] = useState(15)
@@ -170,5 +192,13 @@ export default function ProjectorView({ searchParams }: { searchParams: Promise<
         </ul>
       </div>
     </div>
+  )
+}
+
+export default function ProjectorView() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[var(--color-primary)] text-white flex items-center justify-center font-mono">Loading Projector...</div>}>
+      <ProjectorContent />
+    </Suspense>
   )
 }
