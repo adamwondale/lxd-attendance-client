@@ -80,14 +80,15 @@ export default function ProjectorView({ searchParams }: { searchParams: Promise<
   const circumference = 2 * Math.PI * radius
   const strokeDashoffset = circumference - (timeLeft / 15) * circumference
 
-  // Keep the server and first client render identical, then read the browser origin.
-  const hostUrl = useSyncExternalStore(
-    () => () => {},
-    () => process.env.NEXT_PUBLIC_HOST_URL || window.location.origin,
-    () => process.env.NEXT_PUBLIC_HOST_URL || "",
-  );
-  const qrString = qrData?.generateCohortQr || ""
-  const scanUrl = qrString ? `${hostUrl}/attend?code=${qrString}` : "";
+  // Dynamically grab the exact URL you are viewing the projector on (so the QR code always matches your real Vercel URL)
+  const [hostUrl, setHostUrl] = useState("");
+  useEffect(() => {
+    // Change this line to just use window.location.origin
+    setHostUrl(window.location.origin); 
+  }, []);
+
+  const qrString = qrData?.generateCohortQr || "";
+  const scanUrl = hostUrl && qrString ? `${hostUrl}/attend?code=${qrString}` : "";
 
   return (
     <div className="min-h-screen bg-[var(--color-primary)] text-[var(--color-surface)] flex flex-row relative overflow-hidden">
