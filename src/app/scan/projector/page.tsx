@@ -74,7 +74,8 @@ export default function ProjectorView({ searchParams }: { searchParams: Promise<
   // Dynamically grab the exact URL you are viewing the projector on (so the QR code always matches your real Vercel URL)
   const [hostUrl, setHostUrl] = useState("");
   useEffect(() => {
-    setHostUrl(process.env.NEXT_PUBLIC_HOST_URL || window.location.origin);
+    // Change this line to just use window.location.origin
+    setHostUrl(window.location.origin); 
   }, []);
 
   const qrString = qrData?.generateCohortQr || "";
