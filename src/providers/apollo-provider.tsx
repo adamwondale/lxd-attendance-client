@@ -20,7 +20,12 @@ function makeClient() {
 
   const wsLink = typeof window !== "undefined" ? new GraphQLWsLink(
     createClient({
-      url: (process.env.NEXT_PUBLIC_GRAPHQL_URL || "http://localhost:9000/graphql").replace("http", "ws"),
+      url: (process.env.NEXT_PUBLIC_GRAPHQL_URL || "http://localhost:9000/graphql").replace(/^http/, "ws"),
+      connectionParams: async () => {
+        const session = await getSession();
+        const token = (session?.user as { accessToken?: string } | undefined)?.accessToken;
+        return token ? { authorization: `Bearer ${token}` } : {};
+      },
     })
   ) : null;
 
@@ -37,24 +42,31 @@ function makeClient() {
     };
   });
 
+  const handleUnauthorized = async () => {
+    if (typeof window === "undefined") return;
+    const session = await getSession();
+    const role = (session?.user as { role?: string } | undefined)?.role;
+    const path = window.location.pathname;
+    const callbackUrl =
+      role === "STUDENT" || path.startsWith("/dashboard/student")
+        ? "/student/login"
+        : "/admin/login";
+    await signOut({ callbackUrl });
+  };
+
   const errorLink = onError(({ graphQLErrors, networkError }) => {
     if (graphQLErrors) {
-      for (let err of graphQLErrors) {
+      for (const err of graphQLErrors) {
         if (
           err.extensions?.code === "UNAUTHENTICATED" ||
           err.message.includes("Unauthorized")
         ) {
-          // Token expired or invalid, log out the user
-          if (typeof window !== "undefined") {
-            signOut({ callbackUrl: "/login" });
-          }
+          void handleUnauthorized();
         }
       }
     }
-    if (networkError && 'statusCode' in networkError && networkError.statusCode === 401) {
-      if (typeof window !== "undefined") {
-        signOut({ callbackUrl: "/login" });
-      }
+    if (networkError && "statusCode" in networkError && networkError.statusCode === 401) {
+      void handleUnauthorized();
     }
   });
 

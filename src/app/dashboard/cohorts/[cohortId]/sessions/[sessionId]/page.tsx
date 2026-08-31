@@ -26,7 +26,7 @@ const SESSION_DETAILS = gql`
 
 const ATTENDANCE_LOGGED = gql`
   subscription AttendanceLogged($sessionId: String!) {
-    attendanceLogged(sessionId: $sessionId)
+    attendanceLogged(sessionId: $sessionId) { id sessionId user { name } scannedAt isLate latenessMinutes calculatedPenalty }
   }
 `
 

@@ -11,6 +11,9 @@ const DASHBOARD_METRICS = gql`
     dashboardMetrics {
       activeCohorts
       totalStudents
+      presentToday
+      absentToday
+      lateToday
       todayRevenue
     }
   }
@@ -41,36 +44,20 @@ export default function DashboardOverviewContent() {
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Active Cohorts</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-sans tracking-tight">{metrics?.activeCohorts || 0}</div>
-            <p className="text-sm text-[var(--color-muted)] mt-1">Currently running sessions</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Total Students</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-sans tracking-tight">{metrics?.totalStudents || 0}</div>
-            <p className="text-sm text-[var(--color-muted)] mt-1">Across all active cohorts</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Today's Revenue</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-sans tracking-tight text-[var(--color-accent)]">{metrics?.todayRevenue?.toFixed(2) || "0.00"} ETB</div>
-            <p className="text-sm text-[var(--color-muted)] mt-1">From late penalties</p>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mt-8">
+        {[
+          ['Active Cohorts', metrics?.activeCohorts || 0, 'Currently running', ''],
+          ['Total Students', metrics?.totalStudents || 0, 'Across active cohorts', ''],
+          ['Present Today', metrics?.presentToday || 0, 'Checked in', 'text-emerald-600'],
+          ['Late Today', metrics?.lateToday || 0, 'Arrived after grace', 'text-amber-600'],
+          ['Absent Today', metrics?.absentToday || 0, 'No check-in recorded', 'text-red-600'],
+          ["Today's Penalties", `${metrics?.todayRevenue?.toFixed(2) || '0.00'} ETB`, 'Calculated automatically', 'text-[var(--color-accent)]'],
+        ].map(([title, value, caption, valueClass]) => (
+          <Card key={String(title)} className="surface-lift rounded-2xl border-black/5 bg-white/90">
+            <CardHeader className="pb-2"><CardTitle className="text-[11px] uppercase tracking-widest text-[var(--color-muted)]">{title}</CardTitle></CardHeader>
+            <CardContent><div className={`text-3xl font-semibold tracking-tight ${valueClass}`}>{value}</div><p className="text-xs text-[var(--color-muted)] mt-2">{caption}</p></CardContent>
+          </Card>
+        ))}
       </div>
 
       <div className="pt-8 border-t border-[var(--color-border)] mt-8">

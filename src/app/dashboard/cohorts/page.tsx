@@ -19,19 +19,20 @@ const LIST_COHORTS = gql`
       startDate
       endDate
       isActive
+      durationMonths
     }
   }
 `
 
 const CREATE_COHORT = gql`
-  mutation CreateCohort($name: String!, $pin: String!, $startDate: String!, $endDate: String!) {
-    createCohort(name: $name, pin: $pin, startDate: $startDate, endDate: $endDate)
+  mutation CreateCohort($name: String!, $pin: String!, $startDate: String!, $endDate: String!, $durationMonths: Int) {
+    createCohort(name: $name, pin: $pin, startDate: $startDate, endDate: $endDate, durationMonths: $durationMonths)
   }
 `
 
 const UPDATE_COHORT = gql`
-  mutation UpdateCohort($id: String!, $name: String, $pin: String, $startDate: String, $endDate: String, $isActive: Boolean) {
-    updateCohort(cohortId: $id, name: $name, pin: $pin, startDate: $startDate, endDate: $endDate, isActive: $isActive)
+  mutation UpdateCohort($id: String!, $name: String, $pin: String, $startDate: String, $endDate: String, $isActive: Boolean, $durationMonths: Int) {
+    updateCohort(cohortId: $id, name: $name, pin: $pin, startDate: $startDate, endDate: $endDate, isActive: $isActive, durationMonths: $durationMonths)
   }
 `
 
@@ -63,7 +64,8 @@ export default function CohortsPage() {
     pin: "", 
     startDate: "", 
     endDate: "",
-    isActive: true
+    isActive: true,
+    durationMonths: 3
   })
 
   const openCreateDialog = () => {
@@ -79,7 +81,8 @@ export default function CohortsPage() {
       pin: cohort.pin, 
       startDate: new Date(cohort.startDate).toISOString().split('T')[0], 
       endDate: new Date(cohort.endDate).toISOString().split('T')[0],
-      isActive: cohort.isActive
+      isActive: cohort.isActive,
+      durationMonths: cohort.durationMonths || 3
     })
     setIsDialogOpen(true)
   }
@@ -95,7 +98,8 @@ export default function CohortsPage() {
             pin: formData.pin,
             startDate: new Date(formData.startDate).toISOString(),
             endDate: new Date(formData.endDate).toISOString(),
-            isActive: formData.isActive
+            isActive: formData.isActive,
+            durationMonths: Number(formData.durationMonths)
           }
         })
         toast.success("Cohort updated successfully")
@@ -106,6 +110,7 @@ export default function CohortsPage() {
             pin: formData.pin,
             startDate: new Date(formData.startDate).toISOString(),
             endDate: new Date(formData.endDate).toISOString(),
+            durationMonths: Number(formData.durationMonths)
           }
         })
         toast.success("Cohort created successfully")
@@ -171,6 +176,7 @@ export default function CohortsPage() {
                   <div className="flex flex-col gap-1 md:col-span-2">
                     <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Join PIN</label>
                     <input required type="text" value={formData.pin} onChange={e => setFormData({...formData, pin: e.target.value})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-black outline-none font-sans text-[14px]" placeholder="e.g. LXD-26" />
+                    <select value={formData.durationMonths} onChange={e => setFormData({...formData, durationMonths: Number(e.target.value)})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-black outline-none font-sans text-[14px]"><option value={3}>3 months</option><option value={6}>6 months</option></select>
                   </div>
                   
                   <div className="flex flex-col gap-1">

@@ -1,6 +1,6 @@
-import NextAuth from "next-auth"
-import Google from "next-auth/providers/google"
-import Credentials from "next-auth/providers/credentials"
+import NextAuth from "next-auth";
+import Google from "next-auth/providers/google";
+import Credentials from "next-auth/providers/credentials";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -14,15 +14,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       id: "admin-credentials",
       name: "Admin",
       credentials: {
-        email:    { label: "Email",    type: "email" },
+        email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null
+        if (!credentials?.email || !credentials?.password) return null;
 
         try {
           const res = await fetch(
-            process.env.NEXT_PUBLIC_GRAPHQL_URL || "http://localhost:9000/graphql",
+            process.env.NEXT_PUBLIC_GRAPHQL_URL ||
+              "http://localhost:9000/graphql",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -35,25 +36,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                   }
                 `,
                 variables: {
-                  email:    credentials.email,
+                  email: credentials.email,
                   password: credentials.password,
                 },
               }),
-            }
-          )
+            },
+          );
 
-          const json = await res.json()
-          if (json.errors || !json.data?.loginAdmin?.accessToken) return null
+          const json = await res.json();
+          if (json.errors || !json.data?.loginAdmin?.accessToken) return null;
 
           return {
-            id:          credentials.email as string,
-            email:       credentials.email as string,
-            name:        "Admin",
-            role:        "ADMIN",
+            id: credentials.email as string,
+            email: credentials.email as string,
+            name: "Admin",
+            role: "ADMIN",
             accessToken: json.data.loginAdmin.accessToken,
-          }
+          };
         } catch {
-          return null
+          return null;
         }
       },
     }),
@@ -64,14 +65,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       name: "Student",
       credentials: {
         identifier: { label: "Email or Username", type: "text" },
-        password:   { label: "Password",          type: "password" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.identifier || !credentials?.password) return null
+        if (!credentials?.identifier || !credentials?.password) return null;
 
         try {
           const res = await fetch(
-            process.env.NEXT_PUBLIC_GRAPHQL_URL || "http://localhost:9000/graphql",
+            process.env.NEXT_PUBLIC_GRAPHQL_URL ||
+              "http://localhost:9000/graphql",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -85,24 +87,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 `,
                 variables: {
                   identifier: credentials.identifier,
-                  password:   credentials.password,
+                  password: credentials.password,
                 },
               }),
-            }
-          )
+            },
+          );
 
-          const json = await res.json()
-          if (json.errors || !json.data?.loginStudent?.accessToken) return null
+          const json = await res.json();
+          if (json.errors || !json.data?.loginStudent?.accessToken) return null;
 
           return {
-            id:          credentials.identifier as string,
-            email:       credentials.identifier as string, // Fallback for NextAuth
-            name:        "Student",
-            role:        "STUDENT",
+            id: credentials.identifier as string,
+            email: credentials.identifier as string, // Fallback for NextAuth
+            name: "Student",
+            role: "STUDENT",
             accessToken: json.data.loginStudent.accessToken,
-          }
+          };
         } catch {
-          return null
+          return null;
         }
       },
     }),
@@ -114,15 +116,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async jwt({ token, user, account }) {
       // 1. Admin login passes accessToken on `user` during `authorize`
       if (user && "accessToken" in user) {
-        token.role        = (user as any).role
-        token.accessToken = (user as any).accessToken
+        token.role = (user as any).role;
+        token.accessToken = (user as any).accessToken;
       }
 
       // 2. Google OAuth login: We must exchange Google's id_token for our backend's JWT
       if (account?.provider === "google" && account.id_token) {
         try {
           const res = await fetch(
-            process.env.NEXT_PUBLIC_GRAPHQL_URL || "http://localhost:9000/graphql",
+            process.env.NEXT_PUBLIC_GRAPHQL_URL ||
+              "http://localhost:9000/graphql",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -138,33 +141,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                   token: account.id_token,
                 },
               }),
-            }
-          )
-          const json = await res.json()
-          console.log("[Auth.js] Backend response:", JSON.stringify(json, null, 2))
-          
+            },
+          );
+          const json = await res.json();
+
           if (json.data?.loginWithGoogle?.accessToken) {
-            token.accessToken = json.data.loginWithGoogle.accessToken
-            token.role = "STUDENT" // Google users are always students
+            token.accessToken = json.data.loginWithGoogle.accessToken;
+            token.role = "STUDENT"; // Google users are always students
           } else {
-            console.error("[Auth.js] Missing accessToken in backend response")
+            console.error("[Auth.js] Missing accessToken in backend response");
           }
         } catch (e) {
-          console.error("[Auth.js] Failed to exchange Google token:", e)
+          console.error("[Auth.js] Failed to exchange Google token:", e);
         }
       }
-      return token
+      return token;
     },
     async session({ session, token }) {
       // Expose on the client session object
-      ;(session.user as any).role        = (token.role as string) || "STUDENT";
-      ;(session.user as any).accessToken = token.accessToken as string | null;
+      (session.user as any).role = (token.role as string) || "STUDENT";
+      (session.user as any).accessToken = token.accessToken as string | null;
       return session;
     },
   },
 
   pages: {
-    signIn: "/login",   // Use our custom login page
-    error:  "/login",   // Redirect errors back to login with ?error=
+    signIn: "/student/login", // Use our custom login page
+    error: "/student/login", // Redirect errors back to login with ?error=
   },
-})
+});

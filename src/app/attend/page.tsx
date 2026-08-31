@@ -8,10 +8,17 @@ import { gql } from "@apollo/client/core/index.js"
 import { motion } from "framer-motion"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { getDeviceSignature } from "@/lib/device"
 
 const LOG_ATTENDANCE = gql`
-  mutation LogAttendance($qrCode: String!) {
-    logAttendance(qrCode: $qrCode)
+  mutation LogAttendance($qrCode: String!, $deviceSignature: String) {
+    logAttendance(qrCode: $qrCode, deviceSignature: $deviceSignature)
+  }
+`
+
+const LOG_ATTENDANCE_BY_ID = gql`
+  mutation LogAttendanceById($traineeId: String!, $qrCode: String!, $deviceSignature: String) {
+    logAttendanceById(traineeId: $traineeId, qrCode: $qrCode, deviceSignature: $deviceSignature)
   }
 `
 
@@ -21,6 +28,8 @@ function AttendContent() {
   
   const { status } = useSession()
   const [logAttendance, { loading }] = useMutation(LOG_ATTENDANCE)
+  const [logAttendanceById] = useMutation(LOG_ATTENDANCE_BY_ID)
+  const [traineeId, setTraineeId] = useState("")
   
   const [result, setResult] = useState<'IDLE' | 'SUCCESS' | 'ERROR'>('IDLE')
   const [errorMsg, setErrorMsg] = useState("")
@@ -28,7 +37,7 @@ function AttendContent() {
   useEffect(() => {
     if (status === 'authenticated' && code && result === 'IDLE') {
       // Auto-submit
-      logAttendance({ variables: { qrCode: code } })
+      logAttendance({ variables: { qrCode: code, deviceSignature: getDeviceSignature() } })
         .then(() => setResult('SUCCESS'))
         .catch((err) => {
           setResult('ERROR')
@@ -63,22 +72,40 @@ function AttendContent() {
   }
 
   if (status === 'unauthenticated') {
+    const submitById = async (e: React.FormEvent) => {
+      e.preventDefault()
+      if (!traineeId.trim() || !code) return
+      setErrorMsg("")
+      setResult('IDLE')
+      try {
+        await logAttendanceById({ variables: { traineeId: traineeId.trim(), qrCode: code, deviceSignature: getDeviceSignature() } })
+        setResult('SUCCESS')
+      } catch (err: any) {
+        setResult('ERROR')
+        setErrorMsg(err.message || 'Unable to verify trainee ID')
+      }
+    }
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-[#F9F9F8]">
-        <Card className="w-full max-w-sm border-black shadow-lg">
-          <CardHeader className="text-center pb-2">
-            <CardTitle className="font-serif text-3xl">Sign In</CardTitle>
+      <div className="min-h-screen flex items-center justify-center p-6 bg-[radial-gradient(circle_at_top,#fff_0,#F5F5F3_55%,#ecece8_100%)]">
+        <Card className="w-full max-w-md border-black/10 shadow-2xl rounded-3xl overflow-hidden">
+          <CardHeader className="text-center pb-3">
+            <div className="mx-auto mb-4 h-12 w-12 rounded-2xl bg-black text-white flex items-center justify-center text-xl font-semibold">L</div>
+            <CardTitle className="font-serif text-3xl">Confirm Attendance</CardTitle>
+            <p className="text-sm text-[#878786] mt-2">Enter your registered trainee ID. The QR code has already been verified.</p>
           </CardHeader>
-          <CardContent className="flex flex-col items-center pt-4">
-            <p className="font-mono text-[12px] text-center text-[#878786] uppercase mb-8 leading-relaxed">
-              You must be logged in to <br /> record your attendance.
-            </p>
-            <Button 
-              className="w-full h-12 bg-black text-white hover:bg-black/80 font-sans text-[15px]" 
-              onClick={() => signIn(undefined, { callbackUrl: `/attend?code=${code}` })}
-            >
-              Continue to Login
-            </Button>
+          <CardContent className="pt-3">
+            <form onSubmit={submitById} className="space-y-4">
+              <input value={traineeId} onChange={e => setTraineeId(e.target.value)} autoFocus placeholder="Trainee ID" className="w-full h-14 px-4 text-center tracking-[.18em] uppercase rounded-2xl border border-black/10 bg-[#F9F9F8] outline-none focus:border-black transition-colors" />
+              {result === 'ERROR' && <p className="text-sm text-red-600 bg-red-50 rounded-xl p-3">{errorMsg}</p>}
+              {result === 'SUCCESS' ? (
+                <div className="rounded-2xl bg-green-50 text-green-700 p-4 text-center font-medium">Attendance recorded successfully.</div>
+              ) : (
+                <Button disabled={!traineeId.trim()} className="w-full h-14 rounded-2xl bg-black text-white hover:bg-[#222]">Confirm Check-in</Button>
+              )}
+            </form>
+            <div className="mt-6 text-center">
+              <button onClick={() => signIn(undefined, { callbackUrl: `/attend?code=${code}` })} className="text-sm underline underline-offset-4 text-black/60 hover:text-black">Sign in instead</button>
+            </div>
           </CardContent>
         </Card>
       </div>

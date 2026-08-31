@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, use } from "react"
+import { useState, useEffect, use, useSyncExternalStore } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import QRCode from "react-qr-code"
 import { useQuery, useSubscription } from "@apollo/client/react/index.js"
@@ -13,24 +13,33 @@ const GENERATE_COHORT_QR = gql`
 `
 
 const ATTENDANCE_LOGGED = gql`
-  subscription OnAttendanceLogged($cohortId: String!) {
-    attendanceLogged(cohortId: $cohortId)
+  subscription OnAttendanceLogged($sessionId: String!) {
+    attendanceLogged(sessionId: $sessionId) {
+      id
+      sessionId
+      user { name }
+      scannedAt
+      isLate
+      latenessMinutes
+      calculatedPenalty
+    }
   }
 `
 
 export default function ProjectorView({ searchParams }: { searchParams: Promise<{ cohortId?: string }> }) {
   const unwrappedParams = use(searchParams)
-  const cohortId = unwrappedParams.cohortId || "COHORT1"
+  const cohortId = unwrappedParams.cohortId || ""
 
   const { data: qrData, refetch } = useQuery<{ generateCohortQr: string }>(GENERATE_COHORT_QR, {
     variables: { cohortId },
-    fetchPolicy: "network-only"
+    fetchPolicy: "network-only",
+    skip: !cohortId
   })
 
-  // We are not passing full user details in the subscription yet, so we mock names based on the log ID.
-  // In a full implementation, the subscription should return the user's name.
-  const { data: subData } = useSubscription<{ attendanceLogged: string }>(ATTENDANCE_LOGGED, {
-    variables: { cohortId }
+  const sessionId = unwrappedParams.sessionId
+  const { data: subData } = useSubscription<any>(ATTENDANCE_LOGGED, {
+    variables: { sessionId },
+    skip: !sessionId
   })
 
   const [timeLeft, setTimeLeft] = useState(15)
@@ -38,14 +47,14 @@ export default function ProjectorView({ searchParams }: { searchParams: Promise<
 
   useEffect(() => {
     if (subData?.attendanceLogged) {
-      const logId = subData.attendanceLogged;
-      // Prevent duplicates
-      if (!scans.find(s => s.id === logId)) {
+      const event = subData.attendanceLogged;
+      if (!scans.find(s => s.id === event.id)) {
         setScans(prev => [{
-          id: logId,
-          name: "Student " + logId.substring(0, 4).toUpperCase(),
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        }, ...prev]);
+          id: event.id,
+          name: event.user?.name || "Student",
+          time: new Date(event.scannedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          status: event.isLate ? `Late · ${event.latenessMinutes} min` : "On time"
+        }, ...prev].slice(0, 30));
       }
     }
   }, [subData])
@@ -111,6 +120,7 @@ export default function ProjectorView({ searchParams }: { searchParams: Promise<
               className="stroke-[var(--color-surface)] fill-none"
               strokeWidth="4"
               strokeDasharray={circumference}
+              initial={{ strokeDashoffset: circumference }}
               animate={{ strokeDashoffset }}
               transition={{ duration: 1, ease: "linear" }}
               strokeLinecap="square"
@@ -147,7 +157,7 @@ export default function ProjectorView({ searchParams }: { searchParams: Promise<
                 animate={{ opacity: 1, x: 0 }}
                 className="bg-white/5 p-4 rounded-lg flex justify-between items-center"
               >
-                <div className="font-sans font-medium">{scan.name}</div>
+                <div><div className="font-sans font-medium">{scan.name}</div><div className="font-mono text-[10px] uppercase text-white/40 mt-1">{scan.status}</div></div>
                 <div className="font-mono text-xs text-green-400">{scan.time}</div>
               </motion.li>
             ))}

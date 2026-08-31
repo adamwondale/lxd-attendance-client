@@ -5,21 +5,29 @@ import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { Loader2, ArrowRight } from "lucide-react"
 import Link from "next/link"
+import { useQuery } from "@apollo/client/react/index.js"
+import { gql } from "@apollo/client/core/index.js"
+
+const ACTIVE_COHORTS = gql`query PublicActiveCohorts { publicActiveCohorts { id name sessions { id name startTime } } }`
 
 export default function SignupPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const { data: cohortData } = useQuery(ACTIVE_COHORTS)
 
   const [formData, setFormData] = useState({
     name: "",
     username: "",
     phone: "",
     email: "",
-    password: ""
+    password: "",
+    cohortId: "",
+    sessionId: "",
+    cohortPin: ""
   })
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
@@ -35,8 +43,8 @@ export default function SignupPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           query: `
-            mutation RegisterStudent($email: String!, $password: String!, $name: String!, $phone: String!, $username: String!) {
-              registerStudent(email: $email, password: $password, name: $name, phone: $phone, username: $username)
+            mutation RegisterStudent($email: String!, $password: String!, $name: String!, $phone: String!, $username: String!, $cohortId: String, $sessionId: String, $cohortPin: String) {
+              registerStudent(email: $email, password: $password, name: $name, phone: $phone, username: $username, cohortId: $cohortId, sessionId: $sessionId, cohortPin: $cohortPin)
             }
           `,
           variables: formData
@@ -139,6 +147,11 @@ export default function SignupPage() {
                 onChange={handleChange}
                 className="input w-full"
               />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <select name="cohortId" value={formData.cohortId} onChange={e=>setFormData({...formData, cohortId:e.target.value, sessionId:"", cohortPin:""})} className="input w-full"><option value="">Assign cohort (optional)</option>{(cohortData?.publicActiveCohorts||[]).map((c:any)=><option key={c.id} value={c.id}>{c.name}</option>)}</select>
+                <select name="sessionId" value={formData.sessionId} onChange={handleChange} disabled={!formData.cohortId} required={Boolean(formData.cohortId)} className="input w-full"><option value="">Assign session</option>{(cohortData?.publicActiveCohorts?.find((c:any)=>c.id===formData.cohortId)?.sessions||[]).map((s:any)=><option key={s.id} value={s.id}>{s.name} · {s.startTime}</option>)}</select>
+              </div>
+              {formData.cohortId && <input name="cohortPin" type="password" required placeholder="Cohort PIN" value={formData.cohortPin} onChange={handleChange} className="input w-full" />}
             </div>
 
             <button
@@ -161,7 +174,7 @@ export default function SignupPage() {
         {/* Footer Links */}
         <div className="text-center font-sans text-[13px] text-[var(--color-muted)]">
           Already have an account?{" "}
-          <Link href="/login" className="text-black hover:underline underline-offset-4">
+          <Link href="/student/login" className="text-black hover:underline underline-offset-4">
             Sign In
           </Link>
         </div>
