@@ -45,20 +45,25 @@ function AdminLoginContent() {
     }
 
     setLoading(true)
-    const result = await signIn("admin-credentials", {
-      email,
-      password,
-      redirect: false,
-    })
-    setLoading(false)
+    try {
+      const result = await signIn("admin-credentials", {
+        email,
+        password,
+        redirect: false,
+      })
 
-    if (result?.error) {
-      setError(AUTH_ERRORS[result.error] ?? AUTH_ERRORS.Default)
-      return
+      if (result?.error) {
+        setError(AUTH_ERRORS[result.error] ?? AUTH_ERRORS.Default)
+        return
+      }
+
+      toast.success("Signed in. Welcome back.")
+      window.location.href = "/dashboard"
+    } catch {
+      setError(AUTH_ERRORS.Default)
+    } finally {
+      setLoading(false)
     }
-
-    toast.success("Signed in. Welcome back.")
-    window.location.href = "/dashboard"
   }
 
   return (

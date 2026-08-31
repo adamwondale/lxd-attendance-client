@@ -144,10 +144,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
           );
           const json = await res.json();
-          console.log(
-            "[Auth.js] Backend response:",
-            JSON.stringify(json, null, 2),
-          );
 
           if (json.data?.loginWithGoogle?.accessToken) {
             token.accessToken = json.data.loginWithGoogle.accessToken;

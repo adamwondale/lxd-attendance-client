@@ -148,8 +148,8 @@ export default function SignupPage() {
                 className="input w-full"
               />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                <select name="cohortId" value={formData.cohortId} onChange={e=>setFormData({...formData, cohortId:e.target.value, sessionId:""})} className="input w-full"><option value="">Assign cohort (optional)</option>{(cohortData?.publicActiveCohorts||[]).map((c:any)=><option key={c.id} value={c.id}>{c.name}</option>)}</select>
-                <select name="sessionId" value={formData.sessionId} onChange={handleChange} disabled={!formData.cohortId} className="input w-full"><option value="">Assign session</option>{(cohortData?.publicActiveCohorts?.find((c:any)=>c.id===formData.cohortId)?.sessions||[]).map((s:any)=><option key={s.id} value={s.id}>{s.name} · {s.startTime}</option>)}</select>
+                <select name="cohortId" value={formData.cohortId} onChange={e=>setFormData({...formData, cohortId:e.target.value, sessionId:"", cohortPin:""})} className="input w-full"><option value="">Assign cohort (optional)</option>{(cohortData?.publicActiveCohorts||[]).map((c:any)=><option key={c.id} value={c.id}>{c.name}</option>)}</select>
+                <select name="sessionId" value={formData.sessionId} onChange={handleChange} disabled={!formData.cohortId} required={Boolean(formData.cohortId)} className="input w-full"><option value="">Assign session</option>{(cohortData?.publicActiveCohorts?.find((c:any)=>c.id===formData.cohortId)?.sessions||[]).map((s:any)=><option key={s.id} value={s.id}>{s.name} · {s.startTime}</option>)}</select>
               </div>
               {formData.cohortId && <input name="cohortPin" type="password" required placeholder="Cohort PIN" value={formData.cohortPin} onChange={handleChange} className="input w-full" />}
             </div>

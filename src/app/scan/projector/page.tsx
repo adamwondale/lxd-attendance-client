@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, use } from "react"
+import { useState, useEffect, use, useSyncExternalStore } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import QRCode from "react-qr-code"
 import { useQuery, useSubscription } from "@apollo/client/react/index.js"
@@ -80,9 +80,12 @@ export default function ProjectorView({ searchParams }: { searchParams: Promise<
   const circumference = 2 * Math.PI * radius
   const strokeDashoffset = circumference - (timeLeft / 15) * circumference
 
-  // Ensure this uses the absolute production URL so mobile devices can open it.
-  // Locally, if NEXT_PUBLIC_HOST_URL is set (e.g. to your local IP), use that. Otherwise fallback to origin.
-  const hostUrl = process.env.NEXT_PUBLIC_HOST_URL || (typeof window !== 'undefined' ? window.location.origin : '');
+  // Keep the server and first client render identical, then read the browser origin.
+  const hostUrl = useSyncExternalStore(
+    () => () => {},
+    () => process.env.NEXT_PUBLIC_HOST_URL || window.location.origin,
+    () => process.env.NEXT_PUBLIC_HOST_URL || "",
+  );
   const qrString = qrData?.generateCohortQr || ""
   const scanUrl = qrString ? `${hostUrl}/attend?code=${qrString}` : "";
 

@@ -7,11 +7,11 @@ import {
   GraduationCap,
   Scan,
   FileBarChart2,
-  Building2,
+  UserCircle,
 } from "lucide-react";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import Link from "next/link";
+import { ActiveNavLink } from "@/components/navigation/ActiveNavLink";
 
 export default async function DashboardLayout({
   children,
@@ -42,7 +42,7 @@ export default async function DashboardLayout({
 
         {/* Fixed Bottom Navigation */}
         <nav className="fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-border flex items-center justify-around z-50">
-          <Link
+          <ActiveNavLink
             href="/dashboard/student"
             className="flex flex-col items-center justify-center w-full h-full text-muted hover:text-black transition-colors focus:text-black focus:outline-none group"
           >
@@ -50,8 +50,8 @@ export default async function DashboardLayout({
             <span className="text-[10px] font-medium tracking-wide">
               ID Card
             </span>
-          </Link>
-          <Link
+          </ActiveNavLink>
+          <ActiveNavLink
             href="/dashboard/student/cohorts"
             className="flex flex-col items-center justify-center w-full h-full text-muted hover:text-black transition-colors focus:text-black focus:outline-none group border-l border-r border-black/5"
           >
@@ -59,8 +59,8 @@ export default async function DashboardLayout({
             <span className="text-[10px] font-medium tracking-wide">
               Cohorts
             </span>
-          </Link>
-          <Link
+          </ActiveNavLink>
+          <ActiveNavLink
             href="/dashboard/student/profile"
             className="flex flex-col items-center justify-center w-full h-full text-muted hover:text-black transition-colors focus:text-black focus:outline-none group"
           >
@@ -68,7 +68,7 @@ export default async function DashboardLayout({
             <span className="text-[10px] font-medium tracking-wide">
               Profile
             </span>
-          </Link>
+          </ActiveNavLink>
         </nav>
       </div>
     );
@@ -85,56 +85,56 @@ export default async function DashboardLayout({
           <h1 className="font-serif text-2xl tracking-tight">LXD Studio</h1>
         </div>
         <nav className="flex-1 p-4 flex flex-col space-y-2">
-          <Link
+          <ActiveNavLink
             href="/dashboard"
             className="flex items-center space-x-3 px-3 py-2 rounded-(--radius-none) text-text hover:bg-black/5 font-medium text-[14px] transition-colors"
           >
             <LayoutDashboard className="w-4 h-4" />
             <span>Overview</span>
-          </Link>
-          <Link
+          </ActiveNavLink>
+          <ActiveNavLink
             href="/dashboard/cohorts"
             className="flex items-center space-x-3 px-3 py-2 rounded-(--radius-none) text-text hover:bg-black/5 font-medium text-[14px] transition-colors"
           >
             <Users className="w-4 h-4" />
             <span>Cohorts</span>
-          </Link>
-          <Link
+          </ActiveNavLink>
+          <ActiveNavLink
             href="/dashboard/students"
             className="flex items-center space-x-3 px-3 py-2 rounded-(--radius-none) text-text hover:bg-black/5 font-medium text-[14px] transition-colors"
           >
             <GraduationCap className="w-4 h-4" />
             <span>Students</span>
-          </Link>
-          <Link
+          </ActiveNavLink>
+          <ActiveNavLink
             href="/dashboard/attendance"
             className="flex items-center space-x-3 px-3 py-2 rounded-(--radius-none) text-text hover:bg-black/5 font-medium text-[14px] transition-colors"
           >
             <Calendar className="w-4 h-4" />
             <span>Attendance</span>
-          </Link>
-          <Link
+          </ActiveNavLink>
+          <ActiveNavLink
             href="/dashboard/reports"
             className="flex items-center space-x-3 px-3 py-2 rounded-xl text-text hover:bg-black/5 font-medium text-[14px] transition-colors"
           >
             <FileBarChart2 className="w-4 h-4" />
             <span>Reports</span>
-          </Link>
-          <Link
+          </ActiveNavLink>
+          <ActiveNavLink
             href="/dashboard/scan"
             className="flex items-center space-x-3 px-3 py-2 rounded-xl text-text hover:bg-black/5 font-medium text-[14px] transition-colors"
           >
             <Scan className="w-4 h-4" />
             <span>Scan Badge</span>
-          </Link>
+          </ActiveNavLink>
           <div className="mt-auto flex flex-col space-y-2 pt-8">
-            <Link
+            <ActiveNavLink
               href="/scan/projector"
               className="flex items-center space-x-3 px-3 py-2 rounded-(--radius-none) text-text hover:bg-black/5 font-medium text-[14px] transition-colors"
             >
               <QrCode className="w-4 h-4" />
               <span>Launch Projector</span>
-            </Link>
+            </ActiveNavLink>
             <a
               href="/api/auth/signout"
               className="flex items-center space-x-3 px-3 py-2 rounded-(--radius-none) text-muted hover:text-black hover:bg-black/5 font-medium text-[14px] transition-colors"
@@ -164,28 +164,28 @@ export default async function DashboardLayout({
 
       {/* Mobile Bottom Navigation (hidden on desktop) */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-border flex items-center justify-around z-50">
-        <Link
+        <ActiveNavLink
           href="/dashboard"
           className="flex flex-col items-center justify-center w-full h-full text-muted hover:text-black transition-colors focus:text-black"
         >
           <LayoutDashboard className="w-5 h-5 mb-1" />
           <span className="text-[10px] font-medium tracking-wide">Home</span>
-        </Link>
-        <Link
+        </ActiveNavLink>
+        <ActiveNavLink
           href="/dashboard/cohorts"
           className="flex flex-col items-center justify-center w-full h-full text-muted hover:text-black transition-colors focus:text-black border-l border-black/5"
         >
           <Users className="w-5 h-5 mb-1" />
           <span className="text-[10px] font-medium tracking-wide">Cohorts</span>
-        </Link>
-        <Link
+        </ActiveNavLink>
+        <ActiveNavLink
           href="/dashboard/reports"
           className="flex flex-col items-center justify-center w-full h-full text-muted hover:text-black transition-colors focus:text-black border-l border-black/5"
         >
           <FileBarChart2 className="w-5 h-5 mb-1" />
           <span className="text-[10px] font-medium tracking-wide">Reports</span>
-        </Link>
-        <Link
+        </ActiveNavLink>
+        <ActiveNavLink
           href="/dashboard/scan"
           className="flex flex-col items-center justify-center w-full h-full text-text hover:text-black transition-colors focus:text-black border-l border-black/5 relative"
         >
@@ -195,15 +195,15 @@ export default async function DashboardLayout({
           <span className="text-[10px] font-medium tracking-wide mt-5">
             Scan
           </span>
-        </Link>
-        <Link
+        </ActiveNavLink>
+        <ActiveNavLink
           href="/dashboard/attendance"
           className="flex flex-col items-center justify-center w-full h-full text-muted hover:text-black transition-colors focus:text-black border-l border-black/5"
         >
           <Calendar className="w-5 h-5 mb-1" />
           <span className="text-[10px] font-medium tracking-wide">Logs</span>
-        </Link>
-        <Link
+        </ActiveNavLink>
+        <ActiveNavLink
           href="/dashboard/students"
           className="flex flex-col items-center justify-center w-full h-full text-muted hover:text-black transition-colors focus:text-black border-l border-black/5"
         >
@@ -211,7 +211,7 @@ export default async function DashboardLayout({
           <span className="text-[10px] font-medium tracking-wide">
             Students
           </span>
-        </Link>
+        </ActiveNavLink>
       </nav>
     </div>
   );
