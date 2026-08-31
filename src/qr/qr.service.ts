@@ -46,11 +46,11 @@ export class QrService {
       throw new BadRequestException('Invalid QR signature');
     }
 
-    // Verify 15-second sliding window
+    // Verify 20-second sliding window
     const now = Date.now();
     const diff = now - timestamp;
     
-    if (diff < 0 || diff > 15000) {
+    if (diff < 0 || diff > 20000) {
       throw new BadRequestException('QR code expired');
     }
 

@@ -112,7 +112,7 @@ export default function StudentDashboardPage() {
             <div className="bg-white p-2 border border-black/10 rounded-xl overflow-hidden shadow-sm">
               <QRCode
                 id="student-qr-code"
-                value={`${typeof window !== 'undefined' ? window.location.origin : ''}/dashboard/scan?studentBadge=${qrData.myQrBadge}`}
+                value={`${typeof window !== 'undefined' ? window.location.origin : ''}/dashboard/scan?studentBadge=${encodeURIComponent(qrData.myQrBadge)}`}
                 size={220}
                 level="H"
               />

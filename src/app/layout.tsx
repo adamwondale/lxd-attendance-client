@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Instrument_Serif, DM_Sans, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { ApolloProvider } from "@/providers/apollo-provider";
+import { AuthSessionProvider } from "@/providers/session-provider";
 import { Toaster } from "@/components/ui/toaster";
 
 const instrumentSerif = Instrument_Serif({
@@ -36,10 +37,12 @@ export default function RootLayout({
       <body
         className={`${instrumentSerif.variable} ${dmSans.variable} ${spaceMono.variable} antialiased`}
       >
-        <ApolloProvider>
-          {children}
-          <Toaster />
-        </ApolloProvider>
+        <AuthSessionProvider>
+          <ApolloProvider>
+            {children}
+            <Toaster />
+          </ApolloProvider>
+        </AuthSessionProvider>
       </body>
     </html>
   );
