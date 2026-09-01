@@ -243,7 +243,13 @@ function ProjectorContent() {
               <div className="bg-[var(--color-surface)] p-8 relative z-10 shadow-2xl">
                 <div className="w-[260px] h-[260px] bg-white flex items-center justify-center p-4">
                   {scanUrl ? (
-                    <QRCode value={scanUrl} size={230} level="H" bgColor="#ffffff" fgColor="#000000" />
+                    <QRCode 
+                      value={`${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'}/attend?code=${scanUrl}`} 
+                      size={230} 
+                      level="H" 
+                      bgColor="#ffffff" 
+                      fgColor="#000000" 
+                    />
                   ) : qrError && !refreshingQr ? (
                     <div className="text-center text-black px-5">
                       <AlertCircle className="w-8 h-8 mx-auto mb-3 text-red-500" />
