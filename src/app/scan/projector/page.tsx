@@ -182,7 +182,7 @@ function ProjectorContent() {
     }
   }, [cohortId, sessionId, refetch])
 
-  const scanUrl = qrData?.generateCohortQr || "";
+  const scanUrl = qrData?.projectorQr || "";
 
   return (
     <div className="min-h-screen bg-[var(--color-primary)] text-[var(--color-surface)] flex flex-row relative overflow-hidden">
