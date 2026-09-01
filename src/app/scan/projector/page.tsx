@@ -84,12 +84,6 @@ function ProjectorContent() {
   const { data: cohortListData, loading: cohortsLoading, error: cohortsError } = useQuery<{
     publicActiveCohorts: ProjectorCohort[]
   }>(LIST_PUBLIC_COHORTS, {
-function ProjectorContent() {
-  const searchParams = useSearchParams()
-  const cohortId = searchParams.get("cohortId") || "COHORT1"
-
-  const { data: qrData, refetch, error } = useQuery<{ generateCohortQr: string }>(GENERATE_COHORT_QR, {
-    variables: { cohortId },
     fetchPolicy: "network-only",
   })
 
@@ -200,15 +194,7 @@ function ProjectorContent() {
     }
   }, [cohortId, sessionId, refetch])
 
-  // Dynamically grab the exact URL you are viewing the projector on (so the QR code always matches your real Vercel URL)
-  const [hostUrl, setHostUrl] = useState("");
-  useEffect(() => {
-    // Change this line to just use window.location.origin
-    setHostUrl(window.location.origin); 
-  }, []);
-
-  const qrString = qrData?.generateCohortQr || "";
-  const scanUrl = hostUrl && qrString ? `${hostUrl}/attend?code=${qrString}` : "";
+  const scanUrl = qrData?.generateCohortQr || "";
 
   return (
     <div className="min-h-screen bg-[var(--color-primary)] text-[var(--color-surface)] flex flex-row relative overflow-hidden">
@@ -224,9 +210,9 @@ function ProjectorContent() {
 
       <div className="absolute top-10 left-10 flex flex-col z-10 pr-52">
         <h1 className="font-serif text-5xl">Live Attendance</h1>
-        <p className="font-mono text-xl text-gray-400 mt-2 uppercase tracking-widest">Scan to Check-In</p>
+        <p className="font-mono text-xl text-[var(--color-muted)] mt-2 uppercase tracking-widest">Open LXD App to Scan</p>
         {selectedCohort && (
-          <p className="font-mono text-xs text-gray-500 mt-3 uppercase tracking-widest">
+          <p className="font-mono text-xs text-[var(--color-muted)]/70 mt-3 uppercase tracking-widest">
             {selectedCohort.name}{selectedSession ? ` · ${selectedSession.name}` : ""}
           </p>
         )}
