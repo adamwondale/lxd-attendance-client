@@ -137,6 +137,7 @@ export default async function DashboardLayout({
               <QrCode className="w-4 h-4" />
               <span>Launch Projector</span>
             </a>
+
             <a
               href="/api/auth/signout"
               className="flex items-center space-x-3 px-3 py-2 rounded-(--radius-none) text-muted hover:text-black hover:bg-black/5 font-medium text-[14px] transition-colors"

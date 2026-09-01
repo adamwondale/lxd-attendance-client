@@ -4,7 +4,9 @@ import { Suspense, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import QRCode from "react-qr-code"
-import { useQuery } from "@apollo/client/react/index.js"
+
+import { useSearchParams } from "next/navigation"
+import { useQuery, useSubscription } from "@apollo/client/react/index.js"
 import { gql } from "@apollo/client/core/index.js"
 import { AlertCircle, ArrowLeft, LayoutDashboard, Loader2 } from "lucide-react"
 
@@ -82,6 +84,12 @@ function ProjectorContent() {
   const { data: cohortListData, loading: cohortsLoading, error: cohortsError } = useQuery<{
     publicActiveCohorts: ProjectorCohort[]
   }>(LIST_PUBLIC_COHORTS, {
+function ProjectorContent() {
+  const searchParams = useSearchParams()
+  const cohortId = searchParams.get("cohortId") || "COHORT1"
+
+  const { data: qrData, refetch, error } = useQuery<{ generateCohortQr: string }>(GENERATE_COHORT_QR, {
+    variables: { cohortId },
     fetchPolicy: "network-only",
   })
 
@@ -143,6 +151,18 @@ function ProjectorContent() {
     time: new Date(event.scannedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     status: event.isLate ? `Late · ${event.latenessMinutes} min` : "On time",
   })), [recentScanData])
+  const sessionId = searchParams.get("sessionId");
+  const { data: subData } = useSubscription<any>(ATTENDANCE_LOGGED, {
+    variables: { sessionId },
+    skip: !sessionId
+  })
+
+  if (error) {
+    console.error("GraphQL Error in generateCohortQr:", error);
+  }
+
+  const [timeLeft, setTimeLeft] = useState(15)
+  const [scans, setScans] = useState<any[]>([])
 
   useEffect(() => {
     if (!cohortId) return
@@ -180,13 +200,15 @@ function ProjectorContent() {
     }
   }, [cohortId, sessionId, refetch])
 
-  const qrString = qrData?.projectorQr || ""
-  const hostUrl = process.env.NEXT_PUBLIC_HOST_URL || (typeof window !== "undefined" ? window.location.origin : "")
-  const scanUrl = qrString && hostUrl
-    ? `${hostUrl.replace(/\/$/, "")}/attend?code=${encodeURIComponent(qrString)}`
-    : ""
+  // Dynamically grab the exact URL you are viewing the projector on (so the QR code always matches your real Vercel URL)
+  const [hostUrl, setHostUrl] = useState("");
+  useEffect(() => {
+    // Change this line to just use window.location.origin
+    setHostUrl(window.location.origin); 
+  }, []);
 
-  const errorMessage = cohortsError?.message || qrError?.message
+  const qrString = qrData?.generateCohortQr || "";
+  const scanUrl = hostUrl && qrString ? `${hostUrl}/attend?code=${qrString}` : "";
 
   return (
     <div className="min-h-screen bg-[var(--color-primary)] text-[var(--color-surface)] flex flex-row relative overflow-hidden">
