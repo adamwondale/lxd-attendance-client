@@ -145,18 +145,6 @@ function ProjectorContent() {
     time: new Date(event.scannedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     status: event.isLate ? `Late · ${event.latenessMinutes} min` : "On time",
   })), [recentScanData])
-  const sessionId = searchParams.get("sessionId");
-  const { data: subData } = useSubscription<any>(ATTENDANCE_LOGGED, {
-    variables: { sessionId },
-    skip: !sessionId
-  })
-
-  if (error) {
-    console.error("GraphQL Error in generateCohortQr:", error);
-  }
-
-  const [timeLeft, setTimeLeft] = useState(15)
-  const [scans, setScans] = useState<any[]>([])
 
   useEffect(() => {
     if (!cohortId) return
