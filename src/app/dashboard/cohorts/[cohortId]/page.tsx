@@ -184,7 +184,12 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-          <Link href={`/scan/projector?cohortId=${unwrappedParams.cohortId}`} className="w-full sm:w-auto">
+          <Link
+            href={`/scan/projector?cohortId=${unwrappedParams.cohortId}${sessions[0]?.id ? `&sessionId=${sessions[0].id}` : ""}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full sm:w-auto"
+          >
             <Button className="w-full sm:w-auto bg-white border border-gray-200 text-black hover:bg-gray-50 flex items-center justify-center gap-2">
               Launch Projector
             </Button>
@@ -343,6 +348,14 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
                     <div className="flex flex-wrap gap-2 sm:justify-end w-full sm:w-auto">
                       <Button variant="outline" size="sm" onClick={() => openEdit(session)} className="flex-1 sm:flex-none">Edit</Button>
                       <Button variant="outline" size="sm" className="flex-1 sm:flex-none text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600" onClick={() => handleDelete(session.id)}>Delete</Button>
+                      <Link
+                        href={`/scan/projector?cohortId=${unwrappedParams.cohortId}&sessionId=${session.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full sm:w-auto"
+                      >
+                        <Button variant="outline" size="sm" className="w-full sm:w-auto">Projector</Button>
+                      </Link>
                       <Link href={`/dashboard/cohorts/${unwrappedParams.cohortId}/sessions/${session.id}`} className="w-full sm:w-auto">
                         <Button variant="outline" size="sm" className="w-full sm:w-auto">Live View</Button>
                       </Link>

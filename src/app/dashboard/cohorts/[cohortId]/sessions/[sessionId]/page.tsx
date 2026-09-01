@@ -82,7 +82,7 @@ export default function SessionLiveView({ params }: { params: Promise<{ cohortId
           </p>
         </div>
         <div className="flex gap-4">
-          <Link href={`/scan/projector?cohortId=${unwrappedParams.cohortId}&sessionId=${unwrappedParams.sessionId}`}>
+          <Link href={`/scan/projector?cohortId=${unwrappedParams.cohortId}&sessionId=${unwrappedParams.sessionId}`} target="_blank" rel="noopener noreferrer">
             <Button className="bg-black text-white hover:bg-black/80">Launch Projector</Button>
           </Link>
         </div>
