@@ -37,7 +37,23 @@ export default function DashboardOverviewContent() {
   useSubscription(ON_COHORTS_UPDATED, { onData: () => refetch() })
   useSubscription(ON_STUDENTS_UPDATED, { onData: () => refetch() })
 
-  if (loading) return <div className="animate-pulse bg-black/5 h-64 rounded-xl mt-8"></div>
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mt-8">
+        {[...Array(6)].map((_, i) => (
+          <Card key={i} className="rounded-2xl border-black/5 bg-white/90">
+            <CardHeader className="pb-2">
+              <div className="h-3 w-20 bg-black/5 rounded animate-pulse"></div>
+            </CardHeader>
+            <CardContent>
+              <div className="h-8 w-16 bg-black/10 rounded animate-pulse"></div>
+              <div className="h-3 w-32 bg-black/5 rounded mt-3 animate-pulse"></div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    )
+  }
   if (error) return <div className="text-red-500 mt-8">Failed to load metrics.</div>
 
   const metrics = data?.dashboardMetrics

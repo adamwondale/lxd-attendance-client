@@ -6,7 +6,8 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useQuery, useMutation } from "@apollo/client/react/index.js"
 import { gql } from "@apollo/client/core/index.js"
-import { ArrowLeft, Plus } from "lucide-react"
+import { Pencil, Settings, Trash2, X, Plus, ArrowLeft } from "lucide-react"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import Link from "next/link"
 
 const COHORT_DETAILS = gql`
@@ -306,72 +307,65 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
         </div>
       </div>
 
-      <Card>
-        <CardHeader className="border-b border-[var(--color-border)] hidden sm:block">
-          <div className="grid grid-cols-4 text-[13px] font-mono text-[var(--color-muted)] uppercase items-center">
-            <div className="col-span-2">Session</div>
-            <div>Time</div>
-            <div className="text-right">Actions</div>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          <ul className="divide-y divide-[var(--color-border)]">
-            <AnimatePresence initial={false}>
-              {sessions.map((session: any) => {
-                // calculate late time string for display
-                const [h, m] = session.startTime.split(':').map(Number)
-                const totalM = h * 60 + m + session.gracePeriodMinutes
-                const lateH = Math.floor(totalM / 60) % 24
-                const lateM = totalM % 60
-                const lateTimeStr = `${lateH.toString().padStart(2, '0')}:${lateM.toString().padStart(2, '0')}`
+      <Table>
+        <TableHeader className="hidden sm:table-header-group">
+          <TableRow>
+            <TableHead>Session</TableHead>
+            <TableHead>Time</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {sessions.map((session: any) => {
+            const [h, m] = session.startTime.split(':').map(Number)
+            const totalM = h * 60 + m + session.gracePeriodMinutes
+            const lateH = Math.floor(totalM / 60) % 24
+            const lateM = totalM % 60
+            const lateTimeStr = `${lateH.toString().padStart(2, '0')}:${lateM.toString().padStart(2, '0')}`
 
-                return (
-                  <motion.li
-                    key={session.id}
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="grid grid-cols-1 sm:grid-cols-4 p-4 items-start sm:items-center gap-4 sm:gap-0 hover:bg-gray-50 transition-colors"
+            return (
+              <TableRow key={session.id}>
+                <TableCell>
+                  <Link href={`/dashboard/cohorts/${unwrappedParams.cohortId}/sessions/${session.id}`} className="font-medium hover:underline text-[15px]">
+                    {session.name}
+                  </Link>
+                  <div className="sm:hidden text-[13px] text-black/50 flex flex-wrap items-center gap-2 mt-1">
+                    <span>{session.startTime} (Late: {lateTimeStr})</span>
+                    <span className="text-[var(--color-accent)] font-mono">{session.latePenaltyAmount} ETB</span>
+                  </div>
+                </TableCell>
+                <TableCell className="hidden sm:table-cell">
+                  <div className="text-[14px] text-black/70 flex items-center gap-2">
+                    <span>{session.startTime} (Late: {lateTimeStr})</span>
+                    <span className="text-[var(--color-accent)] text-xs font-mono">{session.latePenaltyAmount} ETB</span>
+                  </div>
+                </TableCell>
+                <TableCell className="text-right flex flex-wrap justify-end gap-2">
+                  <Button variant="outline" size="sm" onClick={() => openEdit(session)} className="h-8">Edit</Button>
+                  <Button variant="outline" size="sm" className="h-8 text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600" onClick={() => handleDelete(session.id)}>Delete</Button>
+                  <Link
+                    href={`/scan/projector?cohortId=${unwrappedParams.cohortId}&sessionId=${session.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    <div className="col-span-1 sm:col-span-2 flex flex-col gap-1">
-                      <Link href={`/dashboard/cohorts/${unwrappedParams.cohortId}/sessions/${session.id}`} className="font-medium hover:underline text-lg sm:text-base">
-                        {session.name}
-                      </Link>
-                      <div className="sm:hidden text-sm text-gray-500 flex flex-wrap items-center gap-2">
-                        <span>{session.startTime} (Late: {lateTimeStr})</span>
-                        <span className="text-[#E54D2E] text-xs font-mono">{session.latePenaltyAmount} ETB</span>
-                      </div>
-                    </div>
-                    <div className="hidden sm:flex text-sm text-gray-500 items-center gap-2">
-                      <span>{session.startTime} (Late: {lateTimeStr})</span>
-                      <span className="text-[#E54D2E] text-xs font-mono">{session.latePenaltyAmount} ETB</span>
-                    </div>
-                    <div className="flex flex-wrap gap-2 sm:justify-end w-full sm:w-auto">
-                      <Button variant="outline" size="sm" onClick={() => openEdit(session)} className="flex-1 sm:flex-none">Edit</Button>
-                      <Button variant="outline" size="sm" className="flex-1 sm:flex-none text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600" onClick={() => handleDelete(session.id)}>Delete</Button>
-                      <Link
-                        href={`/scan/projector?cohortId=${unwrappedParams.cohortId}&sessionId=${session.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full sm:w-auto"
-                      >
-                        <Button variant="outline" size="sm" className="w-full sm:w-auto">Projector</Button>
-                      </Link>
-                      <Link href={`/dashboard/cohorts/${unwrappedParams.cohortId}/sessions/${session.id}`} className="w-full sm:w-auto">
-                        <Button variant="outline" size="sm" className="w-full sm:w-auto">Live View</Button>
-                      </Link>
-                    </div>
-                  </motion.li>
-                )
-              })}
-            </AnimatePresence>
-            {sessions.length === 0 && (
-              <li className="p-8 text-center text-[var(--color-muted)] font-mono text-[13px] uppercase">
+                    <Button variant="outline" size="sm" className="h-8">Projector</Button>
+                  </Link>
+                  <Link href={`/dashboard/cohorts/${unwrappedParams.cohortId}/sessions/${session.id}`}>
+                    <Button variant="outline" size="sm" className="h-8">Live View</Button>
+                  </Link>
+                </TableCell>
+              </TableRow>
+            )
+          })}
+          {sessions.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={3} className="text-center p-8 text-[var(--color-muted)] font-mono text-[13px] uppercase">
                 No sessions created yet
-              </li>
-            )}
-          </ul>
-        </CardContent>
-      </Card>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     </div>
   )
 }

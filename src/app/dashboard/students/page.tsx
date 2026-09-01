@@ -6,6 +6,7 @@ import { gql } from "@apollo/client/core/index.js"
 import { Card, CardHeader, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Loader2, Edit2, Trash2, X, Plus, Search, ChevronLeft, ChevronRight } from "lucide-react"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { toast } from "sonner"
 import { AnimatePresence, motion } from "framer-motion"
 
@@ -209,48 +210,72 @@ export default function StudentsPage() {
       </div>
       <Button onClick={()=>setShowCreate(true)} className="bg-black text-white rounded-xl"><Plus className="w-4 h-4 mr-2"/> Register Student</Button>
 
-      <Card>
-        <CardHeader className="border-b border-[var(--color-border)] space-y-4">
-          <div className="relative max-w-md"><Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black/30"/><input value={search} onChange={e=>{setSearch(e.target.value);setPage(1)}} placeholder="Search students…" className="w-full h-10 pl-10 pr-3 rounded-xl border border-black/10 bg-[#F9F9F8] outline-none focus:border-black text-sm"/></div>
-          <div className="grid grid-cols-4 text-[13px] font-mono text-[var(--color-muted)] uppercase">
-            <div className="col-span-2">Name & Email</div>
-            <div>Enrolled Cohorts</div>
-            <div className="text-right">Actions</div>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
+      <div className="relative max-w-md mb-6">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black/30"/>
+        <input value={search} onChange={e=>{setSearch(e.target.value);setPage(1)}} placeholder="Search students…" className="w-full h-10 pl-10 pr-3 rounded-xl border border-black/10 bg-[#F9F9F8] outline-none focus:border-black text-sm"/>
+      </div>
+      
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name & Email</TableHead>
+            <TableHead>Enrolled Cohorts</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {loading ? (
-            <div className="p-10 flex justify-center">
-              <Loader2 className="w-6 h-6 animate-spin text-[var(--color-muted)]" />
-            </div>
+            <>
+              {[...Array(5)].map((_, i) => (
+                <TableRow key={i} className="animate-pulse">
+                  <TableCell>
+                    <div className="h-4 w-32 bg-black/5 rounded mb-2"></div>
+                    <div className="h-3 w-48 bg-black/5 rounded"></div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-1">
+                      <div className="h-5 w-16 bg-black/5 rounded"></div>
+                      <div className="h-5 w-16 bg-black/5 rounded"></div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      <div className="h-8 w-8 bg-black/10 rounded"></div>
+                      <div className="h-8 w-8 bg-black/10 rounded"></div>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </>
           ) : filteredStudents.length > 0 ? (
             <>
-            <ul className="divide-y divide-[var(--color-border)]">
               {pagedStudents.map((student: any) => (
-                <li key={student.id} className="grid grid-cols-4 p-4 items-center hover:bg-black/[0.02]">
-                  <div className="col-span-2">
+                <TableRow key={student.id}>
+                  <TableCell>
                     <div className="font-medium text-[15px]">{student.name}</div>
                     <div className="text-[13px] text-[var(--color-muted)]">{student.email}</div>
-                  </div>
-                  <div className="text-[14px] text-[var(--color-muted)] flex flex-wrap gap-1">
-                    {student.memberships && student.memberships.length > 0 ? (
-                      student.memberships.map((m: any) => (
-                        <span key={m.cohortId} className="bg-black/5 px-2 py-1 rounded text-xs">
-                          {m.cohort?.name || "Unknown"}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="opacity-50">—</span>
-                    )}
-                  </div>
-                  <div className="text-right flex justify-end gap-2">
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-[14px] text-[var(--color-muted)] flex flex-wrap gap-1">
+                      {student.memberships && student.memberships.length > 0 ? (
+                        student.memberships.map((m: any) => (
+                          <span key={m.cohortId} className="bg-black/5 px-2 py-1 rounded text-xs">
+                            {m.cohort?.name || "Unknown"}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="opacity-50">—</span>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right flex justify-end gap-2">
                     <Button 
                       size="sm" 
                       variant="outline"
                       onClick={() => handleEditClick(student)}
-                      className="h-8 text-xs font-mono tracking-widest uppercase"
+                      className="h-8 px-2"
                     >
-                      <Edit2 className="w-3 h-3 mr-2" /> Manage
+                      <Edit2 className="w-4 h-4" />
                     </Button>
                     <Button 
                       size="sm" 
@@ -265,22 +290,33 @@ export default function StudentsPage() {
                         <Trash2 className="w-4 h-4 text-red-500" />
                       )}
                     </Button>
-                  </div>
-                </li>
+                  </TableCell>
+                </TableRow>
               ))}
-            </ul>
-            {totalPages > 1 && <div className="flex items-center justify-between p-4 border-t border-black/5">
-              <span className="text-xs text-black/40">Page {page} of {totalPages} · {filteredStudents.length} students</span>
-              <div className="flex gap-2"><button disabled={page===1} onClick={()=>setPage(p=>Math.max(1,p-1))} className="h-9 w-9 rounded-lg border border-black/10 flex items-center justify-center disabled:opacity-30 hover:bg-black hover:text-white transition-colors"><ChevronLeft className="w-4 h-4"/></button><button disabled={page===totalPages} onClick={()=>setPage(p=>Math.min(totalPages,p+1))} className="h-9 w-9 rounded-lg border border-black/10 flex items-center justify-center disabled:opacity-30 hover:bg-black hover:text-white transition-colors"><ChevronRight className="w-4 h-4"/></button></div>
-            </div>}
+              
+              {totalPages > 1 && (
+                <TableRow>
+                  <TableCell colSpan={3} className="p-0 border-t border-black/5">
+                    <div className="flex items-center justify-between p-4 bg-[var(--color-background)] rounded-b-2xl">
+                      <span className="text-xs text-black/40 font-mono tracking-widest uppercase">Page {page} of {totalPages} · {filteredStudents.length} students</span>
+                      <div className="flex gap-2">
+                        <button disabled={page===1} onClick={()=>setPage(p=>Math.max(1,p-1))} className="h-9 w-9 rounded-lg border border-black/10 flex items-center justify-center disabled:opacity-30 hover:bg-black hover:text-white transition-colors"><ChevronLeft className="w-4 h-4"/></button>
+                        <button disabled={page===totalPages} onClick={()=>setPage(p=>Math.min(totalPages,p+1))} className="h-9 w-9 rounded-lg border border-black/10 flex items-center justify-center disabled:opacity-30 hover:bg-black hover:text-white transition-colors"><ChevronRight className="w-4 h-4"/></button>
+                      </div>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
             </>
           ) : (
-            <div className="p-10 text-center text-[var(--color-muted)] font-mono text-[13px] uppercase">
-              No students found.
-            </div>
+            <TableRow>
+              <TableCell colSpan={3} className="text-center p-8 text-[var(--color-muted)] font-mono text-[13px] uppercase">
+                No students found.
+              </TableCell>
+            </TableRow>
           )}
-        </CardContent>
-      </Card>
+        </TableBody>
+      </Table>
 
       <AnimatePresence>
         {showCreate && <div className="fixed inset-0 z-50 flex items-center justify-center p-4"><motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={()=>setShowCreate(false)}/><motion.div initial={{opacity:0,scale:.96,y:12}} animate={{opacity:1,scale:1,y:0}} exit={{opacity:0,scale:.96,y:12}} className="relative bg-white rounded-3xl shadow-2xl p-6 w-full max-w-lg"><div className="flex justify-between items-center mb-5"><div><h2 className="font-serif text-2xl">Register Student</h2><p className="text-xs text-black/40 mt-1">Create the trainee account and optional assignment.</p></div><button onClick={()=>setShowCreate(false)}><X className="w-5 h-5 text-black/50"/></button></div><form className="grid sm:grid-cols-2 gap-3" onSubmit={async e=>{e.preventDefault();try{await createStudent({variables:{...createForm,cohortId:createForm.cohortId||undefined,sessionId:createForm.sessionId||undefined}});toast.success("Student registered");setShowCreate(false);setCreateForm({name:"",email:"",phone:"",username:"",password:"",cohortId:"",sessionId:""});refetch()}catch(err:any){toast.error(err.message||"Registration failed")}}}><input required placeholder="Full name" value={createForm.name} onChange={e=>setCreateForm({...createForm,name:e.target.value})} className="input w-full"/><input required type="email" placeholder="Email" value={createForm.email} onChange={e=>setCreateForm({...createForm,email:e.target.value})} className="input w-full"/><input required placeholder="Phone" value={createForm.phone} onChange={e=>setCreateForm({...createForm,phone:e.target.value})} className="input w-full"/><input required placeholder="Username" value={createForm.username} onChange={e=>setCreateForm({...createForm,username:e.target.value})} className="input w-full"/><input required type="password" placeholder="Temporary password" value={createForm.password} onChange={e=>setCreateForm({...createForm,password:e.target.value})} className="input w-full sm:col-span-2"/><select value={createForm.cohortId} onChange={e=>setCreateForm({...createForm,cohortId:e.target.value,sessionId:""})} className="input w-full"><option value="">Assign cohort later</option>{cohortData?.listCohorts?.map((c:any)=><option key={c.id} value={c.id}>{c.name}</option>)}</select><select value={createForm.sessionId} disabled={!createForm.cohortId} onChange={e=>setCreateForm({...createForm,sessionId:e.target.value})} className="input w-full"><option value="">Assign session</option>{cohortData?.listCohorts?.find((c:any)=>c.id===createForm.cohortId)?.sessions?.map((ss:any)=><option key={ss.id} value={ss.id}>{ss.name}</option>)}</select><Button disabled={creatingStudent} className="sm:col-span-2 h-12 rounded-xl bg-black text-white">{creatingStudent?<Loader2 className="w-4 h-4 animate-spin"/>:"Create Student"}</Button></form></motion.div></div>}

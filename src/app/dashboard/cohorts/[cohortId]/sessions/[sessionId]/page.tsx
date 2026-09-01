@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { useQuery, useSubscription } from "@apollo/client/react/index.js"
 import { gql } from "@apollo/client/core/index.js"
 import { ArrowLeft } from "lucide-react"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import Link from "next/link"
 
 const SESSION_DETAILS = gql`
@@ -88,34 +89,41 @@ export default function SessionLiveView({ params }: { params: Promise<{ cohortId
         </div>
       </div>
 
-      <Card>
-        <CardHeader className="border-b border-[var(--color-border)]">
-          <div className="grid grid-cols-4 text-[13px] font-mono text-[var(--color-muted)] uppercase">
-            <div>Name</div>
-            <div>Status</div>
-            <div>Time</div>
-            <div>Penalty</div>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          <ul className="divide-y divide-[var(--color-border)]">
-            <AnimatePresence initial={false}>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Time</TableHead>
+            <TableHead>Penalty</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {logsLoading ? (
+            <>
+              {[...Array(5)].map((_, i) => (
+                <TableRow key={i} className="animate-pulse">
+                  <TableCell>
+                    <div className="h-4 w-32 bg-black/5 rounded"></div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="h-6 w-16 bg-black/5 rounded"></div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="h-4 w-20 bg-black/5 rounded"></div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="h-4 w-16 bg-black/5 rounded"></div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </>
+          ) : logs.length > 0 ? (
+            <>
               {logs.map((log: any) => (
-                <motion.li
-                  key={log.id}
-                  initial={{ opacity: 0, y: -20, backgroundColor: "#f0fdf4" }}
-                  animate={{ opacity: 1, y: 0, backgroundColor: "transparent" }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ 
-                    type: "spring", 
-                    stiffness: 300, 
-                    damping: 30,
-                    backgroundColor: { duration: 1, ease: "easeOut" }
-                  }}
-                  className="grid grid-cols-4 p-4 items-center"
-                >
-                  <div className="font-medium">{log.user.name}</div>
-                  <div>
+                <TableRow key={log.id}>
+                  <TableCell className="font-medium">{log.user.name}</TableCell>
+                  <TableCell>
                     <span className={`inline-flex px-2 py-1 text-[12px] font-mono uppercase border ${
                       log.isLate 
                         ? 'border-[var(--color-accent)] text-[var(--color-accent)]' 
@@ -123,25 +131,25 @@ export default function SessionLiveView({ params }: { params: Promise<{ cohortId
                     }`}>
                       {log.isLate ? 'Late' : 'Present'}
                     </span>
-                  </div>
-                  <div className="text-[var(--color-muted)] text-sm">{new Date(log.scannedAt).toLocaleTimeString()}</div>
-                  <div className="text-[var(--color-accent)] text-sm">{log.penalty ? `${log.penalty.amount} ETB` : "-"}</div>
-                </motion.li>
+                  </TableCell>
+                  <TableCell className="text-[var(--color-muted)] text-sm">
+                    {new Date(log.scannedAt).toLocaleTimeString()}
+                  </TableCell>
+                  <TableCell className="text-[var(--color-accent)] text-sm">
+                    {log.penalty ? `${log.penalty.amount} ETB` : "-"}
+                  </TableCell>
+                </TableRow>
               ))}
-            </AnimatePresence>
-            {!logsLoading && logs.length === 0 && (
-              <li className="p-8 text-center text-[var(--color-muted)] font-mono text-[13px] uppercase">
+            </>
+          ) : (
+            <TableRow>
+              <TableCell colSpan={4} className="text-center p-8 text-[var(--color-muted)] font-mono text-[13px] uppercase">
                 No scans recorded yet
-              </li>
-            )}
-            {logsLoading && (
-              <li className="p-8 text-center text-[var(--color-muted)] font-mono text-[13px] uppercase">
-                Loading...
-              </li>
-            )}
-          </ul>
-        </CardContent>
-      </Card>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     </div>
   )
 }

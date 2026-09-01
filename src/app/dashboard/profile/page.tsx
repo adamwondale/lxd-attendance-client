@@ -14,7 +14,27 @@ export default function CompanyProfilePage() {
   const [update, { loading: saving }] = useMutation(UPDATE)
   const [form, setForm] = useState({companyName:"",companyEmail:"",companyPhone:"",adminName:"",username:""})
   useEffect(() => { if (data?.companyProfile) setForm({ companyName:data.companyProfile.companyName||"", companyEmail:data.companyProfile.companyEmail||"", companyPhone:data.companyProfile.companyPhone||"", adminName:data.companyProfile.adminName||"", username:data.companyProfile.username||"" }) }, [data])
-  if (loading) return <div className="p-10">Loading company profile…</div>
+  if (loading) return (
+    <div className="p-5 md:p-10 max-w-3xl mx-auto space-y-7 animate-pulse">
+      <div>
+        <div className="h-3 w-24 bg-black/5 rounded mb-4"></div>
+        <div className="h-10 w-64 bg-black/10 rounded mb-4"></div>
+        <div className="h-4 w-96 bg-black/5 rounded"></div>
+      </div>
+      <div className="bg-white rounded-3xl border border-black/5 shadow-sm p-5 md:p-8 space-y-5">
+        <div className="h-14 w-14 rounded-2xl bg-black/10"></div>
+        <div className="grid sm:grid-cols-2 gap-4">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="space-y-2">
+              <div className="h-3 w-20 bg-black/5 rounded"></div>
+              <div className="w-full h-12 rounded-xl bg-black/5"></div>
+            </div>
+          ))}
+        </div>
+        <div className="h-12 w-32 rounded-xl bg-black/10 mt-4"></div>
+      </div>
+    </div>
+  )
   return <div className="p-5 md:p-10 max-w-3xl mx-auto space-y-7">
     <div><p className="font-mono text-[10px] uppercase tracking-[.2em] text-black/40">Administration</p><h1 className="font-serif text-4xl md:text-5xl mt-2">Company Profile</h1><p className="text-sm text-black/50 mt-2">Keep the organization and administrator details used by the attendance system up to date.</p></div>
     <form onSubmit={async e => { e.preventDefault(); try { await update({variables:form}); toast.success("Company profile updated") } catch(err:any) { toast.error(err.message || "Unable to update profile") } }} className="bg-white rounded-3xl border border-black/5 shadow-sm p-5 md:p-8 space-y-5">

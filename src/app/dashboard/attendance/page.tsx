@@ -123,33 +123,52 @@ export default function AttendancePage() {
         </Button>
       </div>
 
-      <Card>
-        <CardHeader className="border-b border-[var(--color-border)]">
-          <div className="grid grid-cols-5 text-[13px] font-mono text-[var(--color-muted)] uppercase">
-            <div className="col-span-2">Student</div>
-            <div>Date & Time</div>
-            <div>Status</div>
-            <div className="text-right">Action</div>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Student</TableHead>
+            <TableHead>Date & Time</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className="text-right">Action</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {loading ? (
-            <div className="p-10 flex justify-center">
-              <Loader2 className="w-6 h-6 animate-spin text-[var(--color-muted)]" />
-            </div>
+            <>
+              {[...Array(5)].map((_, i) => (
+                <TableRow key={i} className="animate-pulse">
+                  <TableCell>
+                    <div className="h-4 w-32 bg-black/5 rounded mb-2"></div>
+                    <div className="h-3 w-48 bg-black/5 rounded"></div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="h-4 w-24 bg-black/5 rounded mb-2"></div>
+                    <div className="h-3 w-16 bg-black/5 rounded"></div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="h-5 w-20 bg-black/5 rounded"></div>
+                  </TableCell>
+                  <TableCell className="text-right flex justify-end">
+                    <div className="h-8 w-8 bg-black/10 rounded"></div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </>
           ) : data?.getAttendanceLogs?.length > 0 ? (
-            <ul className="divide-y divide-[var(--color-border)]">
+            <>
               {data.getAttendanceLogs.map((log: any) => (
-                <li key={log.id} className="grid grid-cols-5 p-4 items-center hover:bg-black/[0.02]">
-                  <div className="col-span-2">
+                <TableRow key={log.id}>
+                  <TableCell>
                     <div className="font-medium text-[15px]">{log.user.name}</div>
                     <div className="text-[13px] text-[var(--color-muted)]">{log.user.email}</div>
-                  </div>
-                  <div className="text-[14px]">
-                    <div>{log.date || new Date(log.scannedAt).toLocaleDateString()}</div>
-                    <div className="text-[12px] text-[var(--color-muted)] font-mono">{new Date(log.scannedAt).toLocaleTimeString()}</div>
-                  </div>
-                  <div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-[14px]">
+                      <div>{log.date || new Date(log.scannedAt).toLocaleDateString()}</div>
+                      <div className="text-[12px] text-[var(--color-muted)] font-mono">{new Date(log.scannedAt).toLocaleTimeString()}</div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
                     <span className={`inline-flex px-2 py-1 text-[12px] font-mono uppercase border ${
                       log.isLate 
                         ? 'border-[var(--color-accent)] text-[var(--color-accent)]' 
@@ -162,8 +181,8 @@ export default function AttendancePage() {
                         Fee: {log.penalty.amount} ETB ({log.penalty.status})
                       </div>
                     )}
-                  </div>
-                  <div className="text-right flex justify-end">
+                  </TableCell>
+                  <TableCell className="text-right flex justify-end">
                     {log.penalty && log.penalty.status === 'UNPAID' && (
                       <Button 
                         size="sm" 
@@ -184,17 +203,19 @@ export default function AttendancePage() {
                         <Check className="w-3 h-3" /> Waived
                       </span>
                     )}
-                  </div>
-                </li>
+                  </TableCell>
+                </TableRow>
               ))}
-            </ul>
+            </>
           ) : (
-            <div className="p-10 text-center text-[var(--color-muted)] font-mono text-[13px] uppercase">
-              No attendance records found.
-            </div>
+            <TableRow>
+              <TableCell colSpan={4} className="text-center p-8 text-[var(--color-muted)] font-mono text-[13px] uppercase">
+                No attendance records found.
+              </TableCell>
+            </TableRow>
           )}
-        </CardContent>
-      </Card>
+        </TableBody>
+      </Table>
     </div>
   )
 }

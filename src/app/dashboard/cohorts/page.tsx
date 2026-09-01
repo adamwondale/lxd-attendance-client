@@ -210,7 +210,23 @@ export default function CohortsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (
-          <div className="col-span-full h-32 animate-pulse bg-black/5 rounded-md" />
+          <>
+            {[...Array(6)].map((_, i) => (
+              <Card key={i} className="animate-pulse relative overflow-hidden h-full border-black/5">
+                <CardHeader>
+                  <div className="h-8 w-48 bg-black/5 rounded mb-2"></div>
+                  <div className="h-3 w-20 bg-black/5 rounded"></div>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-4 w-40 bg-black/5 rounded mt-2 mb-6"></div>
+                  <div className="flex gap-2">
+                    <div className="flex-1 h-8 bg-black/5 rounded-xl"></div>
+                    <div className="flex-1 h-8 bg-black/5 rounded-xl"></div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </>
         ) : data?.listCohorts?.length === 0 ? (
           <div className="col-span-full p-12 text-center border border-dashed border-[var(--color-border)] text-[var(--color-muted)] font-mono text-[13px] uppercase">
             No cohorts found. Create one above.
