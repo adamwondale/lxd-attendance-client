@@ -230,7 +230,7 @@ export default function StudentCohortsPage() {
           <button 
             type="button" 
             onClick={() => setJoiningCohort(null)} 
-            className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-none order-2 sm:order-1"
+            className="hidden sm:flex flex-1 sm:flex-none min-h-[56px] shrink-0 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-none order-2 sm:order-1 items-center justify-center"
           >
             Cancel
           </button>
@@ -238,7 +238,7 @@ export default function StudentCohortsPage() {
             type="submit" 
             form="join-cohort-form"
             disabled={joining || !pin}
-            className="flex-1 sm:flex-auto h-14 px-6 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2"
+            className="flex-1 sm:flex-auto min-h-[56px] shrink-0 py-3 px-6 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2"
           >
             {joining ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify & Join"}
           </button>
