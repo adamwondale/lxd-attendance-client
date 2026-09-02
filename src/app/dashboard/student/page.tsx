@@ -29,18 +29,18 @@ export default function StudentDashboardPage() {
     <div className="p-6 max-w-[640px] mx-auto space-y-12 text-[#0A0A0A] bg-[#F9F9F8] min-h-screen font-sans">
       
       {/* Stats Summary */}
-      <section className="grid grid-cols-3 gap-0 border border-[#E5E5E4] bg-[#FFFFFF]">
+      <section className="flex flex-col gap-4">
         {[
-          ['Present', summaryData?.myAttendanceSummary?.presentDays ?? 0],
-          ['Late', summaryData?.myAttendanceSummary?.lateDays ?? 0],
-          ['Penalties', `${summaryData?.myAttendanceSummary?.totalPenalty ?? 0} ETB`],
-        ].map(([label, value], idx) => (
-          <div key={String(label)} className={`p-3 sm:p-6 flex flex-col items-center sm:items-start text-center sm:text-left ${idx > 0 ? 'border-l border-[#E5E5E4]' : ''}`}>
-            <p className="text-[9px] sm:text-[11px] uppercase tracking-widest text-[#878786] font-mono mb-1 sm:mb-2 w-full truncate">{label}</p>
+          ['Present', summaryData?.myAttendanceSummary?.presentDays ?? 0, 'text-[#0A0A0A]'],
+          ['Late', summaryData?.myAttendanceSummary?.lateDays ?? 0, 'text-[#0A0A0A]'],
+          ['Penalties', `${summaryData?.myAttendanceSummary?.totalPenalty ?? 0} ETB`, 'text-[#E54D2E]'],
+        ].map(([label, value, colorClass]) => (
+          <div key={String(label)} className="p-8 sm:p-10 flex flex-col items-center sm:items-start justify-center text-center sm:text-left border border-[#E5E5E4] bg-[#FFFFFF]">
+            <p className="text-[11px] sm:text-[12px] uppercase tracking-widest text-[#878786] font-mono mb-2 sm:mb-4">{label}</p>
             {summaryLoading && !summaryData?.myAttendanceSummary ? (
-              <div className="h-6 sm:h-8 w-12 sm:w-16 bg-[#F9F9F8] animate-pulse mt-1" />
+              <div className="h-16 w-32 bg-[#F9F9F8] animate-pulse mt-1" />
             ) : (
-              <p className="text-xl sm:text-2xl font-serif whitespace-nowrap">{value}</p>
+              <p className={`text-6xl sm:text-7xl font-serif tracking-tight ${colorClass}`}>{value}</p>
             )}
           </div>
         ))}
