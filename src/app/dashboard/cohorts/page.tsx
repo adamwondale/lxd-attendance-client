@@ -159,38 +159,38 @@ export default function CohortsPage() {
         <ModalBody>
           <form id="cohort-form" onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="flex flex-col gap-1 md:col-span-2">
-              <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Name</label>
-              <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-none" placeholder="e.g. Summer 2026 Batch" />
+              <label className="font-mono text-[11px] uppercase tracking-widest text-muted">Name</label>
+              <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-11 px-3 bg-background border border-border focus:border-secondary outline-none font-sans text-[14px] transition-colors rounded-none" placeholder="e.g. Summer 2026 Batch" />
             </div>
             
             <div className="flex flex-col gap-1 md:col-span-2">
-              <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Join PIN</label>
-              <input required type="text" value={formData.pin} onChange={e => setFormData({...formData, pin: e.target.value})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-none mb-3" placeholder="e.g. LXD-26" />
-              <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Duration</label>
-              <select value={formData.durationMonths} onChange={e => setFormData({...formData, durationMonths: Number(e.target.value)})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-none appearance-none"><option value={3}>3 months</option><option value={6}>6 months</option></select>
+              <label className="font-mono text-[11px] uppercase tracking-widest text-muted">Join PIN</label>
+              <input required type="text" value={formData.pin} onChange={e => setFormData({...formData, pin: e.target.value})} className="h-11 px-3 bg-background border border-border focus:border-secondary outline-none font-sans text-[14px] transition-colors rounded-none mb-3" placeholder="e.g. HULU-26" />
+              <label className="font-mono text-[11px] uppercase tracking-widest text-muted">Duration</label>
+              <select value={formData.durationMonths} onChange={e => setFormData({...formData, durationMonths: Number(e.target.value)})} className="h-11 px-3 bg-background border border-border focus:border-secondary outline-none font-sans text-[14px] transition-colors rounded-none appearance-none"><option value={3}>3 months</option><option value={6}>6 months</option></select>
             </div>
             
             <div className="flex flex-col gap-1">
-              <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Start Date</label>
-              <input required type="date" value={formData.startDate} onChange={e => setFormData({...formData, startDate: e.target.value})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-none" />
+              <label className="font-mono text-[11px] uppercase tracking-widest text-muted">Start Date</label>
+              <input required type="date" value={formData.startDate} onChange={e => setFormData({...formData, startDate: e.target.value})} className="h-11 px-3 bg-background border border-border focus:border-secondary outline-none font-sans text-[14px] transition-colors rounded-none" />
             </div>
             
             <div className="flex flex-col gap-1">
-              <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">End Date</label>
-              <input required type="date" value={formData.endDate} onChange={e => setFormData({...formData, endDate: e.target.value})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-none" />
+              <label className="font-mono text-[11px] uppercase tracking-widest text-muted">End Date</label>
+              <input required type="date" value={formData.endDate} onChange={e => setFormData({...formData, endDate: e.target.value})} className="h-11 px-3 bg-background border border-border focus:border-secondary outline-none font-sans text-[14px] transition-colors rounded-none" />
             </div>
 
             {editingCohort && (
-               <div className="flex items-center gap-2 md:col-span-2 mt-2 p-4 bg-[#F9F9F8] border border-[#E5E5E4]">
-                  <input type="checkbox" id="isActive" checked={formData.isActive} onChange={e => setFormData({...formData, isActive: e.target.checked})} className="w-4 h-4 accent-[#0A0A0A] rounded-none" />
-                  <label htmlFor="isActive" className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Cohort is Active (Visible to students)</label>
+               <div className="flex items-center gap-2 md:col-span-2 mt-2 p-4 bg-background border border-border">
+                  <input type="checkbox" id="isActive" checked={formData.isActive} onChange={e => setFormData({...formData, isActive: e.target.checked})} className="w-4 h-4 accent-secondary rounded-none" />
+                  <label htmlFor="isActive" className="font-mono text-[11px] uppercase tracking-widest text-muted">Cohort is Active (Visible to students)</label>
                </div>
             )}
           </form>
         </ModalBody>
         <ModalFooter>
-          <button type="button" onClick={() => setIsDialogOpen(false)} className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-none order-2 sm:order-1">Cancel</button>
-          <button type="submit" form="cohort-form" disabled={creating || updating} className="flex-1 sm:flex-auto h-14 px-6 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2">
+          <button type="button" onClick={() => setIsDialogOpen(false)} className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-border bg-white text-secondary font-mono text-[13px] uppercase tracking-widest hover:bg-background transition-colors rounded-none order-2 sm:order-1">Cancel</button>
+          <button type="submit" form="cohort-form" disabled={creating || updating} className="flex-1 sm:flex-auto h-14 px-6 bg-secondary text-white font-mono text-[13px] uppercase tracking-widest hover:bg-secondary-hover disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2">
             {(creating || updating) ? "Saving..." : (editingCohort ? "Update Cohort" : "Create Cohort")}
           </button>
         </ModalFooter>
@@ -238,7 +238,7 @@ export default function CohortsPage() {
                 </div>
                 <CardHeader>
                   <CardTitle className="font-serif text-2xl tracking-tight pr-4">{cohort.name}</CardTitle>
-                  <p className="font-mono text-[11px] uppercase text-[#878786]">PIN: {cohort.pin}</p>
+                  <p className="font-mono text-[11px] uppercase text-muted">PIN: {cohort.pin}</p>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center gap-4 mt-2 mb-6 text-sm text-[var(--color-muted)]">

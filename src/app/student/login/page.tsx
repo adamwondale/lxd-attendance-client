@@ -20,7 +20,7 @@ const AUTH_ERRORS: Record<string, string> = {
 
 export default function StudentLoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#F9F9F8]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
       <StudentLoginContent />
     </Suspense>
   )
@@ -73,20 +73,20 @@ function StudentLoginContent() {
   return (
     <LoginPageShell
       eyebrow="Student portal"
-      title="LXD Attendance"
+      title="Hulu Track"
       subtitle="Sign in to view your attendance, cohorts, profile, and student QR information."
       footer={
         <>
           Don&apos;t have an account?{" "}
-          <Link href="/student/signup" className="text-[#1C1C1C] hover:underline underline-offset-4">
+          <Link href="/student/signup" className="text-secondary-hover hover:underline underline-offset-4">
             Student Sign Up
           </Link>
         </>
       }
     >
       {(urlError || error) && (
-        <div className="mb-4 p-3 border border-[#E54D2E] bg-[#E54D2E]/5">
-          <p className="font-mono text-[11px] text-[#E54D2E] uppercase tracking-wide">
+        <div className="mb-4 p-3 border border-primary bg-primary/5">
+          <p className="font-mono text-[11px] text-primary uppercase tracking-wide">
             {error || AUTH_ERRORS[urlError ?? ""] || AUTH_ERRORS.Default}
           </p>
         </div>
@@ -114,7 +114,7 @@ function StudentLoginContent() {
           <div className="flex justify-end mt-1.5">
             <Link 
               href="/forgot-password?role=STUDENT" 
-              className="text-[#878786] hover:text-[#1C1C1C] text-[12px] font-sans transition-colors"
+              className="text-muted hover:text-secondary-hover text-[12px] font-sans transition-colors"
             >
               Forgot password?
             </Link>
@@ -124,23 +124,23 @@ function StudentLoginContent() {
         <button
           type="submit"
           disabled={loading || googleLoading}
-          className="button w-full h-11 flex items-center justify-center gap-2 bg-[#0A0A0A] text-white font-sans font-medium text-[14px] border border-[#0A0A0A] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-[150ms] hover:bg-[#2a2a2a]"
+          className="button w-full h-11 flex items-center justify-center gap-2 bg-secondary text-white font-sans font-medium text-[14px] border border-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-[150ms] hover:bg-[#2a2a2a]"
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><span>Sign in as student</span><ArrowRight className="w-4 h-4" /></>}
         </button>
       </form>
 
       <div className="flex items-center gap-3 my-5">
-        <div className="h-px flex-1 bg-[#E5E5E4]" />
-        <span className="font-mono text-[10px] uppercase tracking-widest text-[#878786]">or</span>
-        <div className="h-px flex-1 bg-[#E5E5E4]" />
+        <div className="h-px flex-1 bg-border" />
+        <span className="font-mono text-[10px] uppercase tracking-widest text-muted">or</span>
+        <div className="h-px flex-1 bg-border" />
       </div>
 
       <button
         type="button"
         onClick={googleSignIn}
         disabled={loading || googleLoading}
-        className="button w-full h-11 flex items-center justify-center gap-3 border border-[#E5E5E4] bg-[#FFFFFF] text-[#1C1C1C] font-sans font-medium text-[14px] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-[150ms] hover:bg-[#F9F9F8]"
+        className="button w-full h-11 flex items-center justify-center gap-3 border border-border bg-surface text-secondary-hover font-sans font-medium text-[14px] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-[150ms] hover:bg-background"
       >
         {googleLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : (
           <>
@@ -155,7 +155,7 @@ function StudentLoginContent() {
         )}
       </button>
 
-      <p className="font-mono text-[10px] text-[#878786]/60 uppercase tracking-widest text-center mt-4">
+      <p className="font-mono text-[10px] text-muted/60 uppercase tracking-widest text-center mt-4">
         Students only · coordinators use Admin login
       </p>
     </LoginPageShell>

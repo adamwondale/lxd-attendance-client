@@ -46,4 +46,4 @@ export default function CompanyProfilePage() {
     </form>
   </div>
 }
-function Field({label,value,onChange,type="text",disabled=false}:{label:string,value:string,onChange:(v:string)=>void,type?:string,disabled?:boolean}) { return <label className="space-y-2"><span className="text-[10px] uppercase tracking-widest font-mono text-black/45">{label}</span><input disabled={disabled} type={type} value={value} onChange={e=>onChange(e.target.value)} className="w-full h-12 rounded-xl border border-black/10 bg-[#F9F9F8] px-4 text-sm outline-none focus:border-black disabled:opacity-50"/></label> }
+function Field({label,value,onChange,type="text",disabled=false}:{label:string,value:string,onChange:(v:string)=>void,type?:string,disabled?:boolean}) { return <label className="space-y-2"><span className="text-[10px] uppercase tracking-widest font-mono text-black/45">{label}</span><input disabled={disabled} type={type} value={value} onChange={e=>onChange(e.target.value)} className="w-full h-12 rounded-xl border border-black/10 bg-background px-4 text-sm outline-none focus:border-black disabled:opacity-50"/></label> }

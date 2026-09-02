@@ -29,7 +29,7 @@ export function LoginInput({
 
   return (
     <div className="flex flex-col gap-1">
-      <label htmlFor={id} className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">
+      <label htmlFor={id} className="font-mono text-[11px] uppercase tracking-widest text-muted">
         {label}
       </label>
       <div className="relative">
@@ -41,21 +41,21 @@ export function LoginInput({
           onChange={(event) => onChange(event.target.value)}
           onBlur={onBlur}
           placeholder={placeholder}
-          className={`w-full h-11 px-3 ${isPassword ? "pr-10" : ""} bg-[#F9F9F8] border text-[14px] font-sans text-[#1C1C1C] placeholder:text-[#878786]/60 outline-none transition-[border-color] duration-[150ms] focus:border-[#0A0A0A] ${error ? "border-[#E54D2E]" : "border-[#E5E5E4]"}`}
+          className={`w-full h-11 px-3 ${isPassword ? "pr-10" : ""} bg-background border text-[14px] font-sans text-secondary-hover placeholder:text-muted/60 outline-none transition-[border-color] duration-[150ms] focus:border-secondary ${error ? "border-primary" : "border-border"}`}
         />
         {isPassword && (
           <button
             type="button"
             onClick={() => setShow((current) => !current)}
             aria-label={show ? "Hide password" : "Show password"}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#878786] hover:text-[#1C1C1C] transition-colors duration-[150ms]"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-secondary-hover transition-colors duration-[150ms]"
           >
             {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
         )}
       </div>
       {error && (
-        <p className="font-mono text-[11px] text-[#E54D2E] uppercase tracking-wide mt-0.5">
+        <p className="font-mono text-[11px] text-primary uppercase tracking-wide mt-0.5">
           {error}
         </p>
       )}

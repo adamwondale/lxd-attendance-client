@@ -19,7 +19,7 @@ const FORGOT_PASSWORD = gql`
 
 export default function ForgotPasswordPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#F9F9F8]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
       <ForgotPasswordContent />
     </Suspense>
   )
@@ -62,7 +62,7 @@ function ForgotPasswordContent() {
         title="Check your email"
         subtitle={`If an account exists for ${email}, we have sent password reset instructions.`}
         footer={
-          <Link href={`/${role.toLowerCase()}/login`} className="text-[#1C1C1C] hover:underline underline-offset-4">
+          <Link href={`/${role.toLowerCase()}/login`} className="text-secondary-hover hover:underline underline-offset-4">
             Return to login
           </Link>
         }
@@ -89,7 +89,7 @@ function ForgotPasswordContent() {
       title="Forgot password?"
       subtitle="Enter the email address associated with your account, and we'll send you a link to reset your password."
       footer={
-        <Link href={`/${role.toLowerCase()}/login`} className="text-[#1C1C1C] hover:underline underline-offset-4">
+        <Link href={`/${role.toLowerCase()}/login`} className="text-secondary-hover hover:underline underline-offset-4">
           Back to login
         </Link>
       }
@@ -98,9 +98,9 @@ function ForgotPasswordContent() {
         <motion.div
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-4 p-3 border border-[#E54D2E] bg-[#E54D2E]/5"
+          className="mb-4 p-3 border border-primary bg-primary/5"
         >
-          <p className="font-mono text-[11px] text-[#E54D2E] uppercase tracking-wide">
+          <p className="font-mono text-[11px] text-primary uppercase tracking-wide">
             {error}
           </p>
         </motion.div>
@@ -120,7 +120,7 @@ function ForgotPasswordContent() {
         <button
           type="submit"
           disabled={loading || !email}
-          className="button mt-2 w-full h-11 flex items-center justify-center gap-2 bg-[#0A0A0A] text-white font-sans font-medium text-[14px] border border-[#0A0A0A] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-[150ms] hover:bg-[#2a2a2a]"
+          className="button mt-2 w-full h-11 flex items-center justify-center gap-2 bg-secondary text-white font-sans font-medium text-[14px] border border-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-[150ms] hover:bg-[#2a2a2a]"
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><span>Send reset link</span><ArrowRight className="w-4 h-4" /></>}
         </button>

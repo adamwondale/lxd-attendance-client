@@ -31,7 +31,7 @@ function validatePassword(v: string) {
 
 export default function AdminLoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#F9F9F8]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
       <AdminLoginContent />
     </Suspense>
   )
@@ -97,12 +97,12 @@ function AdminLoginContent() {
   return (
     <LoginPageShell
       eyebrow="Administrator portal"
-      title="LXD Attendance"
+      title="Hulu Track"
       subtitle=""
       footer={
         <>
           Don&apos;t have an account?{" "}
-          <Link href="/admin/signup" className="text-[#1C1C1C] hover:underline underline-offset-4">
+          <Link href="/admin/signup" className="text-secondary-hover hover:underline underline-offset-4">
             Create company account
           </Link>
         </>
@@ -112,9 +112,9 @@ function AdminLoginContent() {
         <motion.div
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-4 p-3 border border-[#E54D2E] bg-[#E54D2E]/5"
+          className="mb-4 p-3 border border-primary bg-primary/5"
         >
-          <p className="font-mono text-[11px] text-[#E54D2E] uppercase tracking-wide">
+          <p className="font-mono text-[11px] text-primary uppercase tracking-wide">
             {serverError || AUTH_ERRORS[urlError ?? ""] || AUTH_ERRORS.Default}
           </p>
         </motion.div>
@@ -150,7 +150,7 @@ function AdminLoginContent() {
           <div className="flex justify-end mt-1.5">
             <Link 
               href="/forgot-password?role=ADMIN" 
-              className="text-[#878786] hover:text-[#1C1C1C] text-[12px] font-sans transition-colors"
+              className="text-muted hover:text-secondary-hover text-[12px] font-sans transition-colors"
             >
               Forgot password?
             </Link>
@@ -160,7 +160,7 @@ function AdminLoginContent() {
         <button
           type="submit"
           disabled={loading}
-          className="button w-full h-11 flex items-center justify-center gap-2 bg-[#E54D2E] text-[#F9F9F8] font-sans font-medium text-[14px] border border-[#0A0A0A] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-[150ms] hover:bg-[#1f1f1f]"
+          className="button w-full h-11 flex items-center justify-center gap-2 bg-primary text-background font-sans font-medium text-[14px] border border-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-[150ms] hover:bg-primary-hover"
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><span>Sign in as admin</span><ArrowRight className="w-4 h-4" /></>}
         </button>

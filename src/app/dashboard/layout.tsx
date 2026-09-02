@@ -37,20 +37,20 @@ export default async function DashboardLayout({
       <div className="flex flex-col min-h-screen bg-background pb-16">
         {/* Minimal Top Header */}
         <header className="h-14 flex items-center justify-center px-6 bg-surface">
-          <h1 className="font-serif text-xl tracking-tight">LXD Student</h1>
+          <h1 className="font-serif text-xl tracking-tight">Hulu Track Student</h1>
         </header>
 
         {/* Main Content Area */}
         <main className="flex-1 overflow-auto">{children}</main>
 
         {/* Fixed Bottom Navigation */}
-        <nav className="fixed bottom-0 left-0 right-0 h-[68px] bg-[#FFFFFF] border-t border-[#E5E5E4] flex items-center justify-around z-50">
+        <nav className="fixed bottom-0 left-0 right-0 h-[68px] bg-surface border-t border-border flex items-center justify-around z-50">
           <ActiveNavLink
             href="/dashboard/student"
             hideIndicator={true}
             className="flex flex-col items-center justify-center flex-1 h-full transition-colors focus:outline-none group"
-            activeClassName="text-[#E54D2E]"
-            inactiveClassName="text-[#878786] hover:text-[#0A0A0A]"
+            activeClassName="text-primary"
+            inactiveClassName="text-muted hover:text-secondary"
           >
             <Home className="w-[22px] h-[22px] mb-1 group-active:scale-95 transition-transform" />
             <span className="text-[10px] font-mono uppercase tracking-widest">Home</span>
@@ -60,8 +60,8 @@ export default async function DashboardLayout({
             href="/dashboard/student/cohorts"
             hideIndicator={true}
             className="flex flex-col items-center justify-center flex-1 h-full transition-colors focus:outline-none group"
-            activeClassName="text-[#E54D2E]"
-            inactiveClassName="text-[#878786] hover:text-[#0A0A0A]"
+            activeClassName="text-primary"
+            inactiveClassName="text-muted hover:text-secondary"
           >
             <Users className="w-[22px] h-[22px] mb-1 group-active:scale-95 transition-transform" />
             <span className="text-[10px] font-mono uppercase tracking-widest">Cohorts</span>
@@ -71,8 +71,8 @@ export default async function DashboardLayout({
             href="/dashboard/student/scan"
             hideIndicator={true}
             className="flex flex-col items-center justify-center flex-1 h-full transition-colors focus:outline-none group"
-            activeClassName="text-[#E54D2E]"
-            inactiveClassName="text-[#878786] hover:text-[#0A0A0A]"
+            activeClassName="text-primary"
+            inactiveClassName="text-muted hover:text-secondary"
           >
             <Scan className="w-[22px] h-[22px] mb-1 group-active:scale-95 transition-transform" />
             <span className="text-[10px] font-mono uppercase tracking-widest">Scan</span>
@@ -82,8 +82,8 @@ export default async function DashboardLayout({
             href="/dashboard/student/profile"
             hideIndicator={true}
             className="flex flex-col items-center justify-center flex-1 h-full transition-colors focus:outline-none group"
-            activeClassName="text-[#E54D2E]"
-            inactiveClassName="text-[#878786] hover:text-[#0A0A0A]"
+            activeClassName="text-primary"
+            inactiveClassName="text-muted hover:text-secondary"
           >
             <UserCircle className="w-[22px] h-[22px] mb-1 group-active:scale-95 transition-transform" />
             <span className="text-[10px] font-mono uppercase tracking-widest">Profile</span>
@@ -101,7 +101,7 @@ export default async function DashboardLayout({
       {/* Desktop Sidebar (hidden on mobile) */}
       <aside className="hidden md:flex w-64 border-r border-border bg-surface flex-col">
         <div className="h-16 flex items-center px-6 border-b border-border">
-          <h1 className="font-serif text-2xl tracking-tight">LXD Studio</h1>
+          <h1 className="font-serif text-2xl tracking-tight">Hulu Track</h1>
         </div>
         <nav className="flex-1 p-4 flex flex-col space-y-2">
           <ActiveNavLink
@@ -162,7 +162,7 @@ export default async function DashboardLayout({
 
       {/* Mobile Top Header (only visible on mobile) */}
       <header className="md:hidden h-14 flex items-center justify-between px-6 bg-surface border-b border-border sticky top-0 z-40">
-        <h1 className="font-serif text-xl tracking-tight">LXD Studio</h1>
+        <h1 className="font-serif text-xl tracking-tight">Hulu Track</h1>
         <a
           href="/api/auth/signout"
           className="text-muted hover:text-black transition-colors"

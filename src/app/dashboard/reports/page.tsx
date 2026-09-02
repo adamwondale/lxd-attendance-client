@@ -61,52 +61,52 @@ export default function ReportsPage() {
   }
 
   return (
-    <div className="p-10 space-y-8 max-w-[1600px] mx-auto text-[#0A0A0A]">
+    <div className="p-10 space-y-8 max-w-[1600px] mx-auto text-secondary">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
         <div>
           <h1 className="font-serif text-4xl mb-2 tracking-tight">Attendance Reports</h1>
-          <p className="font-mono text-[13px] text-[#878786] uppercase">
+          <p className="font-mono text-[13px] text-muted uppercase">
             Daily, monthly and yearly views across cohorts and sessions
           </p>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => window.print()} className="h-11 px-5 border border-[#E5E5E4] bg-white text-[#0A0A0A] hover:bg-[#F9F9F8] transition-colors rounded-none flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest">
+          <button onClick={() => window.print()} className="h-11 px-5 border border-border bg-white text-secondary hover:bg-background transition-colors rounded-none flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest">
             <Printer className="w-4 h-4"/> Print
           </button>
-          <button onClick={exportExcel} className="h-11 px-5 bg-[#0A0A0A] text-white hover:bg-[#1C1C1C] transition-colors rounded-none flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest">
+          <button onClick={exportExcel} className="h-11 px-5 bg-secondary text-white hover:bg-secondary-hover transition-colors rounded-none flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest">
             <FileSpreadsheet className="w-4 h-4"/> Export Excel
           </button>
         </div>
       </div>
 
       {/* Filters (Print Hidden) */}
-      <div className="print:hidden bg-[#FFFFFF] border border-[#E5E5E4] p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
-        <select value={period} onChange={e => setPreset(e.target.value)} className="h-11 border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none appearance-none cursor-pointer">
+      <div className="print:hidden bg-surface border border-border p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
+        <select value={period} onChange={e => setPreset(e.target.value)} className="h-11 border border-border bg-background px-3 text-[14px] font-sans focus:border-secondary outline-none transition-colors rounded-none appearance-none cursor-pointer">
           <option value="week">Last 7 days</option>
           <option value="month">This month</option>
           <option value="year">This year</option>
           <option value="custom">Custom</option>
         </select>
-        <input type="date" value={startDate} onChange={e => {setPeriod("custom"); setStartDate(e.target.value)}} className="h-11 border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none" />
-        <input type="date" value={endDate} onChange={e => {setPeriod("custom"); setEndDate(e.target.value)}} className="h-11 border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none" />
-        <select value={cohortId} onChange={e => {setCohortId(e.target.value); setSessionId("")}} className="h-11 border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none appearance-none cursor-pointer">
+        <input type="date" value={startDate} onChange={e => {setPeriod("custom"); setStartDate(e.target.value)}} className="h-11 border border-border bg-background px-3 text-[14px] font-sans focus:border-secondary outline-none transition-colors rounded-none" />
+        <input type="date" value={endDate} onChange={e => {setPeriod("custom"); setEndDate(e.target.value)}} className="h-11 border border-border bg-background px-3 text-[14px] font-sans focus:border-secondary outline-none transition-colors rounded-none" />
+        <select value={cohortId} onChange={e => {setCohortId(e.target.value); setSessionId("")}} className="h-11 border border-border bg-background px-3 text-[14px] font-sans focus:border-secondary outline-none transition-colors rounded-none appearance-none cursor-pointer">
           <option value="">All Cohorts</option>
           {cohorts.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
         <div className="flex gap-2">
-          <select value={sessionId} onChange={e => setSessionId(e.target.value)} className="h-11 border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none appearance-none cursor-pointer flex-1">
+          <select value={sessionId} onChange={e => setSessionId(e.target.value)} className="h-11 border border-border bg-background px-3 text-[14px] font-sans focus:border-secondary outline-none transition-colors rounded-none appearance-none cursor-pointer flex-1">
             <option value="">All Sessions</option>
             {(selectedCohort?.sessions || cohorts.flatMap((c:any) => c.sessions || [])).map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>)}
           </select>
-          <button onClick={() => refetch()} className="h-11 w-11 border border-[#E5E5E4] bg-white hover:bg-[#F9F9F8] hover:text-[#0A0A0A] text-[#878786] transition-colors rounded-none flex items-center justify-center shrink-0">
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#0A0A0A]' : ''}`}/>
+          <button onClick={() => refetch()} className="h-11 w-11 border border-border bg-white hover:bg-background hover:text-secondary text-muted transition-colors rounded-none flex items-center justify-center shrink-0">
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-secondary' : ''}`}/>
           </button>
         </div>
       </div>
 
       {/* Stats Summary */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 border border-[#E5E5E4] bg-[#FFFFFF]">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 border border-border bg-surface">
         <Stat label="Present" value={totals.present} />
         <Stat label="Late" value={totals.late} />
         <Stat label="Absent" value={totals.absent} />
@@ -114,13 +114,13 @@ export default function ReportsPage() {
       </div>
 
       {/* Detailed Report Table */}
-      <div className="bg-[#FFFFFF] border border-[#E5E5E4] rounded-none overflow-hidden">
-        <div className="p-6 border-b border-[#E5E5E4] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-surface border border-border rounded-none overflow-hidden">
+        <div className="p-6 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 className="font-serif text-2xl">Detailed Report</h2>
-            <p className="text-[13px] text-[#878786] font-mono mt-1 uppercase tracking-widest">{startDate} → {endDate}</p>
+            <p className="text-[13px] text-muted font-mono mt-1 uppercase tracking-widest">{startDate} → {endDate}</p>
           </div>
-          <div className="text-[11px] font-mono text-[#878786] uppercase tracking-widest border border-[#E5E5E4] px-4 py-2 bg-[#F9F9F8]">
+          <div className="text-[11px] font-mono text-muted uppercase tracking-widest border border-border px-4 py-2 bg-background">
             {rows.length} records found
           </div>
         </div>
@@ -128,36 +128,36 @@ export default function ReportsPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-[14px] font-sans">
             <thead>
-              <tr className="border-b border-[#E5E5E4] bg-[#F9F9F8]">
-                <th className="p-4 font-mono text-[11px] uppercase tracking-widest text-[#878786] font-normal">Date</th>
-                <th className="p-4 font-mono text-[11px] uppercase tracking-widest text-[#878786] font-normal">Trainee</th>
-                <th className="p-4 font-mono text-[11px] uppercase tracking-widest text-[#878786] font-normal">Cohort</th>
-                <th className="p-4 font-mono text-[11px] uppercase tracking-widest text-[#878786] font-normal">Session</th>
-                <th className="p-4 font-mono text-[11px] uppercase tracking-widest text-[#878786] font-normal">Status</th>
-                <th className="p-4 font-mono text-[11px] uppercase tracking-widest text-[#878786] font-normal">Late</th>
-                <th className="p-4 font-mono text-[11px] uppercase tracking-widest text-[#878786] font-normal text-right">Penalty</th>
+              <tr className="border-b border-border bg-background">
+                <th className="p-4 font-mono text-[11px] uppercase tracking-widest text-muted font-normal">Date</th>
+                <th className="p-4 font-mono text-[11px] uppercase tracking-widest text-muted font-normal">Trainee</th>
+                <th className="p-4 font-mono text-[11px] uppercase tracking-widest text-muted font-normal">Cohort</th>
+                <th className="p-4 font-mono text-[11px] uppercase tracking-widest text-muted font-normal">Session</th>
+                <th className="p-4 font-mono text-[11px] uppercase tracking-widest text-muted font-normal">Status</th>
+                <th className="p-4 font-mono text-[11px] uppercase tracking-widest text-muted font-normal">Late</th>
+                <th className="p-4 font-mono text-[11px] uppercase tracking-widest text-muted font-normal text-right">Penalty</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="p-12 text-center text-[#878786] font-mono text-[11px] uppercase tracking-widest animate-pulse">
+                  <td colSpan={7} className="p-12 text-center text-muted font-mono text-[11px] uppercase tracking-widest animate-pulse">
                     Generating report...
                   </td>
                 </tr>
               ) : rows.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="p-12 text-center text-[#878786] font-mono text-[11px] uppercase tracking-widest">
+                  <td colSpan={7} className="p-12 text-center text-muted font-mono text-[11px] uppercase tracking-widest">
                     No attendance data for the selected period
                   </td>
                 </tr>
               ) : (
                 rows.map((r:any) => (
-                  <tr key={r.id} className="border-b border-[#E5E5E4] last:border-0 hover:bg-[#F9F9F8] transition-colors">
+                  <tr key={r.id} className="border-b border-border last:border-0 hover:bg-background transition-colors">
                     <td className="p-4 font-mono text-[13px] whitespace-nowrap">{r.date}</td>
                     <td className="p-4 font-medium text-[15px]">{r.traineeName}</td>
-                    <td className="p-4 text-[#878786] text-[14px]">{r.cohortName}</td>
-                    <td className="p-4 text-[#878786] text-[14px]">{r.sessionName}</td>
+                    <td className="p-4 text-muted text-[14px]">{r.cohortName}</td>
+                    <td className="p-4 text-muted text-[14px]">{r.sessionName}</td>
                     <td className="p-4">
                       <span className={`inline-flex px-2 py-1 text-[11px] font-mono uppercase tracking-widest border ${
                         r.status === 'Present' ? 'border-green-600 text-green-700' : 
@@ -168,10 +168,10 @@ export default function ReportsPage() {
                       </span>
                     </td>
                     <td className="p-4 text-[14px]">
-                      {r.latenessMinutes ? <span className="font-mono text-[#E54D2E]">{r.latenessMinutes} min</span> : <span className="text-[#878786]">--</span>}
+                      {r.latenessMinutes ? <span className="font-mono text-primary">{r.latenessMinutes} min</span> : <span className="text-muted">--</span>}
                     </td>
                     <td className="p-4 text-right">
-                      {r.penalty ? <span className="font-mono text-[#E54D2E] text-[14px]">{r.penalty} ETB</span> : <span className="text-[#878786]">--</span>}
+                      {r.penalty ? <span className="font-mono text-primary text-[14px]">{r.penalty} ETB</span> : <span className="text-muted">--</span>}
                     </td>
                   </tr>
                 ))
@@ -186,9 +186,9 @@ export default function ReportsPage() {
 
 function Stat({label, value}: {label: string, value: any}) { 
   return (
-    <div className="p-6 border-r border-[#E5E5E4] last:border-r-0 flex flex-col justify-center">
-      <p className="text-[11px] font-mono uppercase tracking-widest text-[#878786] mb-2">{label}</p>
-      <p className="text-3xl font-serif text-[#0A0A0A]">{value}</p>
+    <div className="p-6 border-r border-border last:border-r-0 flex flex-col justify-center">
+      <p className="text-[11px] font-mono uppercase tracking-widest text-muted mb-2">{label}</p>
+      <p className="text-3xl font-serif text-secondary">{value}</p>
     </div>
   ) 
 }

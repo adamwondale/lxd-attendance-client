@@ -69,7 +69,7 @@ export default function SessionLiveView({ params }: { params: Promise<{ cohortId
   return (
     <div className="p-10 space-y-8 relative">
       <div className="mb-4">
-        <Link href={`/dashboard/cohorts/${unwrappedParams.cohortId}`} className="text-sm font-mono uppercase tracking-widest text-[#878786] hover:text-black flex items-center gap-2">
+        <Link href={`/dashboard/cohorts/${unwrappedParams.cohortId}`} className="text-sm font-mono uppercase tracking-widest text-muted hover:text-black flex items-center gap-2">
           <ArrowLeft className="w-4 h-4" /> Back to Sessions
         </Link>
       </div>

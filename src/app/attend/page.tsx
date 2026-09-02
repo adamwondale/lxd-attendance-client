@@ -46,7 +46,7 @@ function AttendContent() {
 
   if (!code) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-[#F9F9F8]">
+      <div className="min-h-screen flex items-center justify-center p-6 bg-background">
         <Card className="w-full max-w-sm border-black">
           <CardHeader>
             <CardTitle className="text-center font-serif text-2xl">Invalid Link</CardTitle>
@@ -61,7 +61,7 @@ function AttendContent() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-[#F9F9F8]">
+      <div className="min-h-screen flex items-center justify-center p-6 bg-background">
         <div className="animate-pulse font-mono uppercase tracking-widest text-sm text-[var(--color-muted)]">
           Authenticating...
         </div>
@@ -76,7 +76,7 @@ function AttendContent() {
           <CardHeader className="text-center pb-3">
             <div className="mx-auto mb-4 h-12 w-12 rounded-2xl bg-black text-white flex items-center justify-center text-xl font-semibold">L</div>
             <CardTitle className="font-serif text-3xl">Sign in to Check In</CardTitle>
-            <p className="text-sm text-[#878786] mt-2">Your attendance QR is valid for 20 seconds. Sign in with your student account and you will be checked in automatically.</p>
+            <p className="text-sm text-muted mt-2">Your attendance QR is valid for 20 seconds. Sign in with your student account and you will be checked in automatically.</p>
           </CardHeader>
           <CardContent className="pt-3">
             <Button onClick={() => signIn(undefined, { callbackUrl: `/attend?code=${encodeURIComponent(code || '')}` })} className="w-full h-14 rounded-2xl bg-black text-white hover:bg-[#222]">
@@ -89,7 +89,7 @@ function AttendContent() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-[#F9F9F8]">
+    <div className="min-h-screen flex items-center justify-center p-6 bg-background">
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -131,7 +131,7 @@ function AttendContent() {
               </motion.div>
             )}
 
-            <p className="font-mono text-[13px] uppercase text-[#878786] mt-2">
+            <p className="font-mono text-[13px] uppercase text-muted mt-2">
               {loading ? "Verifying cryptographic signature..." : 
                result === 'SUCCESS' ? "Attendance successfully logged. You can close this page." : 
                result === 'ERROR' ? errorMsg : ""}
@@ -146,7 +146,7 @@ function AttendContent() {
 export default function AttendPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center p-6 bg-[#F9F9F8]">
+      <div className="min-h-screen flex items-center justify-center p-6 bg-background">
         <div className="animate-pulse font-mono uppercase tracking-widest text-sm text-[var(--color-muted)]">
           Loading...
         </div>

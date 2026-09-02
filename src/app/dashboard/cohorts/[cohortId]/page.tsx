@@ -175,7 +175,7 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
   return (
     <div className="p-10 space-y-8 relative">
       <div className="mb-4">
-        <Link href="/dashboard/cohorts" className="text-sm font-mono uppercase tracking-widest text-[#878786] hover:text-black flex items-center gap-2">
+        <Link href="/dashboard/cohorts" className="text-sm font-mono uppercase tracking-widest text-muted hover:text-black flex items-center gap-2">
           <ArrowLeft className="w-4 h-4" /> Back to Cohorts
         </Link>
       </div>
@@ -207,7 +207,7 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
             <ModalBody>
               <form id="session-form" onSubmit={handleSaveSession} className="space-y-6">
                 <div className="space-y-2">
-                  <label htmlFor="name" className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Session Name</label>
+                  <label htmlFor="name" className="font-mono text-[11px] uppercase tracking-widest text-muted">Session Name</label>
                   <input 
                     id="name"
                     type="text"
@@ -215,35 +215,35 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
                     onChange={(e: any) => setSessionName(e.target.value)}
                     placeholder="e.g. Day 1: React Basics" 
                     required 
-                    className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans placeholder:text-[#878786]/50 focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                    className="flex h-11 w-full border border-border bg-background px-3 py-2 text-[14px] font-sans placeholder:text-muted/50 focus:border-secondary outline-none transition-colors rounded-none"
                   />
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label htmlFor="startTime" className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Start Time</label>
+                    <label htmlFor="startTime" className="font-mono text-[11px] uppercase tracking-widest text-muted">Start Time</label>
                     <input 
                       id="startTime"
                       type="time"
                       value={startTime}
                       onChange={(e: any) => setStartTime(e.target.value)}
                       required 
-                      className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                      className="flex h-11 w-full border border-border bg-background px-3 py-2 text-[14px] font-sans focus:border-secondary outline-none transition-colors rounded-none"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label htmlFor="lateTime" className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Late Time</label>
+                    <label htmlFor="lateTime" className="font-mono text-[11px] uppercase tracking-widest text-muted">Late Time</label>
                     <input 
                       id="lateTime"
                       type="time"
                       value={lateTime}
                       onChange={(e: any) => setLateTime(e.target.value)}
                       required 
-                      className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                      className="flex h-11 w-full border border-border bg-background px-3 py-2 text-[14px] font-sans focus:border-secondary outline-none transition-colors rounded-none"
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="penalty" className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Late Penalty Amount (ETB)</label>
+                  <label htmlFor="penalty" className="font-mono text-[11px] uppercase tracking-widest text-muted">Late Penalty Amount (ETB)</label>
                   <input 
                     id="penalty"
                     type="number"
@@ -251,35 +251,35 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
                     value={latePenaltyAmount}
                     onChange={(e: any) => setLatePenaltyAmount(parseInt(e.target.value))}
                     required 
-                    className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                    className="flex h-11 w-full border border-border bg-background px-3 py-2 text-[14px] font-sans focus:border-secondary outline-none transition-colors rounded-none"
                   />
-                  <p className="text-[11px] text-[#878786] font-mono uppercase tracking-wide">Scans after the late time will automatically receive the cohort's penalty.</p>
+                  <p className="text-[11px] text-muted font-mono uppercase tracking-wide">Scans after the late time will automatically receive the cohort's penalty.</p>
                 </div>
                 
-                <div className="pt-4 border-t border-[#E5E5E4]">
-                  <p className="font-mono text-[10px] uppercase tracking-widest text-[#878786] mb-4">Escalation Policy</p>
+                <div className="pt-4 border-t border-border">
+                  <p className="font-mono text-[10px] uppercase tracking-widest text-muted mb-4">Escalation Policy</p>
                   <div className="grid sm:grid-cols-3 gap-3">
                     <label className="space-y-1">
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-[#878786]">Threshold (min)</span>
-                      <input type="number" min="0" value={escalationThresholdMinutes} onChange={e=>setEscalationThresholdMinutes(Number(e.target.value))} className="h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none" />
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-muted">Threshold (min)</span>
+                      <input type="number" min="0" value={escalationThresholdMinutes} onChange={e=>setEscalationThresholdMinutes(Number(e.target.value))} className="h-11 w-full border border-border bg-background px-3 text-[14px] font-sans focus:border-secondary outline-none transition-colors rounded-none" />
                     </label>
                     <label className="space-y-1">
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-[#878786]">+ ETB</span>
-                      <input type="number" min="0" value={escalationRate} onChange={e=>setEscalationRate(Number(e.target.value))} className="h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none" />
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-muted">+ ETB</span>
+                      <input type="number" min="0" value={escalationRate} onChange={e=>setEscalationRate(Number(e.target.value))} className="h-11 w-full border border-border bg-background px-3 text-[14px] font-sans focus:border-secondary outline-none transition-colors rounded-none" />
                     </label>
                     <label className="space-y-1">
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-[#878786]">Every (min)</span>
-                      <input type="number" min="1" value={escalationIntervalMinutes} onChange={e=>setEscalationIntervalMinutes(Number(e.target.value))} className="h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none" />
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-muted">Every (min)</span>
+                      <input type="number" min="1" value={escalationIntervalMinutes} onChange={e=>setEscalationIntervalMinutes(Number(e.target.value))} className="h-11 w-full border border-border bg-background px-3 text-[14px] font-sans focus:border-secondary outline-none transition-colors rounded-none" />
                     </label>
                   </div>
-                  <p className="text-[11px] text-[#878786] font-mono uppercase tracking-wide mt-2">After the threshold, penalty increases by rate for each interval.</p>
+                  <p className="text-[11px] text-muted font-mono uppercase tracking-wide mt-2">After the threshold, penalty increases by rate for each interval.</p>
                 </div>
 
-                <div className="pt-4 border-t border-[#E5E5E4] space-y-2">
-                  <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Recurrence</label>
+                <div className="pt-4 border-t border-border space-y-2">
+                  <label className="font-mono text-[11px] uppercase tracking-widest text-muted">Recurrence</label>
                   <div className="flex flex-wrap gap-2">
                     {['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'].map((day) => (
-                      <label key={day} className={`flex items-center justify-center h-10 px-3 text-[11px] font-mono uppercase tracking-widest border cursor-pointer transition-colors ${recurrenceDays.includes(day) || recurrenceDays.includes('EVERYDAY') ? 'bg-[#0A0A0A] text-white border-[#0A0A0A]' : 'bg-[#F9F9F8] border-[#E5E5E4] text-[#878786] hover:bg-white'}`}>
+                      <label key={day} className={`flex items-center justify-center h-10 px-3 text-[11px] font-mono uppercase tracking-widest border cursor-pointer transition-colors ${recurrenceDays.includes(day) || recurrenceDays.includes('EVERYDAY') ? 'bg-secondary text-white border-secondary' : 'bg-background border-border text-muted hover:bg-white'}`}>
                         <input 
                           type="checkbox"
                           className="hidden"
@@ -296,7 +296,7 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
                         {day.slice(0, 3)}
                       </label>
                     ))}
-                    <label className={`flex items-center justify-center h-10 px-3 text-[11px] font-mono uppercase tracking-widest border cursor-pointer transition-colors font-bold ${recurrenceDays.includes('EVERYDAY') ? 'bg-[#E54D2E] text-white border-[#E54D2E]' : 'bg-[#F9F9F8] border-[#E5E5E4] text-[#878786] hover:bg-white'}`}>
+                    <label className={`flex items-center justify-center h-10 px-3 text-[11px] font-mono uppercase tracking-widest border cursor-pointer transition-colors font-bold ${recurrenceDays.includes('EVERYDAY') ? 'bg-primary text-white border-primary' : 'bg-background border-border text-muted hover:bg-white'}`}>
                       <input 
                         type="checkbox"
                         className="hidden"
@@ -313,8 +313,8 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
               </form>
             </ModalBody>
             <ModalFooter>
-              <button type="button" onClick={closeDialog} className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-none order-2 sm:order-1">Cancel</button>
-              <button type="submit" form="session-form" disabled={creating || updating} className="flex-1 sm:flex-auto h-14 px-6 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2">
+              <button type="button" onClick={closeDialog} className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-border bg-white text-secondary font-mono text-[13px] uppercase tracking-widest hover:bg-background transition-colors rounded-none order-2 sm:order-1">Cancel</button>
+              <button type="submit" form="session-form" disabled={creating || updating} className="flex-1 sm:flex-auto h-14 px-6 bg-secondary text-white font-mono text-[13px] uppercase tracking-widest hover:bg-secondary-hover disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2">
                 {(creating || updating) ? "Saving..." : "Save Session"}
               </button>
             </ModalFooter>

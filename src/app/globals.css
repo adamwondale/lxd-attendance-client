@@ -5,13 +5,24 @@
   --font-sans: "DM Sans", sans-serif;
   --font-mono: "Space Mono", monospace;
 
-  --color-primary: #0A0A0A;
-  --color-background: #F5F5F3; /* Warmer, sophisticated cream/grey */
+  /* Hulu Track Brand Colors */
+  --color-brand-green: #21A675;
+  --color-brand-slate: #3B5F7B;
+
+  /* Semantic Mappings */
+  --color-primary: var(--color-brand-green);
+  --color-primary-hover: #1b8b62;
+  
+  --color-secondary: var(--color-brand-slate);
+  --color-secondary-hover: #2d4a60;
+
+  --color-background: #F8F9FA;
   --color-surface: #FFFFFF;
-  --color-text: #1C1C1C;
-  --color-muted: #878786;
-  --color-accent: #E54D2E;
-  --color-border: #E8E8E6;
+  
+  --color-text-main: #1A242C;
+  --color-muted: #6B7280;
+  
+  --color-border: #E2E8F0;
 }
 
 @layer base {
@@ -25,7 +36,7 @@
   
   body {
     background-color: var(--color-background);
-    color: var(--color-text);
+    color: var(--color-text-main);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -37,7 +48,6 @@
   transform: scale(0.97);
   transition: transform 160ms var(--ease-studio);
 }
-
 
 @layer utilities {
   .interactive {
@@ -54,4 +64,4 @@ svg.lucide {
   stroke-linejoin: miter !important;
 }
 
-::selection { background: #E54D2E; color: white; }
+::selection { background: var(--color-brand-green); color: white; }

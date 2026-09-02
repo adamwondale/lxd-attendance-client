@@ -2,8 +2,8 @@ import { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "LXD Attendance",
-    short_name: "LXD",
+    name: "Hulu Track",
+    short_name: "Hulu Track",
     description: "Attendance and cohort management for students.",
     start_url: "/",
     display: "standalone",

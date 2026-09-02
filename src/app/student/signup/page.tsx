@@ -109,16 +109,16 @@ export default function StudentSignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-[#F9F9F8] text-[#0A0A0A] font-sans selection:bg-[#0A0A0A] selection:text-[#FFFFFF] overflow-y-auto">
+    <div className="min-h-screen flex items-center justify-center p-6 bg-background text-secondary font-sans selection:bg-secondary selection:text-surface overflow-y-auto">
       <div className="w-full max-w-[440px] my-auto py-12">
         {/* Header */}
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-serif leading-tight">Join LXD</h1>
-          <p className="text-[#878786] text-xs font-mono uppercase tracking-widest mt-2">Student Registration</p>
+          <h1 className="text-3xl font-serif leading-tight">Join Hulu Track</h1>
+          <p className="text-muted text-xs font-mono uppercase tracking-widest mt-2">Student Registration</p>
         </div>
 
         {/* Form Container */}
-        <div className="bg-[#FFFFFF] border border-[#E5E5E4] p-8 rounded-none shadow-sm">
+        <div className="bg-surface border border-border p-8 rounded-none shadow-sm">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <AnimatePresence>
               {globalError && (
@@ -126,7 +126,7 @@ export default function StudentSignupPage() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="p-4 bg-[#E54D2E]/10 border border-[#E54D2E]/20 text-[#E54D2E] text-sm flex gap-3 items-start rounded-none"
+                  className="p-4 bg-primary/10 border border-primary/20 text-primary text-sm flex gap-3 items-start rounded-none"
                 >
                   <AlertCircle className="w-5 h-5 shrink-0" />
                   <p className="mt-0.5">{globalError}</p>
@@ -136,95 +136,95 @@ export default function StudentSignupPage() {
 
             <div className="space-y-5">
               <div>
-                <label className="block text-[11px] uppercase tracking-widest font-mono text-[#878786] mb-2">Full Name</label>
+                <label className="block text-[11px] uppercase tracking-widest font-mono text-muted mb-2">Full Name</label>
                 <input
                   {...register("name")}
-                  className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none placeholder:text-[#878786]/50 ${
-                    errors.name ? "border-[#E54D2E] focus:border-[#E54D2E]" : "border-[#E5E5E4] focus:border-[#0A0A0A]"
+                  className={`w-full h-[44px] px-3 bg-background border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 ${
+                    errors.name ? "border-primary focus:border-primary" : "border-border focus:border-secondary"
                   }`}
                 />
                 {errors.name && (
-                  <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[11px] uppercase tracking-widest font-mono text-[#E54D2E] mt-2">
+                  <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[11px] uppercase tracking-widest font-mono text-primary mt-2">
                     {errors.name.message}
                   </motion.p>
                 )}
               </div>
 
               <div>
-                <label className="block text-[11px] uppercase tracking-widest font-mono text-[#878786] mb-2">Username</label>
+                <label className="block text-[11px] uppercase tracking-widest font-mono text-muted mb-2">Username</label>
                 <input
                   {...register("username")}
-                  className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none placeholder:text-[#878786]/50 ${
-                    errors.username ? "border-[#E54D2E] focus:border-[#E54D2E]" : "border-[#E5E5E4] focus:border-[#0A0A0A]"
+                  className={`w-full h-[44px] px-3 bg-background border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 ${
+                    errors.username ? "border-primary focus:border-primary" : "border-border focus:border-secondary"
                   }`}
                 />
                 {errors.username && (
-                  <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[11px] uppercase tracking-widest font-mono text-[#E54D2E] mt-2">
+                  <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[11px] uppercase tracking-widest font-mono text-primary mt-2">
                     {errors.username.message}
                   </motion.p>
                 )}
               </div>
 
               <div>
-                <label className="block text-[11px] uppercase tracking-widest font-mono text-[#878786] mb-2">Email Address</label>
+                <label className="block text-[11px] uppercase tracking-widest font-mono text-muted mb-2">Email Address</label>
                 <input
                   type="email"
                   {...register("email")}
-                  className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none placeholder:text-[#878786]/50 ${
-                    errors.email ? "border-[#E54D2E] focus:border-[#E54D2E]" : "border-[#E5E5E4] focus:border-[#0A0A0A]"
+                  className={`w-full h-[44px] px-3 bg-background border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 ${
+                    errors.email ? "border-primary focus:border-primary" : "border-border focus:border-secondary"
                   }`}
                 />
                 {errors.email && (
-                  <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[11px] uppercase tracking-widest font-mono text-[#E54D2E] mt-2">
+                  <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[11px] uppercase tracking-widest font-mono text-primary mt-2">
                     {errors.email.message}
                   </motion.p>
                 )}
               </div>
 
               <div>
-                <label className="block text-[11px] uppercase tracking-widest font-mono text-[#878786] mb-2">Phone Number</label>
+                <label className="block text-[11px] uppercase tracking-widest font-mono text-muted mb-2">Phone Number</label>
                 <input
                   type="tel"
                   maxLength={15}
                   {...register("phone", {
                     onChange: (e) => { e.target.value = e.target.value.replace(/[^\d+]/g, '') }
                   })}
-                  className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none placeholder:text-[#878786]/50 ${
-                    errors.phone ? "border-[#E54D2E] focus:border-[#E54D2E]" : "border-[#E5E5E4] focus:border-[#0A0A0A]"
+                  className={`w-full h-[44px] px-3 bg-background border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 ${
+                    errors.phone ? "border-primary focus:border-primary" : "border-border focus:border-secondary"
                   }`}
                 />
                 {errors.phone && (
-                  <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[11px] uppercase tracking-widest font-mono text-[#E54D2E] mt-2">
+                  <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[11px] uppercase tracking-widest font-mono text-primary mt-2">
                     {errors.phone.message}
                   </motion.p>
                 )}
               </div>
 
               <div>
-                <label className="block text-[11px] uppercase tracking-widest font-mono text-[#878786] mb-2">Password</label>
+                <label className="block text-[11px] uppercase tracking-widest font-mono text-muted mb-2">Password</label>
                 <input
                   type="password"
                   {...register("password")}
-                  className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none placeholder:text-[#878786]/50 ${
-                    errors.password ? "border-[#E54D2E] focus:border-[#E54D2E]" : "border-[#E5E5E4] focus:border-[#0A0A0A]"
+                  className={`w-full h-[44px] px-3 bg-background border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 ${
+                    errors.password ? "border-primary focus:border-primary" : "border-border focus:border-secondary"
                   }`}
                 />
                 {errors.password && (
-                  <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[11px] uppercase tracking-widest font-mono text-[#E54D2E] mt-2">
+                  <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[11px] uppercase tracking-widest font-mono text-primary mt-2">
                     {errors.password.message}
                   </motion.p>
                 )}
               </div>
 
-              <div className="pt-4 border-t border-[#E5E5E4]">
-                <p className="text-[11px] uppercase tracking-widest font-mono text-[#878786] mb-4">Cohort Assignment (Optional)</p>
+              <div className="pt-4 border-t border-border">
+                <p className="text-[11px] uppercase tracking-widest font-mono text-muted mb-4">Cohort Assignment (Optional)</p>
                 <div className="grid grid-cols-1 gap-4">
                   <div>
                     <select
                       {...register("cohortId")}
                       onChange={handleCohortChange}
-                      className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none ${
-                        errors.cohortId ? "border-[#E54D2E] focus:border-[#E54D2E]" : "border-[#E5E5E4] focus:border-[#0A0A0A]"
+                      className={`w-full h-[44px] px-3 bg-background border text-sm outline-none transition-colors rounded-none ${
+                        errors.cohortId ? "border-primary focus:border-primary" : "border-border focus:border-secondary"
                       }`}
                     >
                       <option value="">Select Cohort</option>
@@ -239,8 +239,8 @@ export default function StudentSignupPage() {
                       <div>
                         <select
                           {...register("sessionId")}
-                          className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none ${
-                            errors.sessionId ? "border-[#E54D2E] focus:border-[#E54D2E]" : "border-[#E5E5E4] focus:border-[#0A0A0A]"
+                          className={`w-full h-[44px] px-3 bg-background border text-sm outline-none transition-colors rounded-none ${
+                            errors.sessionId ? "border-primary focus:border-primary" : "border-border focus:border-secondary"
                           }`}
                         >
                           <option value="">Select Session</option>
@@ -249,7 +249,7 @@ export default function StudentSignupPage() {
                           ))}
                         </select>
                         {errors.sessionId && (
-                          <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[11px] uppercase tracking-widest font-mono text-[#E54D2E] mt-2">
+                          <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[11px] uppercase tracking-widest font-mono text-primary mt-2">
                             {errors.sessionId.message}
                           </motion.p>
                         )}
@@ -259,12 +259,12 @@ export default function StudentSignupPage() {
                           type="password"
                           {...register("cohortPin")}
                           placeholder="Cohort PIN"
-                          className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none placeholder:text-[#878786]/50 ${
-                            errors.cohortPin ? "border-[#E54D2E] focus:border-[#E54D2E]" : "border-[#E5E5E4] focus:border-[#0A0A0A]"
+                          className={`w-full h-[44px] px-3 bg-background border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 ${
+                            errors.cohortPin ? "border-primary focus:border-primary" : "border-border focus:border-secondary"
                           }`}
                         />
                         {errors.cohortPin && (
-                          <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[11px] uppercase tracking-widest font-mono text-[#E54D2E] mt-2">
+                          <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[11px] uppercase tracking-widest font-mono text-primary mt-2">
                             {errors.cohortPin.message}
                           </motion.p>
                         )}
@@ -278,15 +278,15 @@ export default function StudentSignupPage() {
             <button
               type="submit"
               disabled={isSubmitting || (isDirty && !isValid)}
-              className="w-full h-[48px] bg-[#0A0A0A] text-[#FFFFFF] rounded-none hover:bg-[#1C1C1C] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium mt-8 tracking-widest"
+              className="w-full h-[48px] bg-secondary text-surface rounded-none hover:bg-secondary-hover transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium mt-8 tracking-widest"
             >
               {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>CREATE ACCOUNT</span>}
             </button>
           </form>
         </div>
         
-        <p className="text-center text-[13px] text-[#878786] mt-8">
-          Already have an account? <Link href="/student/login" className="text-[#0A0A0A] font-medium hover:underline underline-offset-4">Sign in</Link>
+        <p className="text-center text-[13px] text-muted mt-8">
+          Already have an account? <Link href="/student/login" className="text-secondary font-medium hover:underline underline-offset-4">Sign in</Link>
         </p>
       </div>
     </div>
