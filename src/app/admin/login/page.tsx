@@ -147,6 +147,14 @@ function AdminLoginContent() {
             onBlur={() => setPasswordTouched(true)}
             error={passwordError}
           />
+          <div className="flex justify-end mt-1.5">
+            <Link 
+              href="/forgot-password?role=ADMIN" 
+              className="text-[#878786] hover:text-[#1C1C1C] text-[12px] font-sans transition-colors"
+            >
+              Forgot password?
+            </Link>
+          </div>
         </motion.div>
 
         <button

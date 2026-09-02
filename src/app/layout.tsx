@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Instrument_Serif, DM_Sans, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { ApolloProvider } from "@/providers/apollo-provider";
@@ -22,9 +22,26 @@ const spaceMono = Space_Mono({
   variable: "--font-space-mono",
 });
 
+export const viewport: Viewport = {
+  themeColor: "#0A0A0A",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export const metadata: Metadata = {
-  title: "LXD Attendance | Studio",
+  title: "HULU TRACK",
   description: "Disciplined, minimal attendance platform.",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "HULU TRACK",
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 export default function RootLayout({

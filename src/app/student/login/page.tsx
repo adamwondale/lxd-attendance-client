@@ -101,15 +101,25 @@ function StudentLoginContent() {
           value={identifier}
           onChange={setIdentifier}
         />
-        <LoginInput
-          id="student-password"
-          label="Password"
-          type="password"
-          placeholder="••••••••"
-          autoComplete="current-password"
-          value={password}
-          onChange={setPassword}
-        />
+        <div>
+          <LoginInput
+            id="student-password"
+            label="Password"
+            type="password"
+            placeholder="••••••••"
+            autoComplete="current-password"
+            value={password}
+            onChange={setPassword}
+          />
+          <div className="flex justify-end mt-1.5">
+            <Link 
+              href="/forgot-password?role=STUDENT" 
+              className="text-[#878786] hover:text-[#1C1C1C] text-[12px] font-sans transition-colors"
+            >
+              Forgot password?
+            </Link>
+          </div>
+        </div>
 
         <button
           type="submit"
