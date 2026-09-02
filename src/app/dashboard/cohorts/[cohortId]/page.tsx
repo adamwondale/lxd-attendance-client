@@ -6,8 +6,9 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useQuery, useMutation } from "@apollo/client/react/index.js"
 import { gql } from "@apollo/client/core/index.js"
-import { Pencil, Settings, Trash2, X, Plus, ArrowLeft } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Modal, ModalHeader, ModalBody, ModalFooter, AlertModal } from "@/components/ui/modal"
+import { toast } from "sonner"
 import Link from "next/link"
 
 const COHORT_DETAILS = gql`
@@ -53,14 +54,14 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
   const unwrappedParams = use(params)
   const { data: cohortData, loading: cohortLoading, refetch } = useQuery(COHORT_DETAILS, { 
     variables: { id: unwrappedParams.cohortId },
-    fetchPolicy: "network-only"
+    fetchPolicy: "cache-and-network"
   })
 
   const [createSession, { loading: creating }] = useMutation(CREATE_SESSION)
-  const [updateSession, { loading: updating }] = useMutation(UPDATE_SESSION)
-  const [deleteSession] = useMutation(DELETE_SESSION)
+  const [deleteSession, { loading: deleting }] = useMutation(DELETE_SESSION)
 
   const [editingSession, setEditingSession] = useState<any>(null)
+  const [deletingSessionId, setDeletingSessionId] = useState<string | null>(null)
   const [sessionName, setSessionName] = useState("")
   const [startTime, setStartTime] = useState("09:00")
   const [lateTime, setLateTime] = useState("09:15")
@@ -101,14 +102,15 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
     setRecurrenceDays(['EVERYDAY'])
   }
 
-  const handleDelete = async (sessionId: string) => {
-    if (confirm("Are you sure you want to delete this session?")) {
-      try {
-        await deleteSession({ variables: { sessionId } })
-        refetch()
-      } catch (e: any) {
-        alert("Failed to delete: " + e.message)
-      }
+  const handleDelete = async () => {
+    if (!deletingSessionId) return;
+    try {
+      await deleteSession({ variables: { sessionId: deletingSessionId } })
+      toast.success("Session deleted successfully")
+      setDeletingSessionId(null)
+      refetch()
+    } catch (e: any) {
+      toast.error("Failed to delete: " + e.message)
     }
   }
 
@@ -159,8 +161,9 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
       }
       closeDialog()
       refetch()
+      toast.success(editingSession ? "Session updated" : "Session created")
     } catch (error: any) {
-      alert(`Failed to save session: ${error.message}`)
+      toast.error(`Failed to save session: ${error.message}`)
     }
   }
 
@@ -199,113 +202,135 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
             <Plus className="w-4 h-4" /> New Session
           </Button>
 
-          {isDialogOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-              <div className="bg-white rounded-lg p-6 w-full max-w-md">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="font-serif text-2xl">{editingSession ? "Edit Session" : "Create Session"}</h2>
-                  <button onClick={closeDialog} className="text-gray-500 hover:text-black">
-                    &times;
-                  </button>
+          <Modal isOpen={isDialogOpen} onClose={closeDialog} className="sm:max-w-2xl">
+            <ModalHeader title={editingSession ? "Edit Session" : "Create Session"} subtitle="Session Configuration" onClose={closeDialog} />
+            <ModalBody>
+              <form id="session-form" onSubmit={handleSaveSession} className="space-y-6">
+                <div className="space-y-2">
+                  <label htmlFor="name" className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Session Name</label>
+                  <input 
+                    id="name"
+                    type="text"
+                    value={sessionName}
+                    onChange={(e: any) => setSessionName(e.target.value)}
+                    placeholder="e.g. Day 1: React Basics" 
+                    required 
+                    className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans placeholder:text-[#878786]/50 focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                  />
                 </div>
-                <form onSubmit={handleSaveSession} className="space-y-6">
+                <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label htmlFor="name" className="text-sm font-mono uppercase text-[#878786]">Session Name</label>
+                    <label htmlFor="startTime" className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Start Time</label>
                     <input 
-                      id="name"
-                      type="text"
-                      value={sessionName}
-                      onChange={(e: any) => setSessionName(e.target.value)}
-                      placeholder="e.g. Day 1: React Basics" 
+                      id="startTime"
+                      type="time"
+                      value={startTime}
+                      onChange={(e: any) => setStartTime(e.target.value)}
                       required 
-                      className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
+                      className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label htmlFor="startTime" className="text-sm font-mono uppercase text-[#878786]">Start Time</label>
-                      <input 
-                        id="startTime"
-                        type="time"
-                        value={startTime}
-                        onChange={(e: any) => setStartTime(e.target.value)}
-                        required 
-                        className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="lateTime" className="text-sm font-mono uppercase text-[#878786]">Late Time</label>
-                      <input 
-                        id="lateTime"
-                        type="time"
-                        value={lateTime}
-                        onChange={(e: any) => setLateTime(e.target.value)}
-                        required 
-                        className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
-                      />
-                    </div>
-                  </div>
                   <div className="space-y-2">
-                    <label htmlFor="penalty" className="text-sm font-mono uppercase text-[#878786]">Late Penalty Amount (ETB)</label>
+                    <label htmlFor="lateTime" className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Late Time</label>
                     <input 
-                      id="penalty"
-                      type="number"
-                      min="0"
-                      value={latePenaltyAmount}
-                      onChange={(e: any) => setLatePenaltyAmount(parseInt(e.target.value))}
+                      id="lateTime"
+                      type="time"
+                      value={lateTime}
+                      onChange={(e: any) => setLateTime(e.target.value)}
                       required 
-                      className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
+                      className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
                     />
                   </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <label className="space-y-2"><span className="text-[10px] font-mono uppercase text-[#878786]">Threshold</span><input type="number" min="0" value={escalationThresholdMinutes} onChange={e=>setEscalationThresholdMinutes(Number(e.target.value))} className="h-10 w-full rounded-md border border-gray-200 px-3 text-sm" /></label>
-                    <label className="space-y-2"><span className="text-[10px] font-mono uppercase text-[#878786]">+ ETB</span><input type="number" min="0" value={escalationRate} onChange={e=>setEscalationRate(Number(e.target.value))} className="h-10 w-full rounded-md border border-gray-200 px-3 text-sm" /></label>
-                    <label className="space-y-2"><span className="text-[10px] font-mono uppercase text-[#878786]">Every min</span><input type="number" min="1" value={escalationIntervalMinutes} onChange={e=>setEscalationIntervalMinutes(Number(e.target.value))} className="h-10 w-full rounded-md border border-gray-200 px-3 text-sm" /></label>
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="penalty" className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Late Penalty Amount (ETB)</label>
+                  <input 
+                    id="penalty"
+                    type="number"
+                    min="0"
+                    value={latePenaltyAmount}
+                    onChange={(e: any) => setLatePenaltyAmount(parseInt(e.target.value))}
+                    required 
+                    className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                  />
+                  <p className="text-[11px] text-[#878786] font-mono uppercase tracking-wide">Scans after the late time will automatically receive the cohort's penalty.</p>
+                </div>
+                
+                <div className="pt-4 border-t border-[#E5E5E4]">
+                  <p className="font-mono text-[10px] uppercase tracking-widest text-[#878786] mb-4">Escalation Policy</p>
+                  <div className="grid sm:grid-cols-3 gap-3">
+                    <label className="space-y-1">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-[#878786]">Threshold (min)</span>
+                      <input type="number" min="0" value={escalationThresholdMinutes} onChange={e=>setEscalationThresholdMinutes(Number(e.target.value))} className="h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none" />
+                    </label>
+                    <label className="space-y-1">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-[#878786]">+ ETB</span>
+                      <input type="number" min="0" value={escalationRate} onChange={e=>setEscalationRate(Number(e.target.value))} className="h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none" />
+                    </label>
+                    <label className="space-y-1">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-[#878786]">Every (min)</span>
+                      <input type="number" min="1" value={escalationIntervalMinutes} onChange={e=>setEscalationIntervalMinutes(Number(e.target.value))} className="h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none" />
+                    </label>
                   </div>
-                  <p className="text-xs text-black/45">After the threshold, the penalty increases by the configured amount for each interval.</p>
-                  <div className="space-y-2">
-                    <label className="text-sm font-mono uppercase text-[#878786]">Recurrence</label>
-                    <div className="flex flex-wrap gap-2">
-                      {['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'].map((day) => (
-                        <label key={day} className="flex items-center gap-2 text-sm border p-2 rounded hover:bg-gray-50 cursor-pointer">
-                          <input 
-                            type="checkbox"
-                            checked={recurrenceDays.includes(day) || recurrenceDays.includes('EVERYDAY')}
-                            onChange={(e) => {
-                              if (recurrenceDays.includes('EVERYDAY')) {
-                                setRecurrenceDays([day]);
-                              } else {
-                                if (e.target.checked) setRecurrenceDays([...recurrenceDays, day]);
-                                else setRecurrenceDays(recurrenceDays.filter(d => d !== day));
-                              }
-                            }}
-                          />
-                          {day.slice(0, 3)}
-                        </label>
-                      ))}
-                      <label className="flex items-center gap-2 text-sm border p-2 rounded hover:bg-gray-50 cursor-pointer font-bold">
+                  <p className="text-[11px] text-[#878786] font-mono uppercase tracking-wide mt-2">After the threshold, penalty increases by rate for each interval.</p>
+                </div>
+
+                <div className="pt-4 border-t border-[#E5E5E4] space-y-2">
+                  <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Recurrence</label>
+                  <div className="flex flex-wrap gap-2">
+                    {['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'].map((day) => (
+                      <label key={day} className={`flex items-center justify-center h-10 px-3 text-[11px] font-mono uppercase tracking-widest border cursor-pointer transition-colors ${recurrenceDays.includes(day) || recurrenceDays.includes('EVERYDAY') ? 'bg-[#0A0A0A] text-white border-[#0A0A0A]' : 'bg-[#F9F9F8] border-[#E5E5E4] text-[#878786] hover:bg-white'}`}>
                         <input 
                           type="checkbox"
-                          checked={recurrenceDays.includes('EVERYDAY')}
+                          className="hidden"
+                          checked={recurrenceDays.includes(day) || recurrenceDays.includes('EVERYDAY')}
                           onChange={(e) => {
-                            if (e.target.checked) setRecurrenceDays(['EVERYDAY']);
-                            else setRecurrenceDays([]);
+                            if (recurrenceDays.includes('EVERYDAY')) {
+                              setRecurrenceDays([day]);
+                            } else {
+                              if (e.target.checked) setRecurrenceDays([...recurrenceDays, day]);
+                              else setRecurrenceDays(recurrenceDays.filter(d => d !== day));
+                            }
                           }}
                         />
-                        ALL
+                        {day.slice(0, 3)}
                       </label>
-                    </div>
+                    ))}
+                    <label className={`flex items-center justify-center h-10 px-3 text-[11px] font-mono uppercase tracking-widest border cursor-pointer transition-colors font-bold ${recurrenceDays.includes('EVERYDAY') ? 'bg-[#E54D2E] text-white border-[#E54D2E]' : 'bg-[#F9F9F8] border-[#E5E5E4] text-[#878786] hover:bg-white'}`}>
+                      <input 
+                        type="checkbox"
+                        className="hidden"
+                        checked={recurrenceDays.includes('EVERYDAY')}
+                        onChange={(e) => {
+                          if (e.target.checked) setRecurrenceDays(['EVERYDAY']);
+                          else setRecurrenceDays([]);
+                        }}
+                      />
+                      ALL
+                    </label>
                   </div>
-                  <p className="text-xs text-muted-foreground">Scans after the late time will automatically receive the cohort's penalty.</p>
-                  <Button type="submit" disabled={creating || updating} className="w-full bg-black text-white hover:bg-black/80">
-                    {creating || updating ? "Saving..." : "Save Session"}
-                  </Button>
-                </form>
-              </div>
-            </div>
-          )}
+                </div>
+              </form>
+            </ModalBody>
+            <ModalFooter>
+              <button type="button" onClick={closeDialog} className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-none order-2 sm:order-1">Cancel</button>
+              <button type="submit" form="session-form" disabled={creating || updating} className="flex-1 sm:flex-auto h-14 px-6 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2">
+                {(creating || updating) ? "Saving..." : "Save Session"}
+              </button>
+            </ModalFooter>
+          </Modal>
         </div>
       </div>
+
+      <AlertModal
+        isOpen={!!deletingSessionId}
+        onClose={() => setDeletingSessionId(null)}
+        onConfirm={handleDelete}
+        title="Delete Session"
+        description="Are you sure you want to delete this session? This action cannot be undone."
+        confirmText="Delete"
+        loading={deleting}
+      />
 
       <Table>
         <TableHeader className="hidden sm:table-header-group">
@@ -342,7 +367,7 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
                 </TableCell>
                 <TableCell className="text-right flex flex-wrap justify-end gap-2">
                   <Button variant="outline" size="sm" onClick={() => openEdit(session)} className="h-8">Edit</Button>
-                  <Button variant="outline" size="sm" className="h-8 text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600" onClick={() => handleDelete(session.id)}>Delete</Button>
+                  <Button variant="outline" size="sm" className="h-8 text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600" onClick={() => setDeletingSessionId(session.id)}>Delete</Button>
                   <Link
                     href={`/scan/projector?cohortId=${unwrappedParams.cohortId}&sessionId=${session.id}`}
                     target="_blank"

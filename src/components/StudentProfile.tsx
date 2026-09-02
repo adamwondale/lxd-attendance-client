@@ -88,8 +88,8 @@ export function StudentProfile() {
               transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
               className="flex items-center gap-3 group"
             >
-              <div className="flex flex-col gap-1">
-                <h2 className="font-serif text-4xl text-[var(--color-text)] tracking-tight">
+              <div className="flex flex-col gap-1 flex-1">
+                <h2 className="font-serif text-4xl text-[var(--color-text)] tracking-tight break-all sm:break-normal">
                   {data.me.name}
                 </h2>
                 {data.me.username && (
@@ -98,10 +98,11 @@ export function StudentProfile() {
               </div>
               <button 
                 onClick={handleEdit}
-                className="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-[var(--color-muted)] hover:text-black"
-                aria-label="Edit name"
+                className="opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 h-10 px-4 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[10px] uppercase tracking-widest hover:bg-[#F9F9F8] rounded-none shrink-0"
+                aria-label="Edit Profile"
               >
-                <Edit2 className="w-4 h-4" />
+                <Edit2 className="w-3 h-3" />
+                <span className="hidden sm:inline-block">Edit</span>
               </button>
             </motion.div>
           ) : (

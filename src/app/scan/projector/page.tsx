@@ -35,8 +35,8 @@ const GENERATE_PROJECTOR_QR = gql`
 `
 
 const PROJECTOR_RECENT_SCANS = gql`
-  query ProjectorRecentScans($cohortId: String!, $sessionId: String) {
-    projectorRecentScans(cohortId: $cohortId, sessionId: $sessionId) {
+  query ProjectorRecentScans($cohortId: String!, $sessionId: String, $since: String) {
+    projectorRecentScans(cohortId: $cohortId, sessionId: $sessionId, since: $since) {
       id
       sessionId
       user { name }
@@ -74,11 +74,13 @@ const QR_TTL_SECONDS = 20
 function ProjectorContent() {
   const [requestedCohortId, setRequestedCohortId] = useState("")
   const [requestedSessionId, setRequestedSessionId] = useState("")
+  const [launchedAt, setLaunchedAt] = useState("")
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     setRequestedCohortId(params.get("cohortId") || "")
     setRequestedSessionId(params.get("sessionId") || "")
+    setLaunchedAt(params.get("launchedAt") || "")
   }, [])
 
   const { data: cohortListData, loading: cohortsLoading, error: cohortsError } = useQuery<{
@@ -131,7 +133,7 @@ function ProjectorContent() {
       latenessMinutes: number
     }>
   }>(PROJECTOR_RECENT_SCANS, {
-    variables: { cohortId, sessionId: sessionId || undefined },
+    variables: { cohortId, sessionId: sessionId || undefined, since: launchedAt || undefined },
     fetchPolicy: "network-only",
     pollInterval: 2000,
     skip: !cohortId,
@@ -182,19 +184,39 @@ function ProjectorContent() {
     }
   }, [cohortId, sessionId, refetch])
 
+  useEffect(() => {
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'activeProjector') {
+        const newValue = e.newValue ? JSON.parse(e.newValue) : null;
+        if (!newValue || newValue.launchedAt.toString() !== launchedAt) {
+          // Session was ended or a new one was started
+          window.close();
+          window.location.href = '/dashboard';
+        }
+      }
+    }
+    window.addEventListener('storage', handleStorage)
+    return () => window.removeEventListener('storage', handleStorage)
+  }, [launchedAt])
+
+  const endSession = () => {
+    localStorage.removeItem('activeProjector')
+    window.close()
+    window.location.href = '/dashboard'
+  }
+
   const scanUrl = qrData?.projectorQr || "";
 
   return (
     <div className="min-h-screen bg-[var(--color-primary)] text-[var(--color-surface)] flex flex-row relative overflow-hidden">
-      <Link
-        href="/dashboard"
-        aria-label="Back to admin dashboard"
-        className="absolute top-7 right-7 z-30 inline-flex items-center gap-2 border border-white/20 bg-white/5 px-4 py-2 text-xs font-mono uppercase tracking-widest text-white/80 transition hover:bg-white/10 hover:text-white"
+      <button
+        onClick={endSession}
+        aria-label="End Session"
+        className="absolute top-7 right-7 z-30 inline-flex items-center gap-2 border border-red-500/50 bg-red-500/20 px-4 py-2 text-xs font-mono uppercase tracking-widest text-red-200 transition hover:bg-red-500 hover:text-white"
       >
-        <ArrowLeft className="w-4 h-4" />
-        <LayoutDashboard className="w-4 h-4" />
-        Back to Dashboard
-      </Link>
+        <AlertCircle className="w-4 h-4" />
+        End Session
+      </button>
 
       <div className="absolute top-10 left-10 flex flex-col z-10 pr-52">
         <h1 className="font-serif text-5xl">Live Attendance</h1>
@@ -269,7 +291,11 @@ function ProjectorContent() {
       </div>
 
       <div className="w-96 border-l border-white/10 p-8 flex flex-col pt-28">
-        <h2 className="font-mono text-sm tracking-widest uppercase text-gray-400 mb-6">Recent Scans</h2>
+        <div className="flex flex-col items-center justify-center mb-8 bg-white/5 rounded-2xl py-8 border border-white/10 shadow-lg">
+          <span className="font-mono text-7xl font-bold tabular-nums text-emerald-400 leading-none">{scans.length}</span>
+          <h2 className="font-mono text-xs tracking-widest uppercase text-gray-400 mt-4">Students Present</h2>
+        </div>
+        <h3 className="font-mono text-xs tracking-widest uppercase text-gray-500 mb-4">Recent Scans</h3>
         <ul className="flex-1 space-y-4 overflow-y-auto">
           <AnimatePresence>
             {scans.map((scan) => (

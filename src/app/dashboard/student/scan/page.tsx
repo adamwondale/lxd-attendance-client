@@ -196,14 +196,13 @@ export default function StudentScanPage() {
   }, [])
 
   return (
-    <div className="p-10 space-y-8 h-full flex flex-col">
+    <div className="p-6 space-y-8 h-full flex flex-col max-w-lg mx-auto">
       <div>
-        <h1 className="font-serif text-4xl mb-2">Scan Badge</h1>
-        <p className="font-mono text-[13px] text-[var(--color-muted)] uppercase">Scan a student ID QR code. The student&apos;s active session is detected automatically.</p>
+        <h1 className="font-serif text-3xl">Scan Badge</h1>
       </div>
 
-      <div className="flex-1 flex flex-col gap-6 max-w-lg mx-auto w-full">
-        <Card className="flex-1 bg-black overflow-hidden flex flex-col border-black relative rounded-xl shadow-2xl min-h-[450px]">
+      <div className="flex-1 flex flex-col gap-6 w-full">
+        <Card className="flex-1 bg-black overflow-hidden flex flex-col border-black relative rounded-none shadow-sm min-h-[450px]">
           <CardContent className="p-0 flex-1 relative w-full h-full">
             <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-30">
               <div className="text-white/80 font-mono text-[10px] uppercase tracking-widest bg-black/60 px-3 py-1 rounded-full">

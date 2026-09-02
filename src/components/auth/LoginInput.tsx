@@ -10,6 +10,7 @@ export function LoginInput({
   placeholder,
   value,
   onChange,
+  onBlur,
   error,
   autoComplete,
 }: {
@@ -19,6 +20,7 @@ export function LoginInput({
   placeholder?: string
   value: string
   onChange: (value: string) => void
+  onBlur?: () => void
   error?: string
   autoComplete?: string
 }) {
@@ -37,6 +39,7 @@ export function LoginInput({
           value={value}
           autoComplete={autoComplete}
           onChange={(event) => onChange(event.target.value)}
+          onBlur={onBlur}
           placeholder={placeholder}
           className={`w-full h-11 px-3 ${isPassword ? "pr-10" : ""} bg-[#F9F9F8] border text-[14px] font-sans text-[#1C1C1C] placeholder:text-[#878786]/60 outline-none transition-[border-color] duration-[150ms] focus:border-[#0A0A0A] ${error ? "border-[#E54D2E]" : "border-[#E5E5E4]"}`}
         />

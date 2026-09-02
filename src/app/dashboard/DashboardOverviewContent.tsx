@@ -31,11 +31,18 @@ const ON_STUDENTS_UPDATED = gql`
   }
 `
 
+const ON_ATTENDANCE_UPDATED = gql`
+  subscription OnAttendanceUpdated {
+    onAttendanceUpdated
+  }
+`
+
 export default function DashboardOverviewContent() {
-  const { data, loading, error, refetch } = useQuery(DASHBOARD_METRICS)
+  const { data, loading, error, refetch } = useQuery(DASHBOARD_METRICS, { fetchPolicy: "cache-and-network" })
 
   useSubscription(ON_COHORTS_UPDATED, { onData: () => refetch() })
   useSubscription(ON_STUDENTS_UPDATED, { onData: () => refetch() })
+  useSubscription(ON_ATTENDANCE_UPDATED, { onData: () => refetch() })
 
   if (loading) {
     return (

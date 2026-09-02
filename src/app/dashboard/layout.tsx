@@ -8,10 +8,13 @@ import {
   Scan,
   FileBarChart2,
   UserCircle,
+  Home,
+  Link
 } from "lucide-react";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { ActiveNavLink } from "@/components/navigation/ActiveNavLink";
+import { ProjectorLauncher } from "@/components/ProjectorLauncher";
 
 export default async function DashboardLayout({
   children,
@@ -41,33 +44,49 @@ export default async function DashboardLayout({
         <main className="flex-1 overflow-auto">{children}</main>
 
         {/* Fixed Bottom Navigation */}
-        <nav className="fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-border flex items-center justify-around z-50">
+        <nav className="fixed bottom-0 left-0 right-0 h-[68px] bg-[#FFFFFF] border-t border-[#E5E5E4] flex items-center justify-around z-50">
           <ActiveNavLink
             href="/dashboard/student"
-            className="flex flex-col items-center justify-center w-full h-full text-muted hover:text-black transition-colors focus:text-black focus:outline-none group"
+            hideIndicator={true}
+            className="flex flex-col items-center justify-center flex-1 h-full transition-colors focus:outline-none group"
+            activeClassName="text-[#E54D2E]"
+            inactiveClassName="text-[#878786] hover:text-[#0A0A0A]"
           >
-            <QrCode className="w-5 h-5 mb-1 group-active:scale-95 transition-transform" />
-            <span className="text-[10px] font-medium tracking-wide">
-              ID Card
-            </span>
+            <Home className="w-[22px] h-[22px] mb-1 group-active:scale-95 transition-transform" />
+            <span className="text-[10px] font-mono uppercase tracking-widest">Home</span>
           </ActiveNavLink>
+
           <ActiveNavLink
             href="/dashboard/student/cohorts"
-            className="flex flex-col items-center justify-center w-full h-full text-muted hover:text-black transition-colors focus:text-black focus:outline-none group border-l border-r border-black/5"
+            hideIndicator={true}
+            className="flex flex-col items-center justify-center flex-1 h-full transition-colors focus:outline-none group"
+            activeClassName="text-[#E54D2E]"
+            inactiveClassName="text-[#878786] hover:text-[#0A0A0A]"
           >
-            <Users className="w-5 h-5 mb-1 group-active:scale-95 transition-transform" />
-            <span className="text-[10px] font-medium tracking-wide">
-              Cohorts
-            </span>
+            <Users className="w-[22px] h-[22px] mb-1 group-active:scale-95 transition-transform" />
+            <span className="text-[10px] font-mono uppercase tracking-widest">Cohorts</span>
           </ActiveNavLink>
+
+          <ActiveNavLink
+            href="/dashboard/student/scan"
+            hideIndicator={true}
+            className="flex flex-col items-center justify-center flex-1 h-full transition-colors focus:outline-none group"
+            activeClassName="text-[#E54D2E]"
+            inactiveClassName="text-[#878786] hover:text-[#0A0A0A]"
+          >
+            <Scan className="w-[22px] h-[22px] mb-1 group-active:scale-95 transition-transform" />
+            <span className="text-[10px] font-mono uppercase tracking-widest">Scan</span>
+          </ActiveNavLink>
+
           <ActiveNavLink
             href="/dashboard/student/profile"
-            className="flex flex-col items-center justify-center w-full h-full text-muted hover:text-black transition-colors focus:text-black focus:outline-none group"
+            hideIndicator={true}
+            className="flex flex-col items-center justify-center flex-1 h-full transition-colors focus:outline-none group"
+            activeClassName="text-[#E54D2E]"
+            inactiveClassName="text-[#878786] hover:text-[#0A0A0A]"
           >
-            <LogOut className="w-5 h-5 mb-1 group-active:scale-95 transition-transform" />
-            <span className="text-[10px] font-medium tracking-wide">
-              Profile
-            </span>
+            <UserCircle className="w-[22px] h-[22px] mb-1 group-active:scale-95 transition-transform" />
+            <span className="text-[10px] font-mono uppercase tracking-widest">Profile</span>
           </ActiveNavLink>
         </nav>
       </div>
@@ -128,15 +147,7 @@ export default async function DashboardLayout({
             <span>Scan Badge</span>
           </ActiveNavLink>
           <div className="mt-auto flex flex-col space-y-2 pt-8">
-            <a
-              href="/scan/projector"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center space-x-3 px-3 py-2 rounded-(--radius-none) text-text hover:bg-black/5 font-medium text-[14px] transition-colors"
-            >
-              <QrCode className="w-4 h-4" />
-              <span>Launch Projector</span>
-            </a>
+            <ProjectorLauncher />
 
             <a
               href="/api/auth/signout"

@@ -8,7 +8,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import Link from "next/link"
-import { Pencil, Trash2 } from "lucide-react"
+import { Pencil, Trash2, Plus } from "lucide-react"
+import { Modal, ModalHeader, ModalBody, ModalFooter, AlertModal } from "@/components/ui/modal"
 
 const LIST_COHORTS = gql`
   query ListCohorts {
@@ -49,7 +50,7 @@ const ON_COHORTS_UPDATED = gql`
 `
 
 export default function CohortsPage() {
-  const { data, loading, refetch } = useQuery(LIST_COHORTS)
+  const { data, loading, refetch } = useQuery(LIST_COHORTS, { fetchPolicy: "cache-and-network" })
   const [createCohort, { loading: creating }] = useMutation(CREATE_COHORT)
   const [updateCohort, { loading: updating }] = useMutation(UPDATE_COHORT)
   const [deleteCohort, { loading: deleting }] = useMutation(DELETE_COHORT)
@@ -58,6 +59,7 @@ export default function CohortsPage() {
   
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingCohort, setEditingCohort] = useState<any>(null)
+  const [deletingCohortId, setDeletingCohortId] = useState<string | null>(null)
   
   const [formData, setFormData] = useState({ 
     name: "", 
@@ -122,12 +124,12 @@ export default function CohortsPage() {
     }
   }
 
-  const handleDelete = async (e: React.MouseEvent, id: string) => {
-    e.preventDefault()
-    if (!confirm("Are you sure you want to delete (deactivate) this cohort?")) return;
+  const handleDelete = async () => {
+    if (!deletingCohortId) return;
     try {
-      await deleteCohort({ variables: { id } })
+      await deleteCohort({ variables: { id: deletingCohortId } })
       toast.success("Cohort deactivated successfully")
+      setDeletingCohortId(null)
       refetch()
     } catch (err: any) {
       toast.error(err.message || "Failed to delete cohort")
@@ -147,66 +149,62 @@ export default function CohortsPage() {
             Manage training programs
           </p>
         </div>
-        <Button onClick={() => setIsDialogOpen(!isDialogOpen)}>
-          {isDialogOpen ? "Cancel" : "+ New Cohort"}
+        <Button onClick={openCreateDialog} className="bg-black text-white hover:bg-black/80 font-mono text-[11px] uppercase tracking-widest h-11 px-5 rounded-none flex items-center gap-2">
+          <Plus className="w-4 h-4" /> New Cohort
         </Button>
       </div>
 
-      <AnimatePresence>
-        {isDialogOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden"
-          >
-            <Card className="mb-8 border-black">
-              <CardHeader className="bg-[var(--color-background)] border-b border-[var(--color-border)]">
-                <CardTitle className="font-mono text-sm uppercase tracking-widest">
-                  {editingCohort ? 'Edit Cohort' : 'Create New Cohort'}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-1 md:col-span-2">
-                    <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Name</label>
-                    <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-black outline-none font-sans text-[14px]" placeholder="e.g. Summer 2026 Batch" />
-                  </div>
-                  
-                  <div className="flex flex-col gap-1 md:col-span-2">
-                    <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Join PIN</label>
-                    <input required type="text" value={formData.pin} onChange={e => setFormData({...formData, pin: e.target.value})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-black outline-none font-sans text-[14px]" placeholder="e.g. LXD-26" />
-                    <select value={formData.durationMonths} onChange={e => setFormData({...formData, durationMonths: Number(e.target.value)})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-black outline-none font-sans text-[14px]"><option value={3}>3 months</option><option value={6}>6 months</option></select>
-                  </div>
-                  
-                  <div className="flex flex-col gap-1">
-                    <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Start Date</label>
-                    <input required type="date" value={formData.startDate} onChange={e => setFormData({...formData, startDate: e.target.value})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-black outline-none font-sans text-[14px]" />
-                  </div>
-                  
-                  <div className="flex flex-col gap-1">
-                    <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">End Date</label>
-                    <input required type="date" value={formData.endDate} onChange={e => setFormData({...formData, endDate: e.target.value})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-black outline-none font-sans text-[14px]" />
-                  </div>
+      <Modal isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)} className="sm:max-w-xl">
+        <ModalHeader title={editingCohort ? 'Edit Cohort' : 'Create New Cohort'} subtitle="Cohorts" onClose={() => setIsDialogOpen(false)} />
+        <ModalBody>
+          <form id="cohort-form" onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="flex flex-col gap-1 md:col-span-2">
+              <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Name</label>
+              <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-none" placeholder="e.g. Summer 2026 Batch" />
+            </div>
+            
+            <div className="flex flex-col gap-1 md:col-span-2">
+              <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Join PIN</label>
+              <input required type="text" value={formData.pin} onChange={e => setFormData({...formData, pin: e.target.value})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-none mb-3" placeholder="e.g. LXD-26" />
+              <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Duration</label>
+              <select value={formData.durationMonths} onChange={e => setFormData({...formData, durationMonths: Number(e.target.value)})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-none appearance-none"><option value={3}>3 months</option><option value={6}>6 months</option></select>
+            </div>
+            
+            <div className="flex flex-col gap-1">
+              <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Start Date</label>
+              <input required type="date" value={formData.startDate} onChange={e => setFormData({...formData, startDate: e.target.value})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-none" />
+            </div>
+            
+            <div className="flex flex-col gap-1">
+              <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">End Date</label>
+              <input required type="date" value={formData.endDate} onChange={e => setFormData({...formData, endDate: e.target.value})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-none" />
+            </div>
 
-                  {editingCohort && (
-                     <div className="flex items-center gap-2 md:col-span-2 mt-2">
-                        <input type="checkbox" id="isActive" checked={formData.isActive} onChange={e => setFormData({...formData, isActive: e.target.checked})} className="w-4 h-4" />
-                        <label htmlFor="isActive" className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Cohort is Active</label>
-                     </div>
-                  )}
+            {editingCohort && (
+               <div className="flex items-center gap-2 md:col-span-2 mt-2 p-4 bg-[#F9F9F8] border border-[#E5E5E4]">
+                  <input type="checkbox" id="isActive" checked={formData.isActive} onChange={e => setFormData({...formData, isActive: e.target.checked})} className="w-4 h-4 accent-[#0A0A0A] rounded-none" />
+                  <label htmlFor="isActive" className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Cohort is Active (Visible to students)</label>
+               </div>
+            )}
+          </form>
+        </ModalBody>
+        <ModalFooter>
+          <button type="button" onClick={() => setIsDialogOpen(false)} className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-none order-2 sm:order-1">Cancel</button>
+          <button type="submit" form="cohort-form" disabled={creating || updating} className="flex-1 sm:flex-auto h-14 px-6 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2">
+            {(creating || updating) ? "Saving..." : (editingCohort ? "Update Cohort" : "Create Cohort")}
+          </button>
+        </ModalFooter>
+      </Modal>
 
-                  <div className="md:col-span-2 mt-4">
-                    <Button type="submit" disabled={creating || updating} className="w-full h-11 bg-black text-white hover:bg-black/80 font-sans text-[15px]">
-                      {creating || updating ? "Saving..." : (editingCohort ? "Update Cohort" : "Create Cohort")}
-                    </Button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <AlertModal
+        isOpen={!!deletingCohortId}
+        onClose={() => setDeletingCohortId(null)}
+        onConfirm={handleDelete}
+        title="Deactivate Cohort"
+        description="Are you sure you want to deactivate this cohort? It will no longer accept new attendance scans."
+        confirmText="Deactivate"
+        loading={deleting}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (
@@ -252,7 +250,7 @@ export default function CohortsPage() {
                      <Button variant="outline" size="sm" onClick={(e) => { e.preventDefault(); openEditDialog(cohort); }} className="flex-1 h-8 text-[11px] uppercase tracking-widest font-mono">
                         <Pencil className="w-3 h-3 mr-2" /> Edit
                      </Button>
-                     <Button variant="outline" size="sm" onClick={(e) => handleDelete(e, cohort.id)} disabled={deleting} className="flex-1 h-8 text-[11px] uppercase tracking-widest font-mono text-red-500 hover:text-red-600 hover:bg-red-50">
+                     <Button variant="outline" size="sm" onClick={(e) => { e.preventDefault(); setDeletingCohortId(cohort.id); }} disabled={deleting} className="flex-1 h-8 text-[11px] uppercase tracking-widest font-mono text-red-500 hover:text-red-600 hover:bg-red-50">
                         <Trash2 className="w-3 h-3 mr-2" /> Delete
                      </Button>
                   </div>

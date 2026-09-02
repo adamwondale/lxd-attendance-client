@@ -45,8 +45,8 @@ const GET_ATTENDANCE_LOGS = gql`
 `;
 
 const WAIVE_PENALTY = gql`
-  mutation WaivePenalty($penaltyId: String!) {
-    waivePenalty(penaltyId: $penaltyId) {
+  mutation WaivePenalty($penaltyId: String!, $reason: String!) {
+    waivePenalty(penaltyId: $penaltyId, reason: $reason) {
       id
       status
     }
@@ -85,8 +85,9 @@ interface GetAttendanceLogsData {
 
 export default function AttendancePage() {
   const { data, loading, refetch } = useQuery<GetAttendanceLogsData>(GET_ATTENDANCE_LOGS, {
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'cache-and-network',
   });
+  
   const attendanceLogs = data?.getAttendanceLogs ?? [];
 
   useSubscription(ON_ATTENDANCE_UPDATED, { onData: () => refetch() });
@@ -95,9 +96,12 @@ export default function AttendancePage() {
   const [waivingId, setWaivingId] = useState<string | null>(null);
 
   const handleWaive = async (penaltyId: string) => {
+    const reason = window.prompt("Enter reason for waiving this penalty:");
+    if (!reason) return;
+    
     try {
       setWaivingId(penaltyId);
-      await waivePenalty({ variables: { penaltyId } });
+      await waivePenalty({ variables: { penaltyId, reason } });
       toast.success('Penalty waived successfully');
       refetch();
     } catch (err: any) {
@@ -108,9 +112,7 @@ export default function AttendancePage() {
   };
 
   const exportToCSV = () => {
-    const logs = data?.getAttendanceLogs ?? [];
-
-    if (logs.length === 0) {
+    if (attendanceLogs.length === 0) {
       toast('No data to export');
       return;
     }
@@ -126,7 +128,7 @@ export default function AttendancePage() {
       'Penalty Status',
     ];
 
-    const rows = logs.map((log: any) => {
+    const rows = attendanceLogs.map((log: any) => {
       const date = new Date(log.scannedAt).toLocaleDateString();
       const time = new Date(log.scannedAt).toLocaleTimeString();
       const status = log.isLate ? 'Late' : 'Present';
@@ -189,7 +191,7 @@ export default function AttendancePage() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {loading ? (
+          {loading && attendanceLogs.length === 0 ? (
             <>
               {[...Array(5)].map((_, i) => (
                 <TableRow key={i} className="animate-pulse">
@@ -210,9 +212,9 @@ export default function AttendancePage() {
                 </TableRow>
               ))}
             </>
-          ) : data?.getAttendanceLogs && data.getAttendanceLogs.length > 0 ? (
+          ) : attendanceLogs.length > 0 ? (
             <>
-              {data.getAttendanceLogs.map((log: any) => (
+              {attendanceLogs.map((log: any) => (
                 <TableRow key={log.id}>
                   <TableCell>
                     <div className="font-medium text-[15px]">
@@ -225,8 +227,7 @@ export default function AttendancePage() {
                   <TableCell>
                     <div className="text-[14px]">
                       <div>
-                        {log.date ||
-                          new Date(log.scannedAt).toLocaleDateString()}
+                        {new Date(log.scannedAt).toLocaleDateString('en-US', { weekday: 'long' })}, {log.date || new Date(log.scannedAt).toLocaleDateString()}
                       </div>
                       <div className="text-[12px] text-muted font-mono">
                         {new Date(log.scannedAt).toLocaleTimeString()}
@@ -237,7 +238,7 @@ export default function AttendancePage() {
                     <span
                       className={`inline-flex px-2 py-1 text-[12px] font-mono uppercase border ${
                         log.isLate
-                          ? 'border-accent text-accent'
+                          ? 'border-[var(--color-accent)] text-[var(--color-accent)]'
                           : 'border-green-600 text-green-700'
                       }`}
                     >

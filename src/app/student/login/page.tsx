@@ -78,7 +78,7 @@ function StudentLoginContent() {
       footer={
         <>
           Don&apos;t have an account?{" "}
-          <Link href="/signup" className="text-[#1C1C1C] hover:underline underline-offset-4">
+          <Link href="/student/signup" className="text-[#1C1C1C] hover:underline underline-offset-4">
             Student Sign Up
           </Link>
         </>
