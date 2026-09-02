@@ -87,6 +87,7 @@ export default function AttendancePage() {
   const { data, loading, refetch } = useQuery<GetAttendanceLogsData>(GET_ATTENDANCE_LOGS, {
     fetchPolicy: 'network-only',
   });
+  const attendanceLogs = data?.getAttendanceLogs ?? [];
 
   useSubscription(ON_ATTENDANCE_UPDATED, { onData: () => refetch() });
 
@@ -107,12 +108,13 @@ export default function AttendancePage() {
   };
 
   const exportToCSV = () => {
-    if (!data?.getAttendanceLogs?.length) {
+    const logs = data?.getAttendanceLogs ?? [];
+
+    if (logs.length === 0) {
       toast('No data to export');
       return;
     }
 
-    const logs = data.getAttendanceLogs;
     const headers = [
       'Student Name',
       'Email',
@@ -164,7 +166,7 @@ export default function AttendancePage() {
       <div className="flex justify-between items-end">
         <div>
           <h1 className="font-serif text-4xl mb-2">Attendance</h1>
-          <p className="font-mono text-[13px] text-[var(--color-muted)] uppercase">
+          <p className="font-mono text-[13px] text-muted uppercase">
             All Cohort Scans
           </p>
         </div>
@@ -208,7 +210,7 @@ export default function AttendancePage() {
                 </TableRow>
               ))}
             </>
-          ) : data?.getAttendanceLogs?.length > 0 ? (
+          ) : data?.getAttendanceLogs && data.getAttendanceLogs.length > 0 ? (
             <>
               {data.getAttendanceLogs.map((log: any) => (
                 <TableRow key={log.id}>
@@ -216,7 +218,7 @@ export default function AttendancePage() {
                     <div className="font-medium text-[15px]">
                       {log.user.name}
                     </div>
-                    <div className="text-[13px] text-[var(--color-muted)]">
+                    <div className="text-[13px] text-muted">
                       {log.user.email}
                     </div>
                   </TableCell>
@@ -226,7 +228,7 @@ export default function AttendancePage() {
                         {log.date ||
                           new Date(log.scannedAt).toLocaleDateString()}
                       </div>
-                      <div className="text-[12px] text-[var(--color-muted)] font-mono">
+                      <div className="text-[12px] text-muted font-mono">
                         {new Date(log.scannedAt).toLocaleTimeString()}
                       </div>
                     </div>
@@ -235,7 +237,7 @@ export default function AttendancePage() {
                     <span
                       className={`inline-flex px-2 py-1 text-[12px] font-mono uppercase border ${
                         log.isLate
-                          ? 'border-[var(--color-accent)] text-[var(--color-accent)]'
+                          ? 'border-accent text-accent'
                           : 'border-green-600 text-green-700'
                       }`}
                     >
@@ -244,7 +246,7 @@ export default function AttendancePage() {
                         : 'Present'}
                     </span>
                     {log.penalty && (
-                      <div className="text-[11px] font-mono mt-1 text-[var(--color-muted)]">
+                      <div className="text-[11px] font-mono mt-1 text-muted">
                         Fee: {log.penalty.amount} ETB ({log.penalty.status})
                       </div>
                     )}
