@@ -1,12 +1,24 @@
-"use client"
+'use client';
 
-import { useQuery, useMutation, useSubscription } from "@apollo/client/react/index.js"
-import { gql } from "@apollo/client/core/index.js"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Download, Loader2, Check } from "lucide-react"
-import { toast } from "sonner"
-import { useState } from "react"
+import {
+  useQuery,
+  useMutation,
+  useSubscription,
+} from '@apollo/client/react/index.js';
+import { gql } from '@apollo/client/core/index.js';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Download, Loader2, Check } from 'lucide-react';
+import { toast } from 'sonner';
+import { useState } from 'react';
 
 const GET_ATTENDANCE_LOGS = gql`
   query GetAttendanceLogs {
@@ -30,7 +42,7 @@ const GET_ATTENDANCE_LOGS = gql`
       }
     }
   }
-`
+`;
 
 const WAIVE_PENALTY = gql`
   mutation WaivePenalty($penaltyId: String!) {
@@ -39,86 +51,128 @@ const WAIVE_PENALTY = gql`
       status
     }
   }
-`
+`;
 
 const ON_ATTENDANCE_UPDATED = gql`
   subscription OnAttendanceUpdated {
     onAttendanceUpdated
   }
-`
+`;
+
+interface AttendanceLog {
+  id: string;
+  scannedAt: string;
+  isLate: boolean;
+  latenessMinutes: number;
+  calculatedPenalty: number;
+  date: string;
+  isManualScan: boolean;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  penalty: {
+    id: string;
+    amount: number;
+    status: string;
+  } | null;
+}
+
+interface GetAttendanceLogsData {
+  getAttendanceLogs: AttendanceLog[];
+}
 
 export default function AttendancePage() {
-  const { data, loading, refetch } = useQuery(GET_ATTENDANCE_LOGS, {
-    fetchPolicy: "network-only"
-  })
-  
-  useSubscription(ON_ATTENDANCE_UPDATED, { onData: () => refetch() })
+  const { data, loading, refetch } = useQuery<GetAttendanceLogsData>(GET_ATTENDANCE_LOGS, {
+    fetchPolicy: 'network-only',
+  });
 
-  const [waivePenalty, { loading: waiving }] = useMutation(WAIVE_PENALTY)
-  const [waivingId, setWaivingId] = useState<string | null>(null)
+  useSubscription(ON_ATTENDANCE_UPDATED, { onData: () => refetch() });
+
+  const [waivePenalty, { loading: waiving }] = useMutation(WAIVE_PENALTY);
+  const [waivingId, setWaivingId] = useState<string | null>(null);
 
   const handleWaive = async (penaltyId: string) => {
     try {
-      setWaivingId(penaltyId)
-      await waivePenalty({ variables: { penaltyId } })
-      toast.success("Penalty waived successfully")
-      refetch()
+      setWaivingId(penaltyId);
+      await waivePenalty({ variables: { penaltyId } });
+      toast.success('Penalty waived successfully');
+      refetch();
     } catch (err: any) {
-      toast.error(err.message || "Failed to waive penalty")
+      toast.error(err.message || 'Failed to waive penalty');
     } finally {
-      setWaivingId(null)
+      setWaivingId(null);
     }
-  }
+  };
 
   const exportToCSV = () => {
     if (!data?.getAttendanceLogs?.length) {
-      toast("No data to export")
-      return
+      toast('No data to export');
+      return;
     }
 
-    const logs = data.getAttendanceLogs
-    const headers = ["Student Name", "Email", "Date", "Time", "Status", "Late Minutes", "Penalty Amount", "Penalty Status"]
-    
+    const logs = data.getAttendanceLogs;
+    const headers = [
+      'Student Name',
+      'Email',
+      'Date',
+      'Time',
+      'Status',
+      'Late Minutes',
+      'Penalty Amount',
+      'Penalty Status',
+    ];
+
     const rows = logs.map((log: any) => {
-      const date = new Date(log.scannedAt).toLocaleDateString()
-      const time = new Date(log.scannedAt).toLocaleTimeString()
-      const status = log.isLate ? "Late" : "Present"
-      const penaltyAmount = log.penalty ? log.penalty.amount : 0
-      const penaltyStatus = log.penalty ? log.penalty.status : "N/A"
+      const date = new Date(log.scannedAt).toLocaleDateString();
+      const time = new Date(log.scannedAt).toLocaleTimeString();
+      const status = log.isLate ? 'Late' : 'Present';
+      const penaltyAmount = log.penalty ? log.penalty.amount : 0;
+      const penaltyStatus = log.penalty ? log.penalty.status : 'N/A';
 
       return [
-        `"${log.user.name}"`, 
-        `"${log.user.email}"`, 
-        date, 
-        time, 
-        status, 
+        `"${log.user.name}"`,
+        `"${log.user.email}"`,
+        date,
+        time,
+        status,
         log.latenessMinutes || 0,
-        penaltyAmount, 
-        penaltyStatus
-      ].join(",")
-    })
+        penaltyAmount,
+        penaltyStatus,
+      ].join(',');
+    });
 
-    const csvContent = [headers.join(","), ...rows].join("\n")
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-    const link = document.createElement("a")
-    const url = URL.createObjectURL(blob)
-    
-    link.setAttribute("href", url)
-    link.setAttribute("download", `attendance_export_${new Date().toISOString().split('T')[0]}.csv`)
-    link.style.visibility = 'hidden'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
+    const csvContent = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+    link.setAttribute(
+      'download',
+      `attendance_export_${new Date().toISOString().split('T')[0]}.csv`,
+    );
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div className="p-10 space-y-8">
       <div className="flex justify-between items-end">
         <div>
           <h1 className="font-serif text-4xl mb-2">Attendance</h1>
-          <p className="font-mono text-[13px] text-[var(--color-muted)] uppercase">All Cohort Scans</p>
+          <p className="font-mono text-[13px] text-[var(--color-muted)] uppercase">
+            All Cohort Scans
+          </p>
         </div>
-        <Button onClick={exportToCSV} variant="outline" className="flex items-center gap-2">
+        <Button
+          onClick={exportToCSV}
+          variant="outline"
+          className="flex items-center gap-2"
+        >
           <Download className="w-4 h-4" /> Export CSV
         </Button>
       </div>
@@ -159,22 +213,35 @@ export default function AttendancePage() {
               {data.getAttendanceLogs.map((log: any) => (
                 <TableRow key={log.id}>
                   <TableCell>
-                    <div className="font-medium text-[15px]">{log.user.name}</div>
-                    <div className="text-[13px] text-[var(--color-muted)]">{log.user.email}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-[14px]">
-                      <div>{log.date || new Date(log.scannedAt).toLocaleDateString()}</div>
-                      <div className="text-[12px] text-[var(--color-muted)] font-mono">{new Date(log.scannedAt).toLocaleTimeString()}</div>
+                    <div className="font-medium text-[15px]">
+                      {log.user.name}
+                    </div>
+                    <div className="text-[13px] text-[var(--color-muted)]">
+                      {log.user.email}
                     </div>
                   </TableCell>
                   <TableCell>
-                    <span className={`inline-flex px-2 py-1 text-[12px] font-mono uppercase border ${
-                      log.isLate 
-                        ? 'border-[var(--color-accent)] text-[var(--color-accent)]' 
-                        : 'border-green-600 text-green-700'
-                    }`}>
-                      {log.isLate ? `Late · ${log.latenessMinutes || 0} min` : 'Present'}
+                    <div className="text-[14px]">
+                      <div>
+                        {log.date ||
+                          new Date(log.scannedAt).toLocaleDateString()}
+                      </div>
+                      <div className="text-[12px] text-[var(--color-muted)] font-mono">
+                        {new Date(log.scannedAt).toLocaleTimeString()}
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <span
+                      className={`inline-flex px-2 py-1 text-[12px] font-mono uppercase border ${
+                        log.isLate
+                          ? 'border-[var(--color-accent)] text-[var(--color-accent)]'
+                          : 'border-green-600 text-green-700'
+                      }`}
+                    >
+                      {log.isLate
+                        ? `Late · ${log.latenessMinutes || 0} min`
+                        : 'Present'}
                     </span>
                     {log.penalty && (
                       <div className="text-[11px] font-mono mt-1 text-[var(--color-muted)]">
@@ -184,9 +251,9 @@ export default function AttendancePage() {
                   </TableCell>
                   <TableCell className="text-right flex justify-end">
                     {log.penalty && log.penalty.status === 'UNPAID' && (
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
+                      <Button
+                        size="sm"
+                        variant="outline"
                         onClick={() => handleWaive(log.penalty.id)}
                         disabled={waiving && waivingId === log.penalty.id}
                         className="h-8 text-[12px] border-black text-black hover:bg-black hover:text-white"
@@ -194,7 +261,7 @@ export default function AttendancePage() {
                         {waiving && waivingId === log.penalty.id ? (
                           <Loader2 className="w-3 h-3 animate-spin" />
                         ) : (
-                          "Waive Fee"
+                          'Waive Fee'
                         )}
                       </Button>
                     )}
@@ -209,7 +276,10 @@ export default function AttendancePage() {
             </>
           ) : (
             <TableRow>
-              <TableCell colSpan={4} className="text-center p-8 text-[var(--color-muted)] font-mono text-[13px] uppercase">
+              <TableCell
+                colSpan={4}
+                className="text-center p-8 text-[var(--color-muted)] font-mono text-[13px] uppercase"
+              >
                 No attendance records found.
               </TableCell>
             </TableRow>
@@ -217,5 +287,5 @@ export default function AttendancePage() {
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }
