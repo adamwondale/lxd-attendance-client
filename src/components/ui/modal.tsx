@@ -56,7 +56,7 @@ export function Modal({
           >
             {/* Mobile drag handle indicator */}
             <div className="w-full flex justify-center pt-3 pb-1 sm:hidden cursor-grab active:cursor-grabbing shrink-0" onClick={onClose}>
-              <div className="w-12 h-1.5 bg-[#E5E5E4] rounded-full" />
+              <div className="w-12 h-1.5 bg-border rounded-full" />
             </div>
             {children}
           </motion.div>
@@ -76,14 +76,14 @@ export function ModalHeader({
   onClose?: () => void
 }) {
   return (
-    <div className="flex items-start justify-between px-6 pt-4 sm:pt-6 pb-5 border-b border-[#E5E5E4] flex-shrink-0">
+    <div className="flex items-start justify-between px-6 pt-4 sm:pt-6 pb-5 border-b border-border flex-shrink-0">
       <div>
         {subtitle && (
-          <p className="font-mono text-[10px] uppercase tracking-widest text-[#878786] mb-1">
+          <p className="font-mono text-[10px] uppercase tracking-widest text-muted mb-1">
             {subtitle}
           </p>
         )}
-        <h2 className="font-serif text-2xl text-[#0A0A0A]">{title}</h2>
+        <h2 className="font-serif text-2xl text-secondary">{title}</h2>
       </div>
       {onClose && (
         <button
@@ -108,7 +108,7 @@ export function ModalBody({ children, className = "" }: { children: React.ReactN
 
 export function ModalFooter({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`px-6 py-4 border-t border-[#E5E5E4] bg-[#F9F9F8] flex flex-col sm:flex-row gap-3 flex-shrink-0 ${className}`}>
+    <div className={`px-6 py-4 border-t border-border bg-background flex flex-col sm:flex-row gap-3 flex-shrink-0 ${className}`}>
       {children}
     </div>
   )
@@ -140,13 +140,13 @@ export function AlertModal({
       <div className="p-6">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 mb-6 text-center sm:text-left">
           {variant === "destructive" && (
-            <div className="w-10 h-10 border border-[#E54D2E]/30 bg-[#E54D2E]/5 flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0">
-              <AlertTriangle className="w-5 h-5 text-[#E54D2E]" />
+            <div className="w-10 h-10 border border-primary/30 bg-primary/5 flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0">
+              <AlertTriangle className="w-5 h-5 text-primary" />
             </div>
           )}
           <div>
             <h3 className="font-serif text-xl mb-2">{title}</h3>
-            <div className="text-[13px] text-[#878786] font-sans leading-relaxed">
+            <div className="text-[13px] text-muted font-sans leading-relaxed">
               {description}
             </div>
           </div>

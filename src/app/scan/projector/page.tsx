@@ -220,7 +220,7 @@ function ProjectorContent() {
 
       <div className="absolute top-10 left-10 flex flex-col z-10 pr-52">
         <h1 className="font-serif text-5xl">Live Attendance</h1>
-        <p className="font-mono text-xl text-[var(--color-muted)] mt-2 uppercase tracking-widest">Open LXD App to Scan</p>
+        <p className="font-mono text-xl text-[var(--color-muted)] mt-2 uppercase tracking-widest">Open Hulu Track App to Scan</p>
         {selectedCohort && (
           <p className="font-mono text-xs text-[var(--color-muted)]/70 mt-3 uppercase tracking-widest">
             {selectedCohort.name}{selectedSession ? ` · ${selectedSession.name}` : ""}

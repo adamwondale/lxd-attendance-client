@@ -35,7 +35,7 @@ export default function StudentProfilePage() {
       
       const pngFile = canvas.toDataURL("image/png")
       const downloadLink = document.createElement("a")
-      downloadLink.download = "LXD-Identity-Badge.png"
+      downloadLink.download = "Hulu-Track-Identity-Badge.png"
       downloadLink.href = `${pngFile}`
       downloadLink.click()
     }
@@ -44,12 +44,12 @@ export default function StudentProfilePage() {
   }
 
   return (
-    <div className="p-6 max-w-lg mx-auto space-y-8 bg-[#F9F9F8] min-h-[calc(100vh-68px)] font-sans text-[#0A0A0A]">
+    <div className="p-6 max-w-lg mx-auto space-y-8 bg-background min-h-[calc(100vh-68px)] font-sans text-secondary">
       
       {/* Header Area */}
       <div>
         <h2 className="font-serif text-3xl mb-1">Your Profile</h2>
-        <p className="text-[13px] text-[#878786]">Manage your account and view your badge.</p>
+        <p className="text-[13px] text-muted">Manage your account and view your badge.</p>
       </div>
 
       <section className="bg-[#FFFFFF] border border-[#E5E5E4] rounded-xl p-6 shadow-sm">
@@ -95,19 +95,19 @@ export default function StudentProfilePage() {
       </section>
 
       <section className="space-y-4 pt-4">
-        <h3 className="font-mono text-[11px] uppercase tracking-widest text-[#878786] px-1">Account Actions</h3>
+        <h3 className="font-mono text-[11px] uppercase tracking-widest text-muted px-1">Account Actions</h3>
         
         <div className="bg-[#FFFFFF] border border-[#E5E5E4] rounded-xl overflow-hidden shadow-sm">
           <ul className="divide-y divide-[#E5E5E4]">
             <li>
-              <a href="/api/auth/signout" className="flex items-center justify-between p-4 hover:bg-[#F9F9F8] transition-colors group">
+              <a href="/api/auth/signout" className="flex items-center justify-between p-4 hover:bg-background transition-colors group">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-xl bg-red-50 flex items-center justify-center border border-red-100">
                     <LogOut className="w-4 h-4 text-[#E54D2E]" />
                   </div>
-                  <span className="font-medium text-[15px] text-[#E54D2E]">Sign Out</span>
+                  <span className="font-medium text-[15px] text-primary">Sign Out</span>
                 </div>
-                <ChevronRight className="w-4 h-4 text-[#878786] group-hover:text-[#0A0A0A] transition-colors" />
+                <ChevronRight className="w-4 h-4 text-muted group-hover:text-secondary transition-colors" />
               </a>
             </li>
           </ul>

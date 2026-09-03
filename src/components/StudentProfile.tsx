@@ -37,7 +37,7 @@ export function StudentProfile() {
   const [editUsername, setEditUsername] = useState("")
 
   if (loading) return <div className="h-20 animate-pulse bg-black/5 rounded-md" />
-  if (error || !data?.me) return <div className="text-[#E54D2E] font-mono text-sm">Failed to load profile.</div>
+  if (error || !data?.me) return <div className="text-primary font-mono text-sm">Failed to load profile.</div>
 
   const handleEdit = () => {
     setEditName(data.me.name || "")
@@ -75,17 +75,17 @@ export function StudentProfile() {
 
   return (
     <div className="flex flex-col gap-1">
-      <p className="font-mono text-[11px] text-[#878786] uppercase tracking-widest">
+      <p className="font-mono text-[11px] text-muted uppercase tracking-widest">
         {data.me.email}
       </p>
       
       <div className="flex items-center gap-3 group mt-1">
         <div className="flex flex-col gap-1 flex-1">
-          <h2 className="font-serif text-4xl text-[#0A0A0A] tracking-tight break-all sm:break-normal">
+          <h2 className="font-serif text-4xl text-secondary tracking-tight break-all sm:break-normal">
             {data.me.name}
           </h2>
           {data.me.username && (
-            <p className="font-mono text-[13px] text-[#878786]">@{data.me.username}</p>
+            <p className="font-mono text-[13px] text-muted">@{data.me.username}</p>
           )}
         </div>
         <button 
@@ -103,7 +103,7 @@ export function StudentProfile() {
         <ModalBody>
           <div className="space-y-6">
             <div className="flex flex-col gap-1">
-              <label htmlFor="edit-name" className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">
+              <label htmlFor="edit-name" className="font-mono text-[11px] uppercase tracking-widest text-muted">
                 Full Name
               </label>
               <input
@@ -119,11 +119,11 @@ export function StudentProfile() {
             </div>
             
             <div className="flex flex-col gap-1">
-              <label htmlFor="edit-username" className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">
+              <label htmlFor="edit-username" className="font-mono text-[11px] uppercase tracking-widest text-muted">
                 Username
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-[#878786]">@</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-muted">@</span>
                 <input
                   id="edit-username"
                   type="text"

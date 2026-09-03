@@ -3,6 +3,11 @@ import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  secret:
+    process.env.AUTH_SECRET ||
+    process.env.NEXTAUTH_SECRET ||
+    (process.env.NODE_ENV !== "production" ? "lxd-attendance-local-dev-secret" : undefined),
+  trustHost: true,
   providers: [
     // --- Student flow: Google OAuth ---
     Google({

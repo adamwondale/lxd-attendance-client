@@ -18,7 +18,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           "h-10 px-4 py-2 rounded-xl transition-colors",
           
           // Variants
-          variant === "default" && "bg-[var(--color-primary)] text-[var(--color-surface)] hover:bg-[#1f1f1f]",
+          variant === "default" && "bg-[var(--color-primary)] text-[var(--color-surface)] hover:bg-primary-hover",
           variant === "outline" && "border border-[var(--color-border)] bg-transparent hover:bg-black/5",
           variant === "ghost" && "hover:bg-black/5 hover:text-[var(--color-text)]",
           

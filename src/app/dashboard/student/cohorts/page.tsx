@@ -1,11 +1,20 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { useQuery, useMutation, useSubscription } from "@apollo/client/react/index.js"
-import { gql } from "@apollo/client/core/index.js"
-import { Loader2, ArrowRight, X, Users, Search } from "lucide-react"
-import { toast } from "sonner"
-import { Modal, ModalHeader, ModalBody, ModalFooter } from "@/components/ui/modal"
+import { useState } from 'react';
+import {
+  useQuery,
+  useMutation,
+  useSubscription,
+} from '@apollo/client/react/index.js';
+import { gql } from '@apollo/client/core/index.js';
+import { Loader2, ArrowRight, X, Users, Search } from 'lucide-react';
+import { toast } from 'sonner';
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from '@/components/ui/modal';
 
 const MY_COHORTS = gql`
   query MyCohorts {
@@ -21,7 +30,7 @@ const MY_COHORTS = gql`
       }
     }
   }
-`
+`;
 
 const AVAILABLE_COHORTS = gql`
   query AvailableCohorts {
@@ -38,93 +47,117 @@ const AVAILABLE_COHORTS = gql`
       }
     }
   }
-`
+`;
 
 const JOIN_COHORT = gql`
   mutation JoinCohort($cohortId: String!, $sessionId: String!, $pin: String!) {
     joinCohort(cohortId: $cohortId, sessionId: $sessionId, pin: $pin)
   }
-`
+`;
 
 const ON_COHORTS_UPDATED = gql`
   subscription OnCohortsUpdated {
     onCohortsUpdated
   }
-`
+`;
 
 export default function StudentCohortsPage() {
-  const { data: myCohortsData, loading: myCohortsLoading, refetch: refetchMyCohorts } = useQuery<{ myCohorts: any[] }>(MY_COHORTS, { fetchPolicy: "cache-and-network" })
-  const { data: availableCohortsData, loading: availableCohortsLoading, refetch: refetchAvailableCohorts } = useQuery<{ availableCohorts: any[] }>(AVAILABLE_COHORTS, { fetchPolicy: "cache-and-network" })
-  
+  const {
+    data: myCohortsData,
+    loading: myCohortsLoading,
+    refetch: refetchMyCohorts,
+  } = useQuery<{ myCohorts: any[] }>(MY_COHORTS, {
+    fetchPolicy: 'cache-and-network',
+  });
+  const {
+    data: availableCohortsData,
+    loading: availableCohortsLoading,
+    refetch: refetchAvailableCohorts,
+  } = useQuery<{ availableCohorts: any[] }>(AVAILABLE_COHORTS, {
+    fetchPolicy: 'cache-and-network',
+  });
+
   useSubscription(ON_COHORTS_UPDATED, {
     onData: () => {
-      refetchMyCohorts()
-      refetchAvailableCohorts()
-    }
-  })
-  
-  const [joinCohort, { loading: joining }] = useMutation(JOIN_COHORT)
-  
-  const [joiningCohort, setJoiningCohort] = useState<any>(null)
-  const [selectedSessionId, setSelectedSessionId] = useState<string>("")
-  const [pin, setPin] = useState("")
+      refetchMyCohorts();
+      refetchAvailableCohorts();
+    },
+  });
+
+  const [joinCohort, { loading: joining }] = useMutation(JOIN_COHORT);
+
+  const [joiningCohort, setJoiningCohort] = useState<any>(null);
+  const [selectedSessionId, setSelectedSessionId] = useState<string>('');
+  const [pin, setPin] = useState('');
 
   const handleJoinSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (!joiningCohort || !selectedSessionId) {
-      toast.error("Please select a session.")
-      return
+      toast.error('Please select a session.');
+      return;
     }
 
     try {
-      await joinCohort({ variables: { cohortId: joiningCohort.id, sessionId: selectedSessionId, pin } })
-      toast.success(`Successfully joined ${joiningCohort.name}!`)
-      setJoiningCohort(null)
-      setSelectedSessionId("")
-      setPin("")
-      refetchMyCohorts()
-      refetchAvailableCohorts()
+      await joinCohort({
+        variables: {
+          cohortId: joiningCohort.id,
+          sessionId: selectedSessionId,
+          pin,
+        },
+      });
+      toast.success(`Successfully joined ${joiningCohort.name}!`);
+      setJoiningCohort(null);
+      setSelectedSessionId('');
+      setPin('');
+      refetchMyCohorts();
+      refetchAvailableCohorts();
     } catch (err: any) {
-      toast.error(err.message || "Failed to join cohort. Check your PIN.")
+      toast.error(err.message || 'Failed to join cohort. Check your PIN.');
     }
-  }
+  };
 
   return (
     <div className="w-full max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 space-y-8 bg-[#F9F9F8] min-h-full font-sans text-[#0A0A0A]">
-
       {/* Header Area */}
       <div>
         <h2 className="font-serif text-3xl mb-1">Your Classes</h2>
-        <p className="text-[13px] text-[#878786]">Manage your enrollments and discover new cohorts.</p>
+        <p className="text-[13px] text-muted">
+          Manage your enrollments and discover new cohorts.
+        </p>
       </div>
 
       {/* My Cohorts */}
       <section className="space-y-3">
-        <h3 className="font-mono text-[11px] uppercase tracking-widest text-[#878786] px-1 flex items-center gap-2">
+        <h3 className="font-mono text-[11px] uppercase tracking-widest text-muted px-1 flex items-center gap-2">
           <Users className="w-4 h-4" />
           Enrolled Cohorts
         </h3>
-        <div className="bg-[#FFFFFF] border border-[#E5E5E4] rounded-2xl shadow-sm interactive">
+        <div className="bg-[#FFFFFF] border border-[#E5E5E4] rounded-none shadow-sm">
           {myCohortsLoading && !myCohortsData?.myCohorts ? (
-            <div className="divide-y divide-[#E5E5E4]">
+            <div className="divide-y divide-border">
               {[1, 2].map((i) => (
                 <div key={i} className="p-4 flex items-center justify-between">
                   <div className="space-y-2">
-                    <div className="h-5 w-32 bg-[#F9F9F8] animate-pulse" />
-                    <div className="h-4 w-24 bg-[#F9F9F8] animate-pulse" />
+                    <div className="h-5 w-32 bg-background animate-pulse" />
+                    <div className="h-4 w-24 bg-background animate-pulse" />
                   </div>
-                  <div className="h-6 w-16 bg-[#F9F9F8] animate-pulse" />
+                  <div className="h-6 w-16 bg-background animate-pulse" />
                 </div>
               ))}
             </div>
           ) : myCohortsData?.myCohorts?.length > 0 ? (
-            <ul className="divide-y divide-[#E5E5E4]">
+            <ul className="divide-y divide-border">
               {myCohortsData.myCohorts.map((cohort: any) => (
-                <li key={cohort.id} className="p-4 flex items-center justify-between hover:bg-black/[0.02] transition-colors">
+                <li
+                  key={cohort.id}
+                  className="p-4 flex items-center justify-between hover:bg-black/[0.02] transition-colors"
+                >
                   <div>
                     <h4 className="font-medium text-[15px]">{cohort.name}</h4>
                     <p className="text-[13px] text-[var(--color-muted)] mt-0.5">
-                      {cohort.joinedSession ? `Session: ${cohort.joinedSession.name}` : `Started: ${new Date(cohort.startDate).toLocaleDateString()}`}
+                      {cohort.joinedSession
+                        ? `Session: ${cohort.joinedSession.name}`
+                        : `Started: ${new Date(cohort.startDate).toLocaleDateString()}`}
                     </p>
                   </div>
                   <span className="text-[10px] font-mono tracking-widest uppercase bg-green-50 text-green-700 px-2 py-1 rounded-full border border-green-100">
@@ -138,7 +171,9 @@ export default function StudentCohortsPage() {
               <div className="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center mb-2">
                 <Users className="w-5 h-5 text-black/20" />
               </div>
-              <p className="text-[14px] text-black/60">Not enrolled in any cohorts.</p>
+              <p className="text-[14px] text-black/60">
+                Not enrolled in any cohorts.
+              </p>
             </div>
           )}
         </div>
@@ -146,34 +181,40 @@ export default function StudentCohortsPage() {
 
       {/* Available Cohorts */}
       <section className="space-y-3">
-        <h3 className="font-mono text-[11px] uppercase tracking-widest text-[#878786] px-1 flex items-center gap-2">
+        <h3 className="font-mono text-[11px] uppercase tracking-widest text-muted px-1 flex items-center gap-2">
           <Search className="w-4 h-4" />
           Available to Join
         </h3>
-        <div className="bg-[#FFFFFF] border border-[#E5E5E4] rounded-2xl shadow-sm interactive">
-          {availableCohortsLoading && !availableCohortsData?.availableCohorts ? (
-            <div className="divide-y divide-[#E5E5E4]">
+        <div className="bg-[#FFFFFF] border border-[#E5E5E4] rounded-none shadow-sm">
+          {availableCohortsLoading &&
+          !availableCohortsData?.availableCohorts ? (
+            <div className="divide-y divide-border">
               {[1, 2].map((i) => (
                 <div key={i} className="p-4 flex items-center justify-between">
                   <div className="space-y-2">
-                    <div className="h-5 w-32 bg-[#F9F9F8] animate-pulse" />
-                    <div className="h-4 w-24 bg-[#F9F9F8] animate-pulse" />
+                    <div className="h-5 w-32 bg-background animate-pulse" />
+                    <div className="h-4 w-24 bg-background animate-pulse" />
                   </div>
-                  <div className="h-8 w-16 bg-[#F9F9F8] animate-pulse" />
+                  <div className="h-8 w-16 bg-background animate-pulse" />
                 </div>
               ))}
             </div>
           ) : availableCohortsData?.availableCohorts?.length > 0 ? (
-            <ul className="divide-y divide-[#E5E5E4]">
+            <ul className="divide-y divide-border">
               {availableCohortsData.availableCohorts.map((cohort: any) => (
-                <li key={cohort.id} className="p-4 flex items-center justify-between hover:bg-black/[0.02] transition-colors group">
+                <li
+                  key={cohort.id}
+                  className="p-4 flex items-center justify-between hover:bg-black/[0.02] transition-colors group"
+                >
                   <div>
                     <h4 className="font-medium text-[15px]">{cohort.name}</h4>
-                    <p className="text-[13px] text-[var(--color-muted)] mt-0.5">{cohort.sessions?.length || 0} Sessions Available</p>
+                    <p className="text-[13px] text-[var(--color-muted)] mt-0.5">
+                      {cohort.sessions?.length || 0} Sessions Available
+                    </p>
                   </div>
-                  <button 
+                  <button
                     onClick={() => setJoiningCohort(cohort)}
-                    className="h-8 px-4 rounded-xl bg-[#0A0A0A] text-[#FFFFFF] text-[11px] font-mono uppercase tracking-widest flex items-center gap-1 active:scale-95 transition-transform"
+                    className="h-8 px-4 rounded-none bg-[#0A0A0A] text-[#FFFFFF] text-[11px] font-mono uppercase tracking-widest flex items-center gap-1 active:scale-95 transition-transform"
                   >
                     Join
                   </button>
@@ -181,70 +222,97 @@ export default function StudentCohortsPage() {
               ))}
             </ul>
           ) : (
-            <div className="p-8 text-center text-[var(--color-muted)] text-[14px]">No new cohorts available at the moment.</div>
+            <div className="p-8 text-center text-[var(--color-muted)] text-[14px]">
+              No new cohorts available at the moment.
+            </div>
           )}
         </div>
       </section>
 
       {/* Join Cohort Modal */}
-      <Modal isOpen={!!joiningCohort} onClose={() => setJoiningCohort(null)} className="sm:max-w-md">
-        <ModalHeader title="Join Cohort" subtitle={joiningCohort?.name} onClose={() => setJoiningCohort(null)} />
+      <Modal
+        isOpen={!!joiningCohort}
+        onClose={() => setJoiningCohort(null)}
+        className="sm:max-w-md"
+      >
+        <ModalHeader
+          title="Join Cohort"
+          subtitle={joiningCohort?.name}
+          onClose={() => setJoiningCohort(null)}
+        />
         <ModalBody>
           <div className="mb-6">
             <p className="text-[14px] text-[var(--color-muted)] leading-relaxed">
-              You are about to join <strong className="text-black">{joiningCohort?.name}</strong>. Please select a session and enter the secure PIN.
+              You are about to join{' '}
+              <strong className="text-black">{joiningCohort?.name}</strong>.
+              Please select a session and enter the secure PIN.
             </p>
           </div>
 
-          <form id="join-cohort-form" onSubmit={handleJoinSubmit} className="space-y-6">
+          <form
+            id="join-cohort-form"
+            onSubmit={handleJoinSubmit}
+            className="space-y-6"
+          >
             <div className="space-y-2">
-              <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Select Session</label>
-              <select 
+              <label className="font-mono text-[11px] uppercase tracking-widest text-muted">
+                Select Session
+              </label>
+              <select
                 value={selectedSessionId}
                 onChange={(e) => setSelectedSessionId(e.target.value)}
                 required
-                className="w-full h-11 px-3 border border-[#E5E5E4] bg-[#F9F9F8] text-[14px] focus:border-[#0A0A0A] outline-none transition-colors rounded-xl"
+                className="w-full h-11 px-3 border border-[#E5E5E4] bg-[#F9F9F8] text-[14px] focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
               >
-                <option value="" disabled>Choose a session...</option>
+                <option value="" disabled>
+                  Choose a session...
+                </option>
                 {joiningCohort?.sessions?.map((s: any) => (
-                  <option key={s.id} value={s.id}>{s.name} ({s.startTime})</option>
+                  <option key={s.id} value={s.id}>
+                    {s.name} ({s.startTime})
+                  </option>
                 ))}
               </select>
             </div>
 
             <div className="space-y-2">
-              <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Secure PIN</label>
-              <input 
-                type="password" 
+              <label className="font-mono text-[11px] uppercase tracking-widest text-muted">
+                Secure PIN
+              </label>
+              <input
+                type="password"
                 inputMode="numeric"
                 value={pin}
                 onChange={(e) => setPin(e.target.value)}
                 required
                 placeholder="Enter PIN"
-                className="w-full h-11 px-3 border border-[#E5E5E4] bg-[#F9F9F8] text-[14px] focus:border-[#0A0A0A] outline-none transition-colors rounded-xl text-center tracking-widest"
+                className="w-full h-11 px-3 border border-[#E5E5E4] bg-[#F9F9F8] text-[14px] focus:border-[#0A0A0A] outline-none transition-colors rounded-none text-center tracking-widest"
               />
             </div>
           </form>
         </ModalBody>
         <ModalFooter>
-          <button 
-            type="button" 
-            onClick={() => setJoiningCohort(null)} 
-            className="hidden sm:flex flex-1 sm:flex-none min-h-[56px] shrink-0 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-xl order-2 sm:order-1 items-center justify-center"
+          <button
+            type="button"
+            onClick={() => setJoiningCohort(null)}
+            className="hidden sm:flex flex-1 sm:flex-none min-h-[56px] shrink-0 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-none order-2 sm:order-1 items-center justify-center"
           >
             Cancel
           </button>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             form="join-cohort-form"
             disabled={joining || !pin}
-            className="flex-1 sm:flex-auto min-h-[56px] shrink-0 py-3 px-6 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-xl flex items-center justify-center gap-2 order-1 sm:order-2"
+            className="flex-1 sm:flex-auto min-h-[56px] shrink-0 py-3 px-6 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2"
           >
-            {joining ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify & Join"}
+            {joining ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              'Verify & Join'
+            )}
           </button>
         </ModalFooter>
       </Modal>
-
     </div>
-  )
+  );
 }
