@@ -23,8 +23,8 @@ const LIST_PUBLIC_COHORTS = gql`
 
 export function ProjectorLauncher() {
   const [isOpen, setIsOpen] = useState(false)
-  const [activeSession, setActiveSession] = useState<{ sessionName: string } | null>(null)
-  
+  const [activeSession, setActiveSession] = useState<{ cohortId: string; sessionId: string; sessionName: string } | null>(null)
+
   const { data, loading } = useQuery<ProjectorData>(LIST_PUBLIC_COHORTS, {
     skip: !isOpen
   })
