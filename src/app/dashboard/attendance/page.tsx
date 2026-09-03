@@ -151,19 +151,19 @@ export default function AttendancePage() {
   };
 
   return (
-    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 space-y-8">
+    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 space-y-8 bg-background text-foreground">
       <div className="flex justify-between items-end">
         <div>
-          <h1 className="font-serif text-4xl mb-2">Attendance</h1>
+          <h1 className="font-serif text-4xl mb-2 text-foreground">Attendance</h1>
           <p className="font-mono text-[13px] text-muted uppercase">
             All Cohort Scans
           </p>
         </div>
         <div className="print:hidden flex flex-wrap gap-2">
-          <Button onClick={exportToExcel} variant="outline" className="flex items-center gap-2 rounded-xl">
+          <Button onClick={exportToExcel} variant="outline" className="flex items-center gap-2 rounded-none">
             <FileSpreadsheet className="w-4 h-4" /> Export Excel
           </Button>
-          <Button onClick={exportToPDF} variant="outline" className="flex items-center gap-2 rounded-xl">
+          <Button onClick={exportToPDF} variant="outline" className="flex items-center gap-2 rounded-none">
             <FileText className="w-4 h-4" /> Export PDF
           </Button>
         </div>
@@ -184,18 +184,18 @@ export default function AttendancePage() {
               {[...Array(5)].map((_, i) => (
                 <TableRow key={i} className="animate-pulse">
                   <TableCell>
-                    <div className="h-4 w-32 bg-black/5 rounded mb-2"></div>
-                    <div className="h-3 w-48 bg-black/5 rounded"></div>
+                    <div className="h-4 w-32 bg-surface-subtle rounded-none mb-2"></div>
+                    <div className="h-3 w-48 bg-surface-subtle rounded-none"></div>
                   </TableCell>
                   <TableCell>
-                    <div className="h-4 w-24 bg-black/5 rounded mb-2"></div>
-                    <div className="h-3 w-16 bg-black/5 rounded"></div>
+                    <div className="h-4 w-24 bg-surface-subtle rounded-none mb-2"></div>
+                    <div className="h-3 w-16 bg-surface-subtle rounded-none"></div>
                   </TableCell>
                   <TableCell>
-                    <div className="h-5 w-20 bg-black/5 rounded"></div>
+                    <div className="h-5 w-20 bg-surface-subtle rounded-none"></div>
                   </TableCell>
                   <TableCell className="text-right flex justify-end">
-                    <div className="h-8 w-8 bg-black/10 rounded"></div>
+                    <div className="h-8 w-8 bg-surface-subtle rounded-none"></div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -205,7 +205,7 @@ export default function AttendancePage() {
               {(printing ? attendanceLogs : pagedLogs).map((log: any) => (
                 <TableRow key={log.id}>
                   <TableCell>
-                    <div className="font-medium text-[15px]">
+                    <div className="font-medium text-[15px] text-foreground">
                       {log.user.name}
                     </div>
                     <div className="text-[13px] text-muted">
@@ -213,7 +213,7 @@ export default function AttendancePage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="text-[14px]">
+                    <div className="text-[14px] text-foreground">
                       <div>
                         {new Date(log.scannedAt).toLocaleDateString('en-US', { weekday: 'long' })}, {log.date || new Date(log.scannedAt).toLocaleDateString()}
                       </div>
@@ -226,8 +226,8 @@ export default function AttendancePage() {
                     <span
                       className={`inline-flex px-2 py-1 text-[12px] font-mono uppercase border ${
                         log.isLate
-                          ? 'border-[var(--color-accent)] text-[var(--color-accent)]'
-                          : 'border-green-600 text-green-700'
+                          ? 'border-danger text-danger bg-danger-surface'
+                          : 'border-success/30 text-success bg-success-surface'
                       }`}
                     >
                       {log.isLate
@@ -247,7 +247,7 @@ export default function AttendancePage() {
                         variant="outline"
                         onClick={() => handleWaive(log.penalty.id)}
                         disabled={waiving && waivingId === log.penalty.id}
-                        className="h-8 text-[12px] border-black text-black hover:bg-black hover:text-white"
+                        className="h-8 text-[12px] border-border text-foreground hover:bg-surface-hover"
                       >
                         {waiving && waivingId === log.penalty.id ? (
                           <Loader2 className="w-3 h-3 animate-spin" />
@@ -257,7 +257,7 @@ export default function AttendancePage() {
                       </Button>
                     )}
                     {log.penalty && log.penalty.status === 'WAIVED' && (
-                      <span className="flex items-center gap-1 text-[12px] font-mono text-green-600 bg-green-50 px-2 py-1 rounded">
+                      <span className="flex items-center gap-1 text-[12px] font-mono text-success bg-success-surface px-2 py-1 rounded-none border border-success/20">
                         <Check className="w-3 h-3" /> Waived
                       </span>
                     )}
@@ -269,7 +269,7 @@ export default function AttendancePage() {
             <TableRow>
               <TableCell
                 colSpan={4}
-                className="text-center p-8 text-[var(--color-muted)] font-mono text-[13px] uppercase"
+                className="text-center p-8 text-muted font-mono text-[13px] uppercase"
               >
                 No attendance records found.
               </TableCell>
@@ -279,11 +279,11 @@ export default function AttendancePage() {
       </Table>
 
       {attendanceLogs.length > PAGE_SIZE && (
-        <div className="print:hidden flex flex-col sm:flex-row items-center justify-between gap-3 rounded-2xl border border-[#E5E5E4] bg-white px-4 py-3">
-          <span className="font-mono text-[10px] uppercase tracking-widest text-[#878786]">Page {safePage} of {totalPages} · {attendanceLogs.length} records</span>
+        <div className="print:hidden flex flex-col sm:flex-row items-center justify-between gap-3 rounded-none border border-border bg-surface px-4 py-3">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-muted">Page {safePage} of {totalPages} · {attendanceLogs.length} records</span>
           <div className="flex items-center gap-2">
-            <button aria-label="Previous page" disabled={safePage === 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className="h-9 w-9 rounded-xl border border-[#E5E5E4] hover:bg-[#F9F9F8] disabled:opacity-30 transition-all"><ChevronLeft className="w-4 h-4 mx-auto" /></button>
-            <button aria-label="Next page" disabled={safePage === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))} className="h-9 w-9 rounded-xl border border-[#E5E5E4] hover:bg-[#F9F9F8] disabled:opacity-30 transition-all"><ChevronRight className="w-4 h-4 mx-auto" /></button>
+            <button aria-label="Previous page" disabled={safePage === 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className="h-9 w-9 rounded-none border border-border bg-surface text-foreground hover:bg-surface-hover disabled:opacity-30 transition-all"><ChevronLeft className="w-4 h-4 mx-auto" /></button>
+            <button aria-label="Next page" disabled={safePage === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))} className="h-9 w-9 rounded-none border border-border bg-surface text-foreground hover:bg-surface-hover disabled:opacity-30 transition-all"><ChevronRight className="w-4 h-4 mx-auto" /></button>
           </div>
         </div>
       )}

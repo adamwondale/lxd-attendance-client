@@ -110,13 +110,13 @@ export default function StudentScanPage() {
   const isPermissionDenied = cameraErrorObj?.type === "permission"
 
   return (
-    <div className="p-6 space-y-8 h-full flex flex-col max-w-lg mx-auto">
+    <div className="p-6 space-y-8 h-full flex flex-col max-w-lg mx-auto text-foreground">
       <div>
-        <h1 className="font-serif text-3xl">Scan Badge</h1>
+        <h1 className="font-serif text-3xl text-foreground">Scan Badge</h1>
       </div>
 
       <div className="flex-1 flex flex-col gap-6 w-full">
-        <Card className="flex-1 bg-black overflow-hidden flex flex-col border-black relative rounded-xl shadow-sm min-h-[450px]">
+        <Card className="flex-1 bg-black overflow-hidden flex flex-col border border-border relative rounded-none shadow-sm min-h-[450px]">
           <CardContent className="p-0 flex-1 relative w-full h-full">
             <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-30">
               <div className="text-white/80 font-mono text-[10px] uppercase tracking-widest bg-black/60 px-3 py-1 rounded-full">
@@ -216,7 +216,7 @@ export default function StudentScanPage() {
             <Button
               onClick={() => void startScanning()}
               disabled={!canStartScanning || cameraLoading}
-              className="flex-1 h-12 bg-black text-white hover:bg-black/80 font-sans text-[14px]"
+              className="flex-1 h-12 bg-primary text-primary-foreground hover:bg-primary-hover font-sans text-[14px]"
             >
               {cameraLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Camera className="w-4 h-4 mr-2" />}
               {cameraLoading ? "Starting..." : "Start Scanner"}
@@ -224,7 +224,7 @@ export default function StudentScanPage() {
           ) : (
             <Button
               onClick={() => void stopScanning()}
-              className="flex-1 h-12 bg-white text-black border border-black/20 hover:bg-black/5 font-sans text-[14px]"
+              className="flex-1 h-12 bg-surface text-foreground border border-border hover:bg-surface-hover font-sans text-[14px]"
             >
               Stop Scanner
             </Button>

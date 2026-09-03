@@ -104,7 +104,7 @@ function AdminLoginContent() {
           First time here?{' '}
           <Link
             href="/admin/signup"
-            className="text-[#1C1C1C] hover:underline underline-offset-4"
+            className="text-foreground hover:underline underline-offset-4"
           >
             Create company profile
           </Link>
@@ -115,9 +115,9 @@ function AdminLoginContent() {
         <motion.div
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-4 p-3 border border-[#E54D2E] bg-[#E54D2E]/5"
+          className="mb-4 p-3 border border-danger/30 bg-danger-surface rounded-none"
         >
-          <p className="font-mono text-[11px] text-[#E54D2E] uppercase tracking-wide">
+          <p className="font-mono text-[11px] text-danger uppercase tracking-wide">
             {serverError || AUTH_ERRORS[urlError ?? ''] || AUTH_ERRORS.Default}
           </p>
         </motion.div>
@@ -167,7 +167,7 @@ function AdminLoginContent() {
           <div className="flex justify-end mt-1.5">
             <Link
               href="/forgot-password?role=ADMIN"
-              className="text-muted hover:text-secondary-hover text-[12px] font-sans transition-colors"
+              className="text-muted hover:text-foreground text-[12px] font-sans transition-colors"
             >
               Forgot password?
             </Link>
@@ -177,7 +177,7 @@ function AdminLoginContent() {
         <button
           type="submit"
           disabled={loading}
-          className="button w-full h-11 flex items-center justify-center gap-2 bg-primary text-background font-sans font-medium text-[14px] border border-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-[150ms] hover:bg-primary-hover"
+          className="button w-full h-11 flex items-center justify-center gap-2 bg-primary text-primary-foreground font-sans font-medium text-[14px] border border-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-[150ms] hover:bg-primary-hover rounded-none"
         >
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin" />

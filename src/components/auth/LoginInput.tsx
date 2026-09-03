@@ -41,21 +41,21 @@ export function LoginInput({
           onChange={(event) => onChange(event.target.value)}
           onBlur={onBlur}
           placeholder={placeholder}
-          className={`w-full h-11 px-3 ${isPassword ? "pr-10" : ""} bg-background border text-[14px] font-sans text-secondary-hover placeholder:text-muted/60 outline-none transition-[border-color] duration-[150ms] focus:border-secondary ${error ? "border-primary" : "border-border"}`}
+          className={`w-full h-11 px-3 ${isPassword ? "pr-10" : ""} bg-surface border text-[14px] font-sans text-foreground placeholder:text-muted/50 outline-none transition-[border-color] duration-[150ms] focus:border-foreground rounded-none ${error ? "border-danger" : "border-border"}`}
         />
         {isPassword && (
           <button
             type="button"
             onClick={() => setShow((current) => !current)}
             aria-label={show ? "Hide password" : "Show password"}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-secondary-hover transition-colors duration-[150ms]"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground transition-colors duration-[150ms]"
           >
             {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
         )}
       </div>
       {error && (
-        <p className="font-mono text-[11px] text-primary uppercase tracking-wide mt-0.5">
+        <p className="font-mono text-[11px] text-danger uppercase tracking-wide mt-0.5">
           {error}
         </p>
       )}

@@ -117,10 +117,10 @@ export default function StudentCohortsPage() {
   };
 
   return (
-    <div className="w-full max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 space-y-8 bg-[#F9F9F8] min-h-full font-sans text-[#0A0A0A]">
+    <div className="w-full max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 space-y-8 bg-background min-h-full font-sans text-foreground">
       {/* Header Area */}
       <div>
-        <h2 className="font-serif text-3xl mb-1">Your Classes</h2>
+        <h2 className="font-serif text-3xl mb-1 text-foreground">Your Classes</h2>
         <p className="text-[13px] text-muted">
           Manage your enrollments and discover new cohorts.
         </p>
@@ -132,16 +132,16 @@ export default function StudentCohortsPage() {
           <Users className="w-4 h-4" />
           Enrolled Cohorts
         </h3>
-        <div className="bg-[#FFFFFF] border border-[#E5E5E4] rounded-none shadow-sm">
+        <div className="bg-surface border border-border rounded-none shadow-sm">
           {myCohortsLoading && !myCohortsData?.myCohorts ? (
             <div className="divide-y divide-border">
               {[1, 2].map((i) => (
                 <div key={i} className="p-4 flex items-center justify-between">
                   <div className="space-y-2">
-                    <div className="h-5 w-32 bg-background animate-pulse" />
-                    <div className="h-4 w-24 bg-background animate-pulse" />
+                    <div className="h-5 w-32 bg-surface-subtle animate-pulse" />
+                    <div className="h-4 w-24 bg-surface-subtle animate-pulse" />
                   </div>
-                  <div className="h-6 w-16 bg-background animate-pulse" />
+                  <div className="h-6 w-16 bg-surface-subtle animate-pulse" />
                 </div>
               ))}
             </div>
@@ -150,17 +150,17 @@ export default function StudentCohortsPage() {
               {myCohortsData?.myCohorts?.map((cohort: any) => (
                 <li
                   key={cohort.id}
-                  className="p-4 flex items-center justify-between hover:bg-black/[0.02] transition-colors"
+                  className="p-4 flex items-center justify-between hover:bg-surface-hover transition-colors"
                 >
                   <div>
-                    <h4 className="font-medium text-[15px]">{cohort.name}</h4>
-                    <p className="text-[13px] text-[var(--color-muted)] mt-0.5">
+                    <h4 className="font-medium text-[15px] text-foreground">{cohort.name}</h4>
+                    <p className="text-[13px] text-muted mt-0.5">
                       {cohort.joinedSession
                         ? `Session: ${cohort.joinedSession.name}`
                         : `Started: ${new Date(cohort.startDate).toLocaleDateString()}`}
                     </p>
                   </div>
-                  <span className="text-[10px] font-mono tracking-widest uppercase bg-green-50 text-green-700 px-2 py-1 rounded-full border border-green-100">
+                  <span className="text-[10px] font-mono tracking-widest uppercase bg-success-surface text-success px-2 py-1 rounded-full border border-success/20">
                     Active
                   </span>
                 </li>
@@ -168,10 +168,10 @@ export default function StudentCohortsPage() {
             </ul>
           ) : (
             <div className="p-10 flex flex-col items-center justify-center text-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center mb-2">
-                <Users className="w-5 h-5 text-black/20" />
+              <div className="w-10 h-10 rounded-full bg-surface-subtle flex items-center justify-center mb-2">
+                <Users className="w-5 h-5 text-muted" />
               </div>
-              <p className="text-[14px] text-black/60">
+              <p className="text-[14px] text-muted">
                 Not enrolled in any cohorts.
               </p>
             </div>
@@ -185,17 +185,17 @@ export default function StudentCohortsPage() {
           <Search className="w-4 h-4" />
           Available to Join
         </h3>
-        <div className="bg-[#FFFFFF] border border-[#E5E5E4] rounded-none shadow-sm">
+        <div className="bg-surface border border-border rounded-none shadow-sm">
           {availableCohortsLoading &&
           !availableCohortsData?.availableCohorts ? (
             <div className="divide-y divide-border">
               {[1, 2].map((i) => (
                 <div key={i} className="p-4 flex items-center justify-between">
                   <div className="space-y-2">
-                    <div className="h-5 w-32 bg-background animate-pulse" />
-                    <div className="h-4 w-24 bg-background animate-pulse" />
+                    <div className="h-5 w-32 bg-surface-subtle animate-pulse" />
+                    <div className="h-4 w-24 bg-surface-subtle animate-pulse" />
                   </div>
-                  <div className="h-8 w-16 bg-background animate-pulse" />
+                  <div className="h-8 w-16 bg-surface-subtle animate-pulse" />
                 </div>
               ))}
             </div>
@@ -204,17 +204,17 @@ export default function StudentCohortsPage() {
               {availableCohortsData?.availableCohorts?.map((cohort: any) => (
                 <li
                   key={cohort.id}
-                  className="p-4 flex items-center justify-between hover:bg-black/[0.02] transition-colors group"
+                  className="p-4 flex items-center justify-between hover:bg-surface-hover transition-colors group"
                 >
                   <div>
-                    <h4 className="font-medium text-[15px]">{cohort.name}</h4>
-                    <p className="text-[13px] text-[var(--color-muted)] mt-0.5">
+                    <h4 className="font-medium text-[15px] text-foreground">{cohort.name}</h4>
+                    <p className="text-[13px] text-muted mt-0.5">
                       {cohort.sessions?.length || 0} Sessions Available
                     </p>
                   </div>
                   <button
                     onClick={() => setJoiningCohort(cohort)}
-                    className="h-8 px-4 rounded-none bg-[#0A0A0A] text-[#FFFFFF] text-[11px] font-mono uppercase tracking-widest flex items-center gap-1 active:scale-95 transition-transform"
+                    className="h-8 px-4 rounded-none bg-primary text-primary-foreground text-[11px] font-mono uppercase tracking-widest hover:bg-primary-hover flex items-center gap-1 active:scale-95 transition-all"
                   >
                     Join
                   </button>
@@ -222,7 +222,7 @@ export default function StudentCohortsPage() {
               ))}
             </ul>
           ) : (
-            <div className="p-8 text-center text-[var(--color-muted)] text-[14px]">
+            <div className="p-8 text-center text-muted text-[14px]">
               No new cohorts available at the moment.
             </div>
           )}
@@ -242,9 +242,9 @@ export default function StudentCohortsPage() {
         />
         <ModalBody>
           <div className="mb-6">
-            <p className="text-[14px] text-[var(--color-muted)] leading-relaxed">
+            <p className="text-[14px] text-muted leading-relaxed">
               You are about to join{' '}
-              <strong className="text-black">{joiningCohort?.name}</strong>.
+              <strong className="text-foreground">{joiningCohort?.name}</strong>.
               Please select a session and enter the secure PIN.
             </p>
           </div>
@@ -262,7 +262,7 @@ export default function StudentCohortsPage() {
                 value={selectedSessionId}
                 onChange={(e) => setSelectedSessionId(e.target.value)}
                 required
-                className="w-full h-11 px-3 border border-[#E5E5E4] bg-[#F9F9F8] text-[14px] focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                className="w-full h-11 px-3 border border-border bg-surface-subtle text-foreground text-[14px] focus:border-foreground outline-none transition-colors rounded-none"
               >
                 <option value="" disabled>
                   Choose a session...
@@ -286,7 +286,7 @@ export default function StudentCohortsPage() {
                 onChange={(e) => setPin(e.target.value)}
                 required
                 placeholder="Enter PIN"
-                className="w-full h-11 px-3 border border-[#E5E5E4] bg-[#F9F9F8] text-[14px] focus:border-[#0A0A0A] outline-none transition-colors rounded-none text-center tracking-widest"
+                className="w-full h-11 px-3 border border-border bg-surface-subtle text-foreground text-[14px] focus:border-foreground outline-none transition-colors rounded-none text-center tracking-widest"
               />
             </div>
           </form>
@@ -295,7 +295,7 @@ export default function StudentCohortsPage() {
           <button
             type="button"
             onClick={() => setJoiningCohort(null)}
-            className="hidden sm:flex flex-1 sm:flex-none min-h-[56px] shrink-0 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-none order-2 sm:order-1 items-center justify-center"
+            className="hidden sm:flex flex-1 sm:flex-none min-h-[56px] shrink-0 px-6 border border-border bg-surface text-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-surface-hover transition-colors rounded-none order-2 sm:order-1 items-center justify-center"
           >
             Cancel
           </button>
@@ -303,7 +303,7 @@ export default function StudentCohortsPage() {
             type="submit"
             form="join-cohort-form"
             disabled={joining || !pin}
-            className="flex-1 sm:flex-auto min-h-[56px] shrink-0 py-3 px-6 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2"
+            className="flex-1 sm:flex-auto min-h-[56px] shrink-0 py-3 px-6 bg-primary text-primary-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-primary-hover disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2"
           >
             {joining ? (
               <Loader2 className="w-4 h-4 animate-spin" />

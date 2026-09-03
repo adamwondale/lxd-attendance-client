@@ -202,17 +202,17 @@ export default function CohortsPage() {
   };
 
   return (
-    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 space-y-8">
+    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 space-y-8 bg-background text-foreground">
       <div className="flex justify-between items-end">
         <div>
-          <h1 className="font-serif text-4xl mb-2">Cohorts</h1>
-          <p className="font-mono text-[13px] text-[var(--color-muted)] uppercase">
+          <h1 className="font-serif text-4xl mb-2 text-foreground">Cohorts</h1>
+          <p className="font-mono text-[13px] text-muted uppercase">
             Manage training programs
           </p>
         </div>
         <Button
           onClick={openCreateDialog}
-          className="bg-black text-white hover:bg-black/80 font-mono text-[11px] uppercase tracking-widest h-11 px-5 rounded-xl flex items-center gap-2"
+          className="bg-primary text-primary-foreground hover:bg-primary-hover font-mono text-[11px] uppercase tracking-widest h-11 px-5 rounded-none flex items-center gap-2"
         >
           <Plus className="w-4 h-4" /> New Cohort
         </Button>
@@ -245,13 +245,13 @@ export default function CohortsPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
-                className="h-11 px-3 bg-background border border-border focus:border-secondary outline-none font-sans text-[14px] transition-colors rounded-none"
+                className="h-11 px-3 bg-surface-subtle border border-border focus:border-foreground outline-none font-sans text-[14px] text-foreground transition-colors rounded-none"
                 placeholder="e.g. Summer 2026 Batch"
               />
             </div>
 
             <div className="flex flex-col gap-1 md:col-span-2">
-              <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">
+              <label className="font-mono text-[11px] uppercase tracking-widest text-muted">
                 Join PIN
               </label>
               <input
@@ -261,14 +261,14 @@ export default function CohortsPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, pin: e.target.value })
                 }
-                className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-none mb-3"
+                className="h-11 px-3 bg-surface-subtle border border-border focus:border-foreground outline-none font-sans text-[14px] text-foreground transition-colors rounded-none mb-3"
                 placeholder="e.g. LXD-26"
               />
 
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">
+              <label className="font-mono text-[11px] uppercase tracking-widest text-muted">
                 Start Date
               </label>
               <input
@@ -278,12 +278,12 @@ export default function CohortsPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, startDate: e.target.value })
                 }
-                className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-none"
+                className="h-11 px-3 bg-surface-subtle border border-border focus:border-foreground outline-none font-sans text-[14px] text-foreground transition-colors rounded-none"
               />
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">
+              <label className="font-mono text-[11px] uppercase tracking-widest text-muted">
                 End Date
               </label>
               <input
@@ -293,12 +293,12 @@ export default function CohortsPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, endDate: e.target.value })
                 }
-                className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-none"
+                className="h-11 px-3 bg-surface-subtle border border-border focus:border-foreground outline-none font-sans text-[14px] text-foreground transition-colors rounded-none"
               />
             </div>
 
             {editingCohort && (
-              <div className="flex items-center gap-2 md:col-span-2 mt-2 p-4 bg-[#F9F9F8] border border-[#E5E5E4]">
+              <div className="flex items-center gap-2 md:col-span-2 mt-2 p-4 bg-surface-subtle border border-border">
                 <input
                   type="checkbox"
                   id="isActive"
@@ -306,11 +306,11 @@ export default function CohortsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, isActive: e.target.checked })
                   }
-                  className="w-4 h-4 accent-[#0A0A0A] rounded-none"
+                  className="w-4 h-4 accent-primary rounded-none"
                 />
                 <label
                   htmlFor="isActive"
-                  className="font-mono text-[11px] uppercase tracking-widest text-[#878786]"
+                  className="font-mono text-[11px] uppercase tracking-widest text-muted"
                 >
                   Cohort is Active (Visible to students)
                 </label>
@@ -322,7 +322,7 @@ export default function CohortsPage() {
           <button
             type="button"
             onClick={() => setIsDialogOpen(false)}
-            className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-none order-2 sm:order-1"
+            className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-border bg-surface text-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-surface-hover transition-colors rounded-none order-2 sm:order-1"
           >
             Cancel
           </button>
@@ -330,7 +330,7 @@ export default function CohortsPage() {
             type="submit"
             form="cohort-form"
             disabled={creating || updating}
-            className="flex-1 sm:flex-auto h-14 px-6 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2"
+            className="flex-1 sm:flex-auto h-14 px-6 bg-primary text-primary-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-primary-hover disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2"
           >
             {creating || updating
               ? 'Saving...'
@@ -357,24 +357,24 @@ export default function CohortsPage() {
             {[...Array(6)].map((_, i) => (
               <Card
                 key={i}
-                className="animate-pulse relative overflow-hidden h-full border-black/5"
+                className="animate-pulse relative overflow-hidden h-full border-border bg-surface"
               >
                 <CardHeader>
-                  <div className="h-8 w-48 bg-black/5 rounded mb-2"></div>
-                  <div className="h-3 w-20 bg-black/5 rounded"></div>
+                  <div className="h-8 w-48 bg-surface-subtle rounded-none mb-2"></div>
+                  <div className="h-3 w-20 bg-surface-subtle rounded-none"></div>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-4 w-40 bg-black/5 rounded mt-2 mb-6"></div>
+                  <div className="h-4 w-40 bg-surface-subtle rounded-none mt-2 mb-6"></div>
                   <div className="flex gap-2">
-                    <div className="flex-1 h-8 bg-black/5 rounded-xl"></div>
-                    <div className="flex-1 h-8 bg-black/5 rounded-xl"></div>
+                    <div className="flex-1 h-8 bg-surface-subtle rounded-none"></div>
+                    <div className="flex-1 h-8 bg-surface-subtle rounded-none"></div>
                   </div>
                 </CardContent>
               </Card>
             ))}
           </>
         ) : data?.listCohorts?.length === 0 ? (
-          <div className="col-span-full p-12 text-center border border-dashed border-[var(--color-border)] text-[var(--color-muted)] font-mono text-[13px] uppercase">
+          <div className="col-span-full p-12 text-center border border-dashed border-border text-muted font-mono text-[13px] uppercase">
             No cohorts found. Create one above.
           </div>
         ) : (
@@ -385,15 +385,15 @@ export default function CohortsPage() {
               className="block"
             >
               <Card
-                className={`group hover:border-black transition-colors cursor-pointer relative overflow-hidden h-full ${!cohort.isActive ? 'opacity-50' : ''}`}
+                className={`group hover:border-foreground transition-colors cursor-pointer relative overflow-hidden h-full ${!cohort.isActive ? 'opacity-50' : ''}`}
               >
                 <div className="absolute top-0 right-0 p-3 flex gap-2">
                   <span
-                    className={`w-2 h-2 rounded-full inline-block ${cohort.isActive ? 'bg-green-500' : 'bg-red-500'}`}
+                    className={`w-2 h-2 rounded-full inline-block ${cohort.isActive ? 'bg-success' : 'bg-danger'}`}
                   />
                 </div>
                 <CardHeader>
-                  <CardTitle className="font-serif text-2xl tracking-tight pr-4">
+                  <CardTitle className="font-serif text-2xl tracking-tight pr-4 text-foreground">
                     {cohort.name}
                   </CardTitle>
                   <p className="font-mono text-[11px] uppercase text-muted">
@@ -401,7 +401,7 @@ export default function CohortsPage() {
                   </p>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center gap-4 mt-2 mb-6 text-sm text-[var(--color-muted)]">
+                  <div className="flex items-center gap-4 mt-2 mb-6 text-sm text-muted">
                     <span>{formatDate(cohort.startDate)}</span>
                     <span>→</span>
                     <span>{formatDate(cohort.endDate)}</span>
@@ -426,7 +426,7 @@ export default function CohortsPage() {
                         setDeletingCohortId(cohort.id);
                       }}
                       disabled={deleting}
-                      className="flex-1 h-8 text-[11px] uppercase tracking-widest font-mono text-red-500 hover:text-red-600 hover:bg-red-50"
+                      className="flex-1 h-8 text-[11px] uppercase tracking-widest font-mono text-danger hover:text-danger hover:bg-danger-surface"
                     >
                       <Trash2 className="w-3 h-3 mr-2" /> Delete
                     </Button>

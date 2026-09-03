@@ -1,4 +1,5 @@
 import { motion } from "framer-motion"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 const EASE = [0.23, 1, 0.32, 1] as const
 
@@ -16,7 +17,11 @@ export function LoginPageShell({
   footer: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4 relative">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
+
       <div className="w-full max-w-[400px]">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -27,7 +32,7 @@ export function LoginPageShell({
           <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted mb-3">
             {eyebrow}
           </p>
-          <h1 className="font-serif text-[40px] leading-[1.05] tracking-[-0.02em] text-secondary">
+          <h1 className="font-serif text-[40px] leading-[1.05] tracking-[-0.02em] text-foreground">
             {title}
           </h1>
           <p className="font-sans text-[13px] leading-relaxed text-muted mt-3 max-w-[340px]">
@@ -39,10 +44,10 @@ export function LoginPageShell({
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4, ease: EASE, delay: 0.08 }}
-          className="bg-surface border border-border"
+          className="bg-surface border border-border shadow-sm"
         >
           <div className="p-6">{children}</div>
-          <div className="p-4 text-center font-sans text-[13px] text-muted border-t border-border bg-background">
+          <div className="p-4 text-center font-sans text-[13px] text-muted border-t border-border bg-surface-subtle">
             {footer}
           </div>
         </motion.div>

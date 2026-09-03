@@ -1,32 +1,84 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-serif: 'Instrument Serif', serif;
   --font-sans: 'DM Sans', sans-serif;
   --font-mono: 'Space Mono', monospace;
 
-  /* Hulu Track Brand Colors */
-  --color-brand-green: #21a675;
-  --color-brand-slate: #3b5f7b;
+  /* Semantic Theme Tokens */
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-surface-subtle: var(--surface-subtle);
 
-  /* Semantic Mappings */
-  --color-primary: var(--color-brand-green);
-  --color-primary-hover: #1b8b62;
+  --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-muted: var(--muted);
 
-  --color-secondary: var(--color-brand-slate);
-  --color-secondary-hover: #2d4a60;
+  --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
 
-  --color-background: #f8f9fa;
-  --color-surface: #ffffff;
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
 
-  --color-text-main: #1a242c;
-  --color-muted: #6b7280;
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary-hover: var(--secondary-hover);
 
-  --color-border: #e2e8f0;
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-danger-surface: var(--danger-surface);
+
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-surface: var(--success-surface);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
 }
 
 @layer base {
   :root {
+    --background: #F9F9F8;
+    --surface: #FFFFFF;
+    --surface-hover: rgba(10, 10, 10, 0.03);
+    --surface-subtle: #F2F2F1;
+
+    --foreground: #0A0A0A;
+    --foreground-muted: #878786;
+    --muted: #878786;
+
+    --border: #E5E5E4;
+    --border-subtle: #EDEDEC;
+
+    --primary: #0A0A0A;
+    --primary-foreground: #FFFFFF;
+    --primary-hover: #262626;
+
+    --secondary: #3b5f7b;
+    --secondary-foreground: #FFFFFF;
+    --secondary-hover: #2d4a60;
+
+    --danger: #E54D2E;
+    --danger-foreground: #FFFFFF;
+    --danger-surface: rgba(229, 77, 46, 0.08);
+
+    --success: #21a675;
+    --success-foreground: #FFFFFF;
+    --success-surface: rgba(33, 166, 117, 0.08);
+
+    --accent: #21a675;
+    --accent-foreground: #FFFFFF;
+
+    --card: #FFFFFF;
+    --card-foreground: #0A0A0A;
+
     --ease-studio: cubic-bezier(0.23, 1, 0.32, 1);
     --duration-fast: 150ms;
     --duration-smooth: 400ms;
@@ -34,13 +86,49 @@
     --spacing-base: 4px;
   }
 
+  .dark {
+    --background: #111110;
+    --surface: #181817;
+    --surface-hover: rgba(255, 255, 255, 0.05);
+    --surface-subtle: #222221;
+
+    --foreground: #EDEDED;
+    --foreground-muted: #9E9E9D;
+    --muted: #9E9E9D;
+
+    --border: #2C2C2B;
+    --border-subtle: #222221;
+
+    --primary: #EDEDED;
+    --primary-foreground: #111110;
+    --primary-hover: #FFFFFF;
+
+    --secondary: #6287a3;
+    --secondary-foreground: #FFFFFF;
+    --secondary-hover: #7b9eb8;
+
+    --danger: #F25533;
+    --danger-foreground: #FFFFFF;
+    --danger-surface: rgba(242, 85, 51, 0.12);
+
+    --success: #28b882;
+    --success-foreground: #111110;
+    --success-surface: rgba(40, 184, 130, 0.12);
+
+    --accent: #28b882;
+    --accent-foreground: #111110;
+
+    --card: #181817;
+    --card-foreground: #EDEDED;
+  }
+
   html {
     scroll-behavior: smooth;
   }
 
   body {
-    background-color: var(--color-background);
-    color: var(--color-text-main);
+    background-color: var(--background);
+    color: var(--foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

@@ -11,14 +11,16 @@ const Toaster = ({ ...props }: ToasterProps) => {
       toastOptions={{
         classNames: {
           toast:
-            "group toast group-[.toaster]:bg-[var(--color-surface)] group-[.toaster]:text-[var(--color-text)] group-[.toaster]:border-[var(--color-border)] group-[.toaster]:shadow-none group-[.toaster]:rounded-[var(--radius-none)]",
-          description: "group-[.toast]:text-[var(--color-muted)]",
+            "group toast group-[.toaster]:bg-surface group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg group-[.toaster]:rounded-none",
+          description: "group-[.toast]:text-muted",
           actionButton:
-            "group-[.toast]:bg-[var(--color-primary)] group-[.toast]:text-[var(--color-surface)]",
+            "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
           cancelButton:
-            "group-[.toast]:bg-[var(--color-muted)] group-[.toast]:text-[var(--color-background)]",
+            "group-[.toast]:bg-surface-subtle group-[.toast]:text-foreground",
           error:
-            "group-[.toaster]:bg-[#E54D2E]/5 group-[.toaster]:text-[#E54D2E] group-[.toaster]:border-[#E54D2E] [&>svg]:text-[#E54D2E]",
+            "group-[.toaster]:bg-danger-surface group-[.toaster]:text-danger group-[.toaster]:border-danger [&>svg]:text-danger",
+          success:
+            "group-[.toaster]:bg-success-surface group-[.toaster]:text-success group-[.toaster]:border-success [&>svg]:text-success",
         },
       }}
       {...props}

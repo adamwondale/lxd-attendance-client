@@ -19,8 +19,8 @@ export function ActiveNavLink({ href, className, activeClassName, inactiveClassN
 
   const classes = [
     typeof className === "string" ? className : "",
-    "relative",
-    isActive ? (activeClassName || "bg-black/8 text-black") : (inactiveClassName || ""),
+    "relative transition-colors",
+    isActive ? (activeClassName || "bg-surface-subtle text-foreground font-medium") : (inactiveClassName || "text-muted hover:text-foreground hover:bg-surface-hover"),
   ].filter(Boolean).join(" ")
 
   return (
@@ -34,7 +34,7 @@ export function ActiveNavLink({ href, className, activeClassName, inactiveClassN
       {isActive && !hideIndicator && (
         <span
           aria-hidden="true"
-          className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-0.5 bg-black"
+          className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-0.5 bg-primary"
         />
       )}
     </Link>

@@ -42,22 +42,46 @@ export const metadata: Metadata = {
   },
 };
 
+import { ThemeProvider } from "@/providers/theme-provider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                var stored = localStorage.getItem('theme');
+                var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                var isDark = stored === 'dark' || (!stored && prefersDark);
+                if (isDark) {
+                  document.documentElement.classList.add('dark');
+                  document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                  document.documentElement.setAttribute('data-theme', 'light');
+                }
+              } catch(e) {}
+            `,
+          }}
+        />
+      </head>
       <body
-        className={`${instrumentSerif.variable} ${dmSans.variable} ${spaceMono.variable} antialiased`}
+        className={`${instrumentSerif.variable} ${dmSans.variable} ${spaceMono.variable} antialiased bg-background text-foreground min-h-screen`}
       >
-        <AuthSessionProvider>
-          <ApolloProvider>
-            {children}
-            <Toaster />
-          </ApolloProvider>
-        </AuthSessionProvider>
+        <ThemeProvider>
+          <AuthSessionProvider>
+            <ApolloProvider>
+              {children}
+              <Toaster />
+            </ApolloProvider>
+          </AuthSessionProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

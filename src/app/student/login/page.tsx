@@ -81,7 +81,7 @@ function StudentLoginContent() {
           Don&apos;t have an account?{' '}
           <Link
             href="/student/signup"
-            className="text-secondary-hover hover:underline underline-offset-4"
+            className="text-foreground hover:underline underline-offset-4"
           >
             Student Sign Up
           </Link>
@@ -92,9 +92,9 @@ function StudentLoginContent() {
         <motion.div
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-4 p-3 border border-[#E54D2E] bg-[#E54D2E]/5"
+          className="mb-4 p-3 border border-danger/30 bg-danger-surface rounded-none"
         >
-          <p className="font-mono text-[11px] text-[#E54D2E] uppercase tracking-wide">
+          <p className="font-mono text-[11px] text-danger uppercase tracking-wide">
             {error || AUTH_ERRORS[urlError ?? ''] || AUTH_ERRORS.Default}
           </p>
         </motion.div>
@@ -122,7 +122,7 @@ function StudentLoginContent() {
           <div className="flex justify-end mt-1.5">
             <Link
               href="/forgot-password?role=STUDENT"
-              className="text-muted hover:text-secondary-hover text-[12px] font-sans transition-colors"
+              className="text-muted hover:text-foreground text-[12px] font-sans transition-colors"
             >
               Forgot password?
             </Link>
@@ -132,7 +132,7 @@ function StudentLoginContent() {
         <button
           type="submit"
           disabled={loading || googleLoading}
-          className="button w-full h-11 flex items-center justify-center gap-2 bg-secondary text-white font-sans font-medium text-[14px] border border-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-[150ms] hover:bg-[#2a2a2a]"
+          className="button w-full h-11 flex items-center justify-center gap-2 bg-primary text-primary-foreground font-sans font-medium text-[14px] border border-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-[150ms] hover:bg-primary-hover rounded-none"
         >
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -157,7 +157,7 @@ function StudentLoginContent() {
         type="button"
         onClick={googleSignIn}
         disabled={loading || googleLoading}
-        className="button w-full h-11 flex items-center justify-center gap-3 border border-border bg-surface text-secondary-hover font-sans font-medium text-[14px] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-[150ms] hover:bg-background"
+        className="button w-full h-11 flex items-center justify-center gap-3 border border-border bg-surface text-foreground font-sans font-medium text-[14px] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-[150ms] hover:bg-surface-hover rounded-none"
       >
         {googleLoading ? (
           <Loader2 className="w-4 h-4 animate-spin" />

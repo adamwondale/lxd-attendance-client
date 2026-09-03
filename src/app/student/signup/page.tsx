@@ -144,18 +144,18 @@ export default function StudentSignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-background text-secondary font-sans selection:bg-secondary selection:text-surface overflow-y-auto">
+    <div className="min-h-screen flex items-center justify-center p-6 bg-background text-foreground font-sans selection:bg-secondary selection:text-surface overflow-y-auto">
       <div className="w-full max-w-[440px] my-auto py-12">
         {/* Header */}
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-serif leading-tight">Join Hulu Track</h1>
+          <h1 className="text-3xl font-serif leading-tight text-foreground">Join Hulu Track</h1>
           <p className="text-muted text-xs font-mono uppercase tracking-widest mt-2">
             Student Registration
           </p>
         </div>
 
         {/* Form Container */}
-        <div className="bg-[#FFFFFF] border border-[#E5E5E4] p-8 rounded-xl shadow-sm">
+        <div className="bg-surface border border-border p-8 rounded-none shadow-sm">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <AnimatePresence>
               {globalError && (
@@ -163,7 +163,7 @@ export default function StudentSignupPage() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="p-4 bg-[#E54D2E]/10 border border-[#E54D2E]/20 text-[#E54D2E] text-sm flex gap-3 items-start rounded-none"
+                  className="p-4 bg-danger-surface border border-danger/20 text-danger text-sm flex gap-3 items-start rounded-none"
                 >
                   <AlertCircle className="w-5 h-5 shrink-0" />
                   <p className="mt-0.5">{globalError}</p>
@@ -178,17 +178,17 @@ export default function StudentSignupPage() {
                 </label>
                 <input
                   {...register('name')}
-                  className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none placeholder:text-[#878786]/50 ${
+                  className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 text-foreground ${
                     errors.name
-                      ? 'border-[#E54D2E] focus:border-[#E54D2E]'
-                      : 'border-[#E5E5E4] focus:border-[#0A0A0A]'
+                      ? 'border-danger focus:border-danger'
+                      : 'border-border focus:border-foreground'
                   }`}
                 />
                 {errors.name && (
                   <motion.p
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="text-[11px] uppercase tracking-widest font-mono text-primary mt-2"
+                    className="text-[11px] uppercase tracking-widest font-mono text-danger mt-2"
                   >
                     {errors.name.message}
                   </motion.p>
@@ -201,17 +201,17 @@ export default function StudentSignupPage() {
                 </label>
                 <input
                   {...register('username')}
-                  className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none placeholder:text-[#878786]/50 ${
+                  className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 text-foreground ${
                     errors.username
-                      ? 'border-[#E54D2E] focus:border-[#E54D2E]'
-                      : 'border-[#E5E5E4] focus:border-[#0A0A0A]'
+                      ? 'border-danger focus:border-danger'
+                      : 'border-border focus:border-foreground'
                   }`}
                 />
                 {errors.username && (
                   <motion.p
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="text-[11px] uppercase tracking-widest font-mono text-primary mt-2"
+                    className="text-[11px] uppercase tracking-widest font-mono text-danger mt-2"
                   >
                     {errors.username.message}
                   </motion.p>
@@ -225,17 +225,17 @@ export default function StudentSignupPage() {
                 <input
                   type="email"
                   {...register('email')}
-                  className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none placeholder:text-[#878786]/50 ${
+                  className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 text-foreground ${
                     errors.email
-                      ? 'border-[#E54D2E] focus:border-[#E54D2E]'
-                      : 'border-[#E5E5E4] focus:border-[#0A0A0A]'
+                      ? 'border-danger focus:border-danger'
+                      : 'border-border focus:border-foreground'
                   }`}
                 />
                 {errors.email && (
                   <motion.p
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="text-[11px] uppercase tracking-widest font-mono text-primary mt-2"
+                    className="text-[11px] uppercase tracking-widest font-mono text-danger mt-2"
                   >
                     {errors.email.message}
                   </motion.p>
@@ -254,17 +254,17 @@ export default function StudentSignupPage() {
                       e.target.value = e.target.value.replace(/[^\d+]/g, '');
                     },
                   })}
-                  className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none placeholder:text-[#878786]/50 ${
+                  className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 text-foreground ${
                     errors.phone
-                      ? 'border-[#E54D2E] focus:border-[#E54D2E]'
-                      : 'border-[#E5E5E4] focus:border-[#0A0A0A]'
+                      ? 'border-danger focus:border-danger'
+                      : 'border-border focus:border-foreground'
                   }`}
                 />
                 {errors.phone && (
                   <motion.p
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="text-[11px] uppercase tracking-widest font-mono text-primary mt-2"
+                    className="text-[11px] uppercase tracking-widest font-mono text-danger mt-2"
                   >
                     {errors.phone.message}
                   </motion.p>
@@ -278,17 +278,17 @@ export default function StudentSignupPage() {
                 <input
                   type="password"
                   {...register('password')}
-                  className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none placeholder:text-[#878786]/50 ${
+                  className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 text-foreground ${
                     errors.password
-                      ? 'border-[#E54D2E] focus:border-[#E54D2E]'
-                      : 'border-[#E5E5E4] focus:border-[#0A0A0A]'
+                      ? 'border-danger focus:border-danger'
+                      : 'border-border focus:border-foreground'
                   }`}
                 />
                 {errors.password && (
                   <motion.p
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="text-[11px] uppercase tracking-widest font-mono text-primary mt-2"
+                    className="text-[11px] uppercase tracking-widest font-mono text-danger mt-2"
                   >
                     {errors.password.message}
                   </motion.p>
@@ -304,10 +304,10 @@ export default function StudentSignupPage() {
                     <select
                       {...register('cohortId')}
                       onChange={handleCohortChange}
-                      className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none ${
+                      className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-none text-foreground ${
                         errors.cohortId
-                          ? 'border-[#E54D2E] focus:border-[#E54D2E]'
-                          : 'border-[#E5E5E4] focus:border-[#0A0A0A]'
+                          ? 'border-danger focus:border-danger'
+                          : 'border-border focus:border-foreground'
                       }`}
                     >
                       <option value="">Select Cohort</option>
@@ -324,10 +324,10 @@ export default function StudentSignupPage() {
                       <div>
                         <select
                           {...register('sessionId')}
-                          className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none ${
+                          className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-none text-foreground ${
                             errors.sessionId
-                              ? 'border-[#E54D2E] focus:border-[#E54D2E]'
-                              : 'border-[#E5E5E4] focus:border-[#0A0A0A]'
+                              ? 'border-danger focus:border-danger'
+                              : 'border-border focus:border-foreground'
                           }`}
                         >
                           <option value="">Select Session</option>
@@ -345,7 +345,7 @@ export default function StudentSignupPage() {
                           <motion.p
                             initial={{ opacity: 0, y: -5 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="text-[11px] uppercase tracking-widest font-mono text-primary mt-2"
+                            className="text-[11px] uppercase tracking-widest font-mono text-danger mt-2"
                           >
                             {errors.sessionId.message}
                           </motion.p>
@@ -356,17 +356,17 @@ export default function StudentSignupPage() {
                           type="password"
                           {...register('cohortPin')}
                           placeholder="Cohort PIN"
-                          className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none placeholder:text-[#878786]/50 ${
+                          className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 text-foreground ${
                             errors.cohortPin
-                              ? 'border-[#E54D2E] focus:border-[#E54D2E]'
-                              : 'border-[#E5E5E4] focus:border-[#0A0A0A]'
+                              ? 'border-danger focus:border-danger'
+                              : 'border-border focus:border-foreground'
                           }`}
                         />
                         {errors.cohortPin && (
                           <motion.p
                             initial={{ opacity: 0, y: -5 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="text-[11px] uppercase tracking-widest font-mono text-primary mt-2"
+                            className="text-[11px] uppercase tracking-widest font-mono text-danger mt-2"
                           >
                             {errors.cohortPin.message}
                           </motion.p>
@@ -381,7 +381,7 @@ export default function StudentSignupPage() {
             <button
               type="submit"
               disabled={isSubmitting || (isDirty && !isValid)}
-              className="w-full h-[48px] bg-[#0A0A0A] text-[#FFFFFF] rounded-none hover:bg-[#1C1C1C] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium mt-8 tracking-widest"
+              className="w-full h-[48px] bg-primary text-primary-foreground rounded-none hover:bg-primary-hover transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium mt-8 tracking-widest"
             >
               {isSubmitting ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -396,7 +396,7 @@ export default function StudentSignupPage() {
           Already have an account?{' '}
           <Link
             href="/student/login"
-            className="text-secondary font-medium hover:underline underline-offset-4"
+            className="text-foreground font-medium hover:underline underline-offset-4"
           >
             Sign in
           </Link>

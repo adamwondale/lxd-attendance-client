@@ -62,7 +62,7 @@ function ForgotPasswordContent() {
         title="Check your email"
         subtitle={`If an account exists for ${email}, we have sent password reset instructions.`}
         footer={
-          <Link href={`/${role.toLowerCase()}/login`} className="text-secondary-hover hover:underline underline-offset-4">
+          <Link href={`/${role.toLowerCase()}/login`} className="text-foreground hover:underline underline-offset-4">
             Return to login
           </Link>
         }
@@ -72,10 +72,10 @@ function ForgotPasswordContent() {
           animate={{ opacity: 1, scale: 1 }}
           className="flex flex-col items-center justify-center py-8 text-center"
         >
-          <div className="w-16 h-16 bg-[#e6f4ea] rounded-full flex items-center justify-center mb-6">
-            <CheckCircle2 className="w-8 h-8 text-[#137333]" />
+          <div className="w-16 h-16 bg-success-surface border border-success/20 rounded-full flex items-center justify-center mb-6">
+            <CheckCircle2 className="w-8 h-8 text-success" />
           </div>
-          <p className="text-[#4a4a4a] text-[14px]">
+          <p className="text-muted text-[14px]">
             You can safely close this window. Check your inbox (and spam folder) for the reset link.
           </p>
         </motion.div>
@@ -89,7 +89,7 @@ function ForgotPasswordContent() {
       title="Forgot password?"
       subtitle="Enter the email address associated with your account, and we'll send you a link to reset your password."
       footer={
-        <Link href={`/${role.toLowerCase()}/login`} className="text-secondary-hover hover:underline underline-offset-4">
+        <Link href={`/${role.toLowerCase()}/login`} className="text-foreground hover:underline underline-offset-4">
           Back to login
         </Link>
       }
@@ -98,9 +98,9 @@ function ForgotPasswordContent() {
         <motion.div
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-4 p-3 border border-[#E54D2E] bg-[#E54D2E]/5"
+          className="mb-4 p-3 border border-danger/30 bg-danger-surface rounded-none"
         >
-          <p className="font-mono text-[11px] text-[#E54D2E] uppercase tracking-wide">
+          <p className="font-mono text-[11px] text-danger uppercase tracking-wide">
             {error}
           </p>
         </motion.div>
@@ -120,7 +120,7 @@ function ForgotPasswordContent() {
         <button
           type="submit"
           disabled={loading || !email}
-          className="button mt-2 w-full h-11 flex items-center justify-center gap-2 bg-secondary text-white font-sans font-medium text-[14px] border border-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-[150ms] hover:bg-[#2a2a2a]"
+          className="button mt-2 w-full h-11 flex items-center justify-center gap-2 bg-primary text-primary-foreground font-sans font-medium text-[14px] border border-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-[150ms] hover:bg-primary-hover rounded-none"
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><span>Send reset link</span><ArrowRight className="w-4 h-4" /></>}
         </button>
