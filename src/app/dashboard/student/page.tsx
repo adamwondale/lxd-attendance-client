@@ -49,8 +49,8 @@ export default function StudentDashboardPage() {
     });
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 space-y-10 sm:space-y-12 text-primary bg-[#F9F9F8] min-h-full font-sans">
-    <div className="p-6 max-w-[640px] mx-auto space-y-12 text-secondary bg-background min-h-screen font-sans">
+    <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 space-y-10 sm:space-y-12 text-primary bg-[#F9F9F8] min-h-full font-sans">
+      <div className="mx-auto space-y-12 text-secondary bg-background min-h-screen font-sans">
       
       {/* Stats Summary */}
       <section className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">

@@ -176,7 +176,7 @@ export default function ReportsPage() {
       },
       fetchPolicy: 'network-only',
     });
-    return res.data.attendanceReport.data;
+    return res.data?.attendanceReport.data || [];
   };
 
   const exportExcel = async () => {

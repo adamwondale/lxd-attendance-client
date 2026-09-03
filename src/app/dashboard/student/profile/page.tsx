@@ -44,7 +44,7 @@ export default function StudentProfilePage() {
   }
 
   return (
-    <div className="p-6 max-w-lg mx-auto space-y-8 bg-background min-h-[calc(100vh-68px)] font-sans text-secondary">
+    <div className="p-6 max-w-2xl mx-auto space-y-8 bg-background min-h-[calc(100vh-68px)] font-sans text-secondary">
       
       {/* Header Area */}
       <div>
