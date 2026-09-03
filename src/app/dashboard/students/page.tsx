@@ -578,6 +578,7 @@ function EditStudentModal({
   const [newEnrollment, setNewEnrollment] = useState(false);
   const [selectedCohort, setSelectedCohort] = useState('');
   const [selectedSession, setSelectedSession] = useState('');
+  const [updatingSessionFor, setUpdatingSessionFor] = useState<string | null>(null);
 
   useEffect(() => {
     const e = validateEditForm(form);
@@ -640,6 +641,28 @@ function EditStudentModal({
     cohortId: string,
     newSessionId: string,
   ) => {
+    setUpdatingSessionFor(cohortId);
+    
+    // Optimistic update
+    setLocalMemberships((prev) =>
+      prev.map((m) => {
+        if (m.cohortId === cohortId) {
+          const cohort = cohortData?.listCohorts?.find(
+            (c: any) => c.id === cohortId,
+          );
+          const newSess = cohort?.sessions?.find(
+            (s: any) => s.id === newSessionId,
+          );
+          return {
+            ...m,
+            sessionId: newSessionId,
+            session: { name: newSess?.name || m.session?.name },
+          };
+        }
+        return m;
+      }),
+    );
+
     try {
       await updateMembership({
         variables: { userId: student.id, cohortId, sessionId: newSessionId },
@@ -648,6 +671,10 @@ function EditStudentModal({
       onRefetch();
     } catch (err: any) {
       toast.error(err.message || 'Failed to update session.');
+      // Revert optimistic update on failure by refetching
+      onRefetch();
+    } finally {
+      setUpdatingSessionFor(null);
     }
   };
 
@@ -822,19 +849,31 @@ function EditStudentModal({
                       </p>
                     </div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <select
-                        className="h-9 px-2 border border-[#E5E5E4] bg-[#F9F9F8] text-[13px] font-sans text-[#0A0A0A] outline-none focus:border-[#0A0A0A] transition-colors rounded-none w-full md:w-36"
-                        value={m.sessionId}
-                        onChange={(e) =>
-                          handleUpdateSession(m.cohortId, e.target.value)
-                        }
-                      >
-                        {cohort?.sessions?.map((s: any) => (
-                          <option key={s.id} value={s.id}>
-                            {s.name}
-                          </option>
-                        ))}
-                      </select>
+                      <div className="relative w-full md:w-36">
+                        <select
+                          disabled={updatingSessionFor === m.cohortId}
+                          className="h-9 px-2 w-full border border-[#E5E5E4] bg-[#F9F9F8] text-[13px] font-sans text-[#0A0A0A] outline-none focus:border-[#0A0A0A] transition-colors rounded-none disabled:opacity-60 appearance-none"
+                          value={m.sessionId}
+                          onChange={(e) =>
+                            handleUpdateSession(m.cohortId, e.target.value)
+                          }
+                        >
+                          {cohort?.sessions?.map((s: any) => (
+                            <option key={s.id} value={s.id}>
+                              {s.name}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-[#878786]">
+                          {updatingSessionFor === m.cohortId ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          )}
+                        </div>
+                      </div>
                       <button
                         onClick={() => handleRemoveCohort(m.cohortId)}
                         className="h-9 px-3 border border-[#E54D2E]/30 text-[#E54D2E] font-mono text-[10px] uppercase tracking-widest hover:bg-[#E54D2E]/5 hover:border-[#E54D2E] transition-colors rounded-none flex-1 md:flex-none"

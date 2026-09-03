@@ -30,20 +30,22 @@ export function ProjectorLauncher() {
   })
 
   const openLauncher = () => {
-    const active = localStorage.getItem('activeProjector')
-    if (active) {
-      try {
-        setActiveSession(JSON.parse(active))
-      } catch (e) {}
-    } else {
-      setActiveSession(null)
-    }
+    setActiveSession(null)
     setIsOpen(true)
+  }
+
+  const handleSessionClick = (cohortId: string, sessionId: string, sessionName: string) => {
+    const active = localStorage.getItem(`activeProjector_${sessionId}`)
+    if (active) {
+      setActiveSession({ cohortId, sessionId, sessionName })
+    } else {
+      handleLaunch(cohortId, sessionId, sessionName)
+    }
   }
 
   const handleLaunch = (cohortId: string, sessionId: string, sessionName: string) => {
     const launchedAt = Date.now()
-    localStorage.setItem('activeProjector', JSON.stringify({ cohortId, sessionId, launchedAt, sessionName }))
+    localStorage.setItem(`activeProjector_${sessionId}`, JSON.stringify({ cohortId, sessionId, launchedAt, sessionName }))
     window.open(`/scan/projector?cohortId=${cohortId}&sessionId=${sessionId}&launchedAt=${launchedAt}`, '_blank')
     setIsOpen(false)
   }
@@ -73,10 +75,16 @@ export function ProjectorLauncher() {
                     Session <strong>{activeSession.sessionName}</strong> is currently active on a projector.
                   </div>
                   <button 
-                    onClick={() => setActiveSession(null)}
+                    onClick={() => handleLaunch(activeSession.cohortId!, activeSession.sessionId!, activeSession.sessionName)}
                     className="w-full bg-red-600 text-white px-4 py-2 rounded text-sm hover:bg-red-700 font-medium"
                   >
                     Close older session and start a new one
+                  </button>
+                  <button 
+                    onClick={() => setActiveSession(null)}
+                    className="w-full bg-transparent text-gray-600 border border-gray-300 px-4 py-2 rounded text-sm hover:bg-black/5 font-medium mt-2"
+                  >
+                    Cancel
                   </button>
                 </div>
               ) : loading ? (
@@ -91,7 +99,7 @@ export function ProjectorLauncher() {
                       {cohort.sessions.map((session: any) => (
                         <button
                           key={session.id}
-                          onClick={() => handleLaunch(cohort.id, session.id, session.name)}
+                          onClick={() => handleSessionClick(cohort.id, session.id, session.name)}
                           className="block w-full text-left px-3 py-2 text-sm hover:bg-black/5 rounded"
                         >
                           Launch {session.name}

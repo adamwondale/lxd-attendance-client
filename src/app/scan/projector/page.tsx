@@ -186,7 +186,7 @@ function ProjectorContent() {
 
   useEffect(() => {
     const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'activeProjector') {
+      if (e.key === `activeProjector_${sessionId}`) {
         const newValue = e.newValue ? JSON.parse(e.newValue) : null;
         if (!newValue || newValue.launchedAt.toString() !== launchedAt) {
           // Session was ended or a new one was started
@@ -199,7 +199,7 @@ function ProjectorContent() {
   }, [launchedAt])
 
   const endSession = () => {
-    localStorage.removeItem('activeProjector')
+    localStorage.removeItem(`activeProjector_${sessionId}`)
     window.location.href = '/dashboard/attendance'
   }
 

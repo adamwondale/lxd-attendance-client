@@ -1,14 +1,14 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
-import { getSession, signIn } from "next-auth/react"
+import { useCallback, useEffect, useState } from "react"
+import { useSession, signIn } from "next-auth/react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useMutation } from "@apollo/client/react/index.js"
 import { gql } from "@apollo/client/core/index.js"
 import { AlertCircle, CheckCircle2, Loader2, Camera, RefreshCcw, Scan } from "lucide-react"
-import { Html5Qrcode, type CameraDevice } from "html5-qrcode"
+import { useQRScanner } from "@caffeineai/qr-code"
 import { getDeviceSignature } from "@/lib/device"
 
 const LOG_ATTENDANCE = gql`
@@ -16,8 +16,6 @@ const LOG_ATTENDANCE = gql`
     logAttendance(qrCode: $qrCode, deviceSignature: $deviceSignature)
   }
 `
-
-const SCANNER_ID = "lxd-student-qr-reader"
 
 function extractAttendanceCode(decodedText: string) {
   try {
@@ -29,55 +27,45 @@ function extractAttendanceCode(decodedText: string) {
 }
 
 export default function StudentScanPage() {
-  const [authStatus, setAuthStatus] = useState<"loading" | "authenticated" | "unauthenticated">("loading")
+  const { status } = useSession()
   const [logAttendance] = useMutation(LOG_ATTENDANCE)
-  const scannerRef = useRef<Html5Qrcode | null>(null)
-  const runningRef = useRef(false)
-  const processingRef = useRef(false)
-  const restartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const startScannerRef = useRef<() => Promise<void>>(async () => {})
 
   const [scanStatus, setScanStatus] = useState<"idle" | "success" | "error" | "loading">("idle")
   const [errorMsg, setErrorMsg] = useState("")
-  const [cameraError, setCameraError] = useState("")
-  const [cameraLoading, setCameraLoading] = useState(false)
-  const [isActive, setIsActive] = useState(false)
-  const [cameras, setCameras] = useState<CameraDevice[]>([])
 
-  const stopScanner = useCallback(async () => {
-    const scanner = scannerRef.current
-    if (!scanner || !runningRef.current) {
-      setIsActive(false)
-      return
-    }
-
-    try {
-      await scanner.stop()
-    } catch {
-      // The camera may already have stopped after a permission/device change.
-    } finally {
-      runningRef.current = false
-      setIsActive(false)
-    }
-  }, [])
+  const {
+    qrResults,
+    isActive,
+    isSupported,
+    error: cameraErrorObj,
+    isLoading: cameraLoading,
+    canStartScanning,
+    startScanning,
+    stopScanning,
+    switchCamera,
+    clearResults,
+    videoRef,
+    canvasRef
+  } = useQRScanner({
+    facingMode: 'environment',
+    scanInterval: 100, // Make it super fast!
+    maxResults: 1
+  })
 
   const handleScan = useCallback(async (decodedText: string) => {
-    if (processingRef.current) return
+    if (scanStatus !== "idle") return
+    
     const qrCode = extractAttendanceCode(decodedText)
     if (!qrCode) return
 
-    const session = await getSession()
-    if (!session) {
-      setAuthStatus("unauthenticated")
+    if (status === "unauthenticated") {
       await signIn(undefined, { callbackUrl: window.location.href })
       return
     }
-    setAuthStatus("authenticated")
 
-    processingRef.current = true
     setScanStatus("loading")
     setErrorMsg("")
-    await stopScanner()
+    await stopScanning() // Pause scanning during mutation
 
     try {
       await logAttendance({ variables: { qrCode, deviceSignature: getDeviceSignature() } })
@@ -89,86 +77,19 @@ export default function StudentScanPage() {
       setErrorMsg(message)
       if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate([300])
     } finally {
-      restartTimerRef.current = setTimeout(() => {
-        processingRef.current = false
+      setTimeout(() => {
         setScanStatus("idle")
-        void startScannerRef.current()
+        clearResults()
+        void startScanning()
       }, 2200)
     }
-  }, [logAttendance, stopScanner])
-
-  const startScanner = useCallback(async () => {
-    if (runningRef.current || cameraLoading) return
-
-    setCameraLoading(true)
-    setCameraError("")
-    setErrorMsg("")
-
-    try {
-      const available = cameras.length ? cameras : await Html5Qrcode.getCameras()
-      if (!available.length) throw new Error("No camera was found on this device.")
-      setCameras(available)
-
-      const preferred = available.find((camera) =>
-        /back|rear|environment/i.test(camera.label),
-      ) || available[0]
-
-      const scanner = scannerRef.current || new Html5Qrcode(SCANNER_ID, { verbose: false })
-      scannerRef.current = scanner
-
-      await scanner.start(
-        preferred.id,
-        {
-          fps: 10,
-          qrbox: { width: 250, height: 250 },
-          aspectRatio: 1,
-          disableFlip: false,
-        },
-        (decodedText) => { void handleScan(decodedText) },
-        () => undefined,
-      )
-
-      runningRef.current = true
-      setIsActive(true)
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Unable to start the camera."
-      setCameraError(message)
-      setIsActive(false)
-      runningRef.current = false
-    } finally {
-      setCameraLoading(false)
-    }
-  }, [cameraLoading, cameras, handleScan])
-
-  const switchCamera = useCallback(async () => {
-    if (cameras.length < 2 || cameraLoading) return
-    await stopScanner()
-    const currentCameraId = scannerRef.current ? cameras.find((camera) => camera.label && /back|rear|environment/i.test(camera.label))?.id : undefined
-    const currentIndex = currentCameraId ? cameras.findIndex((camera) => camera.id === currentCameraId) : 0
-    const nextCamera = cameras[(Math.max(currentIndex, 0) + 1) % cameras.length]
-    const scanner = scannerRef.current
-    if (!scanner || runningRef.current) return
-
-    setCameraLoading(true)
-    try {
-      await scanner.start(
-        nextCamera.id,
-        { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1, disableFlip: false },
-        (decodedText) => { void handleScan(decodedText) },
-        () => undefined,
-      )
-      runningRef.current = true
-      setIsActive(true)
-    } catch (error: unknown) {
-      setCameraError(error instanceof Error ? error.message : "Unable to switch camera.")
-    } finally {
-      setCameraLoading(false)
-    }
-  }, [cameraLoading, cameras, handleScan, stopScanner])
+  }, [logAttendance, scanStatus, status, stopScanning, clearResults, startScanning])
 
   useEffect(() => {
-    startScannerRef.current = startScanner
-  }, [startScanner])
+    if (qrResults.length > 0 && scanStatus === "idle") {
+      handleScan(qrResults[0].data)
+    }
+  }, [qrResults, scanStatus, handleScan])
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search)
@@ -180,20 +101,12 @@ export default function StudentScanPage() {
   }, [handleScan])
 
   useEffect(() => {
-    let cancelled = false
-    void getSession().then((session) => {
-      if (cancelled) return
-      setAuthStatus(session ? "authenticated" : "unauthenticated")
-      if (session) void startScannerRef.current()
-    })
-    return () => { cancelled = true }
-  }, [])
+    if (status === "authenticated" && canStartScanning && !isActive && scanStatus === "idle") {
+      void startScanning()
+    }
+  }, [status, canStartScanning, isActive, scanStatus, startScanning])
 
-  useEffect(() => () => {
-    if (restartTimerRef.current) clearTimeout(restartTimerRef.current)
-    const scanner = scannerRef.current
-    if (scanner && runningRef.current) void scanner.stop().catch(() => undefined)
-  }, [])
+  const cameraError = cameraErrorObj?.message || ""
 
   return (
     <div className="p-6 space-y-8 h-full flex flex-col max-w-lg mx-auto">
@@ -208,22 +121,33 @@ export default function StudentScanPage() {
               <div className="text-white/80 font-mono text-[10px] uppercase tracking-widest bg-black/60 px-3 py-1 rounded-full">
                 {cameraLoading ? "Starting Camera" : isActive ? "Active Camera" : "Ready"}
               </div>
-              {cameras.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => void switchCamera()}
-                  disabled={cameraLoading || !isActive}
-                  className="bg-black/60 p-2 rounded-full text-white/80 hover:text-white disabled:opacity-50"
-                  aria-label="Switch camera"
-                >
-                  <RefreshCcw className="w-4 h-4" />
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => void switchCamera()}
+                disabled={cameraLoading || !isActive}
+                className="bg-black/60 p-2 rounded-full text-white/80 hover:text-white disabled:opacity-50"
+                aria-label="Switch camera"
+              >
+                <RefreshCcw className="w-4 h-4" />
+              </button>
             </div>
 
-            <div id={SCANNER_ID} className="w-full h-full min-h-[450px] bg-zinc-950 [&>video]:w-full [&>video]:h-full [&>video]:object-cover" />
+            {isSupported === false && (
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-white/55">
+                <AlertCircle className="w-16 h-16 mb-4 opacity-50" />
+                <p className="font-mono text-[11px] uppercase tracking-widest">Camera not supported</p>
+              </div>
+            )}
 
-            {authStatus === "unauthenticated" && (
+            <video 
+              ref={videoRef} 
+              className="w-full h-full min-h-[450px] bg-zinc-950 object-cover"
+              playsInline
+              muted
+            />
+            <canvas ref={canvasRef} style={{ display: 'none' }} />
+
+            {status === "unauthenticated" && (
               <div className="absolute inset-0 z-20 bg-black/90 text-white flex flex-col items-center justify-center p-6 text-center">
                 <p className="font-serif text-2xl mb-2">Student sign-in required</p>
                 <p className="font-mono text-[10px] uppercase tracking-widest text-white/60 mb-5">Sign in before scanning the projector QR.</p>
@@ -280,8 +204,8 @@ export default function StudentScanPage() {
         <div className="flex gap-4 pb-10">
           {!isActive ? (
             <Button
-              onClick={() => void startScanner()}
-              disabled={cameraLoading}
+              onClick={() => void startScanning()}
+              disabled={!canStartScanning || cameraLoading}
               className="flex-1 h-12 bg-black text-white hover:bg-black/80 font-sans text-[14px]"
             >
               {cameraLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Camera className="w-4 h-4 mr-2" />}
@@ -289,7 +213,7 @@ export default function StudentScanPage() {
             </Button>
           ) : (
             <Button
-              onClick={() => void stopScanner()}
+              onClick={() => void stopScanning()}
               className="flex-1 h-12 bg-white text-black border border-black/20 hover:bg-black/5 font-sans text-[14px]"
             >
               Stop Scanner
