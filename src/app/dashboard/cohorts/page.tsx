@@ -113,7 +113,6 @@ export default function CohortsPage() {
     startDate: '',
     endDate: '',
     isActive: true,
-    durationMonths: 3,
   });
 
   const openCreateDialog = () => {
@@ -124,7 +123,6 @@ export default function CohortsPage() {
       startDate: '',
       endDate: '',
       isActive: true,
-      durationMonths: 3,
     });
     setIsDialogOpen(true);
   };
@@ -137,7 +135,6 @@ export default function CohortsPage() {
       startDate: new Date(cohort.startDate).toISOString().split('T')[0],
       endDate: new Date(cohort.endDate).toISOString().split('T')[0],
       isActive: cohort.isActive,
-      durationMonths: cohort.durationMonths || 3,
     });
     setIsDialogOpen(true);
   };
@@ -238,19 +235,6 @@ export default function CohortsPage() {
             className="grid grid-cols-1 md:grid-cols-2 gap-5"
           >
             <div className="flex flex-col gap-1 md:col-span-2">
-              <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">
-                Name
-              </label>
-              <input
-                required
-                type="text"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-xl"
-                placeholder="e.g. Summer 2026 Batch"
-              />
               <label className="font-mono text-[11px] uppercase tracking-widest text-muted">
                 Name
               </label>
@@ -280,22 +264,7 @@ export default function CohortsPage() {
                 className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-none mb-3"
                 placeholder="e.g. LXD-26"
               />
-              <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">
-                Duration
-              </label>
-              <select
-                value={formData.durationMonths}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    durationMonths: Number(e.target.value),
-                  })
-                }
-                className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-none appearance-none"
-              >
-                <option value={3}>3 months</option>
-                <option value={6}>6 months</option>
-              </select>
+
             </div>
 
             <div className="flex flex-col gap-1">
