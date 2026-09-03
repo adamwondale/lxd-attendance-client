@@ -89,11 +89,15 @@ function StudentLoginContent() {
       }
     >
       {(urlError || error) && (
-        <div className="mb-4 p-3 border border-primary bg-primary/5">
-          <p className="font-mono text-[11px] text-primary uppercase tracking-wide">
+        <motion.div
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-4 p-3 border border-[#E54D2E] bg-[#E54D2E]/5"
+        >
+          <p className="font-mono text-[11px] text-[#E54D2E] uppercase tracking-wide">
             {error || AUTH_ERRORS[urlError ?? ''] || AUTH_ERRORS.Default}
           </p>
-        </div>
+        </motion.div>
       )}
 
       <form onSubmit={submit} noValidate className="flex flex-col gap-4">

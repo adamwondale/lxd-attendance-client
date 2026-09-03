@@ -96,9 +96,9 @@ function ResetPasswordContent() {
         <motion.div
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-4 p-3 border border-primary bg-primary/5"
+          className="mb-4 p-3 border border-[#E54D2E] bg-[#E54D2E]/5"
         >
-          <p className="font-mono text-[11px] text-primary uppercase tracking-wide">
+          <p className="font-mono text-[11px] text-[#E54D2E] uppercase tracking-wide">
             {error}
           </p>
         </motion.div>
