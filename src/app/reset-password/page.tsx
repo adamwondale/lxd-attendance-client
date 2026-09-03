@@ -45,11 +45,13 @@ function ResetPasswordContent() {
         title="Invalid Link"
         subtitle="This password reset link is invalid or missing the secure token."
         footer={
-          <Link href={`/${role.toLowerCase()}/login`} className="text-secondary-hover hover:underline underline-offset-4">
+          <Link href={`/${role.toLowerCase()}/login`} className="text-[#1C1C1C] hover:underline underline-offset-4">
             Return to login
           </Link>
         }
-      />
+      >
+        <div />
+      </LoginPageShell>
     )
   }
 

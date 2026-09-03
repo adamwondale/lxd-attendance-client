@@ -145,9 +145,9 @@ export default function StudentCohortsPage() {
                 </div>
               ))}
             </div>
-          ) : myCohortsData?.myCohorts?.length > 0 ? (
+          ) : (myCohortsData?.myCohorts?.length ?? 0) > 0 ? (
             <ul className="divide-y divide-border">
-              {myCohortsData.myCohorts.map((cohort: any) => (
+              {myCohortsData?.myCohorts?.map((cohort: any) => (
                 <li
                   key={cohort.id}
                   className="p-4 flex items-center justify-between hover:bg-black/[0.02] transition-colors"
@@ -199,9 +199,9 @@ export default function StudentCohortsPage() {
                 </div>
               ))}
             </div>
-          ) : availableCohortsData?.availableCohorts?.length > 0 ? (
+          ) : (availableCohortsData?.availableCohorts?.length ?? 0) > 0 ? (
             <ul className="divide-y divide-border">
-              {availableCohortsData.availableCohorts.map((cohort: any) => (
+              {availableCohortsData?.availableCohorts?.map((cohort: any) => (
                 <li
                   key={cohort.id}
                   className="p-4 flex items-center justify-between hover:bg-black/[0.02] transition-colors group"

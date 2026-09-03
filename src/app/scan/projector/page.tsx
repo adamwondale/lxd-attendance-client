@@ -241,7 +241,7 @@ function ProjectorContent() {
             <p className="font-mono text-xs text-gray-400 uppercase tracking-widest mt-3">
               Open the projector from an active cohort or session in the admin dashboard.
             </p>
-            {errorMessage && <p className="text-xs text-red-400 mt-4">{errorMessage}</p>}
+
           </div>
         ) : (
           <>

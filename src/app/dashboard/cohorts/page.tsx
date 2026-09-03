@@ -113,6 +113,7 @@ export default function CohortsPage() {
     startDate: '',
     endDate: '',
     isActive: true,
+    durationMonths: 3,
   });
 
   const openCreateDialog = () => {
@@ -123,6 +124,7 @@ export default function CohortsPage() {
       startDate: '',
       endDate: '',
       isActive: true,
+      durationMonths: 3,
     });
     setIsDialogOpen(true);
   };
@@ -135,6 +137,7 @@ export default function CohortsPage() {
       startDate: new Date(cohort.startDate).toISOString().split('T')[0],
       endDate: new Date(cohort.endDate).toISOString().split('T')[0],
       isActive: cohort.isActive,
+      durationMonths: cohort.durationMonths || 3,
     });
     setIsDialogOpen(true);
   };
