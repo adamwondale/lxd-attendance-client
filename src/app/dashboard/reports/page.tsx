@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { gql } from '@apollo/client/core/index.js';
-import { useQuery, useSubscription } from '@apollo/client/react/index.js';
+import { useQuery, useSubscription, useApolloClient } from '@apollo/client/react/index.js';
 import {
   Printer,
   FileSpreadsheet,
@@ -31,22 +31,35 @@ const REPORT = gql`
     $endDate: String!
     $cohortId: String
     $sessionId: String
+    $page: Int
+    $limit: Int
   ) {
     attendanceReport(
       startDate: $startDate
       endDate: $endDate
       cohortId: $cohortId
       sessionId: $sessionId
+      page: $page
+      limit: $limit
     ) {
-      id
-      date
-      status
-      traineeId
-      traineeName
-      cohortName
-      sessionName
-      latenessMinutes
-      penalty
+      data {
+        id
+        date
+        status
+        traineeId
+        traineeName
+        cohortName
+        sessionName
+        latenessMinutes
+        penalty
+      }
+      totalCount
+      summary {
+        present
+        late
+        absent
+        penalty
+      }
     }
   }
 `;
@@ -68,7 +81,13 @@ type ReportRow = {
   latenessMinutes: number;
   penalty: number;
 };
-type ReportData = { attendanceReport: ReportRow[] };
+type ReportData = { 
+  attendanceReport: {
+    data: ReportRow[];
+    totalCount: number;
+    summary: { present: number; late: number; absent: number; penalty: number };
+  }
+};
 
 const ON_ATTENDANCE_UPDATED = gql`
   subscription OnAttendanceUpdated {
@@ -97,6 +116,12 @@ export default function ReportsPage() {
   const [endDate, setEndDate] = useState(initial.end);
   const [cohortId, setCohortId] = useState('');
   const [sessionId, setSessionId] = useState('');
+  const PAGE_SIZE = 10;
+  const [page, setPage] = useState(1);
+  const [printing, setPrinting] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const client = useApolloClient();
+
   const { data: cohortData } = useQuery<ReportCohortsData>(COHORTS, {
     fetchPolicy: 'cache-first',
   });
@@ -106,6 +131,8 @@ export default function ReportsPage() {
       endDate,
       cohortId: cohortId || undefined,
       sessionId: sessionId || undefined,
+      page,
+      limit: PAGE_SIZE,
     },
     fetchPolicy: 'cache-and-network',
   });
@@ -114,29 +141,20 @@ export default function ReportsPage() {
 
   const cohorts = cohortData?.listCohorts || [];
   const selectedCohort = cohorts.find((c: any) => c.id === cohortId);
-  const rows = data?.attendanceReport || [];
-  const [page, setPage] = useState(1);
-  const [printing, setPrinting] = useState(false);
-  const PAGE_SIZE = 10;
-  const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+  const reportData = data?.attendanceReport;
+  const rows = reportData?.data || [];
+  
+  const totalCount = reportData?.totalCount || 0;
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
-  const pagedRows = rows.slice(
-    (safePage - 1) * PAGE_SIZE,
-    safePage * PAGE_SIZE,
-  );
+  
+  const pagedRows = rows; // Already paginated from the server
 
   useEffect(() => {
-    if (page > totalPages) setPage(totalPages);
+    if (page > totalPages && totalPages > 0) setPage(totalPages);
   }, [page, totalPages]);
-  const totals = useMemo(
-    () => ({
-      present: rows.filter((r: any) => r.status === 'Present').length,
-      late: rows.filter((r: any) => r.status === 'Late').length,
-      absent: rows.filter((r: any) => r.status === 'Absent').length,
-      penalty: rows.reduce((n: number, r: any) => n + r.penalty, 0),
-    }),
-    [rows],
-  );
+
+  const totals = reportData?.summary || { present: 0, late: 0, absent: 0, penalty: 0 };
 
   const setPreset = (value: string) => {
     setPeriod(value);
@@ -145,39 +163,141 @@ export default function ReportsPage() {
     setStartDate(r.start);
     setEndDate(r.end);
   };
-  const exportExcel = () => {
-    if (!rows.length) return toast('No report data to export');
-    const escape = (value: unknown) =>
-      String(value ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    const body = rows
-      .map(
-        (r: any) =>
-          `<tr><td>${escape(r.date)}</td><td>${escape(r.traineeName)}</td><td>${escape(r.cohortName)}</td><td>${escape(r.sessionName)}</td><td>${escape(r.status)}</td><td>${r.latenessMinutes || 0}</td><td>${r.penalty || 0}</td></tr>`,
-      )
-      .join('');
-    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:Arial,sans-serif;color:#111}h1{font-size:22px;margin:0 0 6px}p{color:#666;margin:0 0 18px;font-size:12px}table{border-collapse:collapse;width:100%}th{background:#0A0A0A;color:#fff;font-weight:700;text-align:left;padding:10px;border:1px solid #ddd}td{padding:9px;border:1px solid #ddd}tr:nth-child(even){background:#f7f7f5}</style></head><body><h1>LXD Attendance Report</h1><p>${escape(startDate)} → ${escape(endDate)} · ${rows.length} records</p><table><thead><tr><th>Date</th><th>Trainee</th><th>Cohort</th><th>Session</th><th>Status</th><th>Late Minutes</th><th>Penalty (ETB)</th></tr></thead><tbody>${body}</tbody></table></body></html>`;
-    const blob = new Blob([html], {
-      type: 'application/vnd.ms-excel;charset=utf-8',
+  const fetchAllReportData = async () => {
+    const res = await client.query<ReportData>({
+      query: REPORT,
+      variables: {
+        startDate,
+        endDate,
+        cohortId: cohortId || undefined,
+        sessionId: sessionId || undefined,
+        page: 1,
+        limit: 1000000,
+      },
+      fetchPolicy: 'network-only',
     });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `attendance-report-${startDate}-to-${endDate}.xls`;
-    a.click();
-    URL.revokeObjectURL(url);
+    return res.data.attendanceReport.data;
   };
 
-  const exportPDF = () => {
-    if (!rows.length) return toast('No report data to export');
+  const exportExcel = async () => {
+    if (!totalCount) return toast('No report data to export');
+    setExporting(true);
+    try {
+      const allRows = await fetchAllReportData();
+      const escape = (value: unknown) =>
+        String(value ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      const body = allRows
+        .map(
+          (r: any) =>
+            `<tr><td>${escape(r.date)}</td><td>${escape(r.traineeName)}</td><td>${escape(r.cohortName)}</td><td>${escape(r.sessionName)}</td><td>${escape(r.status)}</td><td>${r.latenessMinutes || 0}</td><td>${r.penalty || 0}</td></tr>`,
+        )
+        .join('');
+      const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:Arial,sans-serif;color:#111}h1{font-size:22px;margin:0 0 6px}p{color:#666;margin:0 0 18px;font-size:12px}table{border-collapse:collapse;width:100%}th{background:#0A0A0A;color:#fff;font-weight:700;text-align:left;padding:10px;border:1px solid #ddd}td{padding:9px;border:1px solid #ddd}tr:nth-child(even){background:#f7f7f5}</style></head><body><h1>LXD Attendance Report</h1><p>${escape(startDate)} → ${escape(endDate)} · ${allRows.length} records</p><table><thead><tr><th>Date</th><th>Trainee</th><th>Cohort</th><th>Session</th><th>Status</th><th>Late Minutes</th><th>Penalty (ETB)</th></tr></thead><tbody>${body}</tbody></table></body></html>`;
+      const blob = new Blob([html], {
+        type: 'application/vnd.ms-excel;charset=utf-8',
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `attendance-report-${startDate}-to-${endDate}.xls`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      toast.error("Failed to export data");
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const printFullReport = async () => {
+    if (!totalCount) return toast('No report data to print');
     setPrinting(true);
-    window.setTimeout(() => {
-      window.print();
+    try {
+      const allRows = await fetchAllReportData();
+      const escape = (value: unknown) =>
+        String(value ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+          
+      const body = allRows
+        .map(
+          (r: any) =>
+            `<tr>
+              <td style="white-space:nowrap">${escape(r.date)}</td>
+              <td><strong>${escape(r.traineeName)}</strong></td>
+              <td style="color:#666">${escape(r.cohortName)}</td>
+              <td style="color:#666">${escape(r.sessionName)}</td>
+              <td>${escape(r.status)}</td>
+              <td>${r.latenessMinutes ? r.latenessMinutes + ' min' : '--'}</td>
+              <td>${r.penalty ? r.penalty + ' ETB' : '--'}</td>
+            </tr>`,
+        )
+        .join('');
+        
+      const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+        <title>Attendance Report</title>
+        <style>
+          @page { size: auto; margin: 15mm; }
+          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #0A0A0A; line-height: 1.4; font-size: 11px; }
+          .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; border-bottom: 2px solid #0A0A0A; padding-bottom: 12px; }
+          .title { margin: 0; font-size: 24px; font-weight: 700; font-family: serif; }
+          .meta { margin: 0; color: #666; font-family: monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+          table { border-collapse: collapse; width: 100%; text-align: left; }
+          th { padding: 8px 4px; border-bottom: 1px solid #0A0A0A; font-family: monospace; font-size: 9px; text-transform: uppercase; color: #666; letter-spacing: 0.5px; font-weight: normal; }
+          td { padding: 10px 4px; border-bottom: 1px solid #E5E5E4; }
+          .summary { display: flex; gap: 24px; margin-bottom: 24px; }
+          .summary-item { border: 1px solid #E5E5E4; padding: 12px 20px; flex: 1; }
+          .summary-label { font-family: monospace; font-size: 9px; text-transform: uppercase; color: #666; letter-spacing: 0.5px; margin-bottom: 4px; }
+          .summary-value { font-size: 20px; font-weight: 600; font-family: serif; margin: 0; }
+        </style>
+        </head><body>
+          <div class="header">
+            <div>
+              <h1 class="title">Attendance Report</h1>
+              <p class="meta">${escape(startDate)} &rarr; ${escape(endDate)}</p>
+            </div>
+            <div class="meta">${allRows.length} RECORDS GENERATED</div>
+          </div>
+          <div class="summary">
+            <div class="summary-item"><div class="summary-label">Present</div><div class="summary-value">${totals.present}</div></div>
+            <div class="summary-item"><div class="summary-label">Late</div><div class="summary-value">${totals.late}</div></div>
+            <div class="summary-item"><div class="summary-label">Absent</div><div class="summary-value">${totals.absent}</div></div>
+            <div class="summary-item"><div class="summary-label">Penalties</div><div class="summary-value">${totals.penalty} ETB</div></div>
+          </div>
+          <table><thead><tr><th>Date</th><th>Trainee</th><th>Cohort</th><th>Session</th><th>Status</th><th>Late</th><th>Penalty</th></tr></thead><tbody>${body}</tbody></table>
+        </body></html>`;
+
+      const iframe = document.createElement('iframe');
+      iframe.style.position = 'absolute';
+      iframe.style.width = '0px';
+      iframe.style.height = '0px';
+      iframe.style.border = 'none';
+      document.body.appendChild(iframe);
+      
+      const doc = iframe.contentWindow?.document;
+      if (doc) {
+        doc.open();
+        doc.write(html);
+        doc.close();
+        
+        iframe.contentWindow?.focus();
+        setTimeout(() => {
+          iframe.contentWindow?.print();
+          setTimeout(() => {
+            document.body.removeChild(iframe);
+          }, 1000);
+        }, 500);
+      }
+    } catch (e) {
+      toast.error("Failed to prepare print document");
+    } finally {
       setPrinting(false);
-    }, 50);
+    }
   };
 
   return (
@@ -194,16 +314,18 @@ export default function ReportsPage() {
         </div>
         <div className="flex gap-3">
           <button
-            onClick={() => window.print()}
-            className="h-11 px-5 border border-[#E5E5E4] bg-white text-[#0A0A0A] hover:bg-[#F9F9F8] transition-colors rounded-none flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest"
+            onClick={printFullReport}
+            disabled={printing}
+            className="h-11 px-5 border border-[#E5E5E4] bg-white text-[#0A0A0A] hover:bg-[#F9F9F8] transition-colors rounded-none flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest disabled:opacity-50"
           >
-            <Printer className="w-4 h-4" /> Print
+            {printing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Printer className="w-4 h-4" />} Print
           </button>
           <button
             onClick={exportExcel}
-            className="h-11 px-5 bg-[#0A0A0A] text-white hover:bg-[#1C1C1C] transition-colors rounded-none flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest"
+            disabled={exporting}
+            className="h-11 px-5 bg-[#0A0A0A] text-white hover:bg-[#1C1C1C] transition-colors rounded-none flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest disabled:opacity-50"
           >
-            <FileSpreadsheet className="w-4 h-4" /> Export Excel
+            {exporting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <FileSpreadsheet className="w-4 h-4" />} Export Excel
           </button>
         </div>
       </div>
@@ -298,7 +420,7 @@ export default function ReportsPage() {
             </p>
           </div>
           <div className="text-[11px] font-mono text-muted uppercase tracking-widest border border-border px-4 py-2 bg-background">
-            {rows.length} records found
+            {totalCount} records found
           </div>
         </div>
 
@@ -405,10 +527,10 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      {rows.length > PAGE_SIZE && (
+      {totalCount > PAGE_SIZE && (
         <div className="print:hidden flex flex-col sm:flex-row items-center justify-between gap-3 rounded-2xl border border-[#E5E5E4] bg-white px-4 py-3">
           <span className="font-mono text-[10px] uppercase tracking-widest text-[#878786]">
-            Page {safePage} of {totalPages} · {rows.length} records
+            Page {safePage} of {totalPages} · {totalCount} records
           </span>
           <div className="flex items-center gap-2">
             <button
