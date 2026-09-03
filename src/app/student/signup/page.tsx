@@ -22,6 +22,9 @@ const ACTIVE_COHORTS = gql`
   }
 `
 
+type ActiveCohort = { id: string; name: string; sessions: Array<{ id: string; name: string; startTime: string }> }
+type ActiveCohortsData = { publicActiveCohorts: ActiveCohort[] }
+
 const studentSignupSchema = z.object({
   name: z.string().min(2, "Name is required"),
   username: z.string().min(3, "Username must be at least 3 characters").regex(/^[a-zA-Z0-9_]+$/, "Only letters, numbers, and underscores allowed"),
@@ -47,7 +50,7 @@ type SignupFormValues = z.infer<typeof studentSignupSchema>
 export default function StudentSignupPage() {
   const router = useRouter()
   const [globalError, setGlobalError] = useState("")
-  const { data: cohortData } = useQuery(ACTIVE_COHORTS)
+  const { data: cohortData } = useQuery<ActiveCohortsData>(ACTIVE_COHORTS)
 
   const {
     register,
@@ -118,7 +121,7 @@ export default function StudentSignupPage() {
         </div>
 
         {/* Form Container */}
-        <div className="bg-[#FFFFFF] border border-[#E5E5E4] p-8 rounded-none shadow-sm">
+        <div className="bg-[#FFFFFF] border border-[#E5E5E4] p-8 rounded-xl shadow-sm">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <AnimatePresence>
               {globalError && (
@@ -126,7 +129,7 @@ export default function StudentSignupPage() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="p-4 bg-[#E54D2E]/10 border border-[#E54D2E]/20 text-[#E54D2E] text-sm flex gap-3 items-start rounded-none"
+                  className="p-4 bg-[#E54D2E]/10 border border-[#E54D2E]/20 text-[#E54D2E] text-sm flex gap-3 items-start rounded-xl"
                 >
                   <AlertCircle className="w-5 h-5 shrink-0" />
                   <p className="mt-0.5">{globalError}</p>
@@ -139,7 +142,7 @@ export default function StudentSignupPage() {
                 <label className="block text-[11px] uppercase tracking-widest font-mono text-[#878786] mb-2">Full Name</label>
                 <input
                   {...register("name")}
-                  className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none placeholder:text-[#878786]/50 ${
+                  className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-xl placeholder:text-[#878786]/50 ${
                     errors.name ? "border-[#E54D2E] focus:border-[#E54D2E]" : "border-[#E5E5E4] focus:border-[#0A0A0A]"
                   }`}
                 />
@@ -154,7 +157,7 @@ export default function StudentSignupPage() {
                 <label className="block text-[11px] uppercase tracking-widest font-mono text-[#878786] mb-2">Username</label>
                 <input
                   {...register("username")}
-                  className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none placeholder:text-[#878786]/50 ${
+                  className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-xl placeholder:text-[#878786]/50 ${
                     errors.username ? "border-[#E54D2E] focus:border-[#E54D2E]" : "border-[#E5E5E4] focus:border-[#0A0A0A]"
                   }`}
                 />
@@ -170,7 +173,7 @@ export default function StudentSignupPage() {
                 <input
                   type="email"
                   {...register("email")}
-                  className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none placeholder:text-[#878786]/50 ${
+                  className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-xl placeholder:text-[#878786]/50 ${
                     errors.email ? "border-[#E54D2E] focus:border-[#E54D2E]" : "border-[#E5E5E4] focus:border-[#0A0A0A]"
                   }`}
                 />
@@ -189,7 +192,7 @@ export default function StudentSignupPage() {
                   {...register("phone", {
                     onChange: (e) => { e.target.value = e.target.value.replace(/[^\d+]/g, '') }
                   })}
-                  className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none placeholder:text-[#878786]/50 ${
+                  className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-xl placeholder:text-[#878786]/50 ${
                     errors.phone ? "border-[#E54D2E] focus:border-[#E54D2E]" : "border-[#E5E5E4] focus:border-[#0A0A0A]"
                   }`}
                 />
@@ -205,7 +208,7 @@ export default function StudentSignupPage() {
                 <input
                   type="password"
                   {...register("password")}
-                  className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none placeholder:text-[#878786]/50 ${
+                  className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-xl placeholder:text-[#878786]/50 ${
                     errors.password ? "border-[#E54D2E] focus:border-[#E54D2E]" : "border-[#E5E5E4] focus:border-[#0A0A0A]"
                   }`}
                 />
@@ -223,7 +226,7 @@ export default function StudentSignupPage() {
                     <select
                       {...register("cohortId")}
                       onChange={handleCohortChange}
-                      className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none ${
+                      className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-xl ${
                         errors.cohortId ? "border-[#E54D2E] focus:border-[#E54D2E]" : "border-[#E5E5E4] focus:border-[#0A0A0A]"
                       }`}
                     >
@@ -239,7 +242,7 @@ export default function StudentSignupPage() {
                       <div>
                         <select
                           {...register("sessionId")}
-                          className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none ${
+                          className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-xl ${
                             errors.sessionId ? "border-[#E54D2E] focus:border-[#E54D2E]" : "border-[#E5E5E4] focus:border-[#0A0A0A]"
                           }`}
                         >
@@ -259,7 +262,7 @@ export default function StudentSignupPage() {
                           type="password"
                           {...register("cohortPin")}
                           placeholder="Cohort PIN"
-                          className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-none placeholder:text-[#878786]/50 ${
+                          className={`w-full h-[44px] px-3 bg-[#F9F9F8] border text-sm outline-none transition-colors rounded-xl placeholder:text-[#878786]/50 ${
                             errors.cohortPin ? "border-[#E54D2E] focus:border-[#E54D2E]" : "border-[#E5E5E4] focus:border-[#0A0A0A]"
                           }`}
                         />
@@ -278,7 +281,7 @@ export default function StudentSignupPage() {
             <button
               type="submit"
               disabled={isSubmitting || (isDirty && !isValid)}
-              className="w-full h-[48px] bg-[#0A0A0A] text-[#FFFFFF] rounded-none hover:bg-[#1C1C1C] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium mt-8 tracking-widest"
+              className="w-full h-[48px] bg-[#0A0A0A] text-[#FFFFFF] rounded-xl hover:bg-[#1C1C1C] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium mt-8 tracking-widest"
             >
               {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>CREATE ACCOUNT</span>}
             </button>

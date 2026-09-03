@@ -1,4 +1,3 @@
-import Link from "next/link"
 import { motion } from "framer-motion"
 
 const EASE = [0.23, 1, 0.32, 1] as const
@@ -47,16 +46,6 @@ export function LoginPageShell({
             {footer}
           </div>
         </motion.div>
-
-        <div className="flex items-center justify-center gap-4 mt-6">
-          <Link href="/student/login" className="font-mono text-[10px] uppercase tracking-widest text-[#878786] hover:text-[#0A0A0A] transition-colors">
-            Student login
-          </Link>
-          <span className="text-[#D8D8D6]">·</span>
-          <Link href="/admin/login" className="font-mono text-[10px] uppercase tracking-widest text-[#878786] hover:text-[#0A0A0A] transition-colors">
-            Admin login
-          </Link>
-        </div>
 
         <motion.p
           initial={{ opacity: 0 }}

@@ -22,6 +22,8 @@ const LIST_COHORTS = gql`
     listCohorts { id name sessions { id name } }
   }
 `
+type StudentCohortListData = { listCohorts: Array<{ id: string; name: string; sessions: Array<{ id: string; name: string }> }> }
+
 const CREATE_STUDENT = gql`
   mutation AdminCreateStudent($name:String!,$email:String!,$phone:String!,$username:String!,$password:String!,$cohortId:String,$sessionId:String) {
     adminCreateStudent(name:$name,email:$email,phone:$phone,username:$username,password:$password,cohortId:$cohortId,sessionId:$sessionId) { id name email username }
@@ -79,7 +81,7 @@ function Field({ label, id, type = "text", placeholder, value, onChange, onBlur,
           placeholder={placeholder}
           onChange={e => onChange(e.target.value)}
           onBlur={onBlur}
-          className={`w-full h-11 px-3 ${isPassword ? "pr-10" : ""} bg-[#F9F9F8] border text-[14px] font-sans text-[#0A0A0A] placeholder:text-[#878786]/50 outline-none transition-[border-color] duration-150 focus:border-[#0A0A0A] disabled:opacity-40 rounded-none ${error ? "border-[#E54D2E]" : "border-[#E5E5E4]"}`}
+          className={`w-full h-11 px-3 ${isPassword ? "pr-10" : ""} bg-[#F9F9F8] border text-[14px] font-sans text-[#0A0A0A] placeholder:text-[#878786]/50 outline-none transition-[border-color] duration-150 focus:border-[#0A0A0A] disabled:opacity-40 rounded-xl ${error ? "border-[#E54D2E]" : "border-[#E5E5E4]"}`}
         />
         {isPassword && (
           <button type="button" onClick={() => setShow(s => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#878786] hover:text-[#0A0A0A] transition-colors">
@@ -104,7 +106,7 @@ function SelectField({ label, id, value, onChange, disabled, children }: {
     <div className="flex flex-col gap-1">
       <label htmlFor={id} className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">{label}</label>
       <select id={id} value={value} onChange={e => onChange(e.target.value)} disabled={disabled}
-        className="w-full h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] text-[14px] font-sans text-[#0A0A0A] outline-none focus:border-[#0A0A0A] transition-[border-color] duration-150 rounded-none disabled:opacity-40 appearance-none">
+        className="w-full h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] text-[14px] font-sans text-[#0A0A0A] outline-none focus:border-[#0A0A0A] transition-[border-color] duration-150 rounded-xl disabled:opacity-40 appearance-none">
         {children}
       </select>
     </div>
@@ -195,8 +197,8 @@ function CreateStudentModal({ cohortData, onClose, onSuccess }: { cohortData: an
         </form>
       </ModalBody>
         <ModalFooter>
-        <button type="button" onClick={onClose} className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-none order-2 sm:order-1">Cancel</button>
-        <button type="submit" form="create-student-form" disabled={loading} className="flex-1 sm:flex-auto h-14 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2">
+        <button type="button" onClick={onClose} className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-xl order-2 sm:order-1">Cancel</button>
+        <button type="submit" form="create-student-form" disabled={loading} className="flex-1 sm:flex-auto h-14 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-xl flex items-center justify-center gap-2 order-1 sm:order-2">
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Create Student"}
         </button>
       </ModalFooter>
@@ -283,7 +285,7 @@ function EditStudentModal({ student, cohortData, onClose, onRefetch }: { student
             </div>
           </div>
           <div className="flex justify-end">
-            <button type="submit" disabled={updating} className="h-10 px-6 bg-[#0A0A0A] text-white font-mono text-[11px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-none flex items-center gap-2 w-full sm:w-auto justify-center">
+            <button type="submit" disabled={updating} className="h-10 px-6 bg-[#0A0A0A] text-white font-mono text-[11px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-xl flex items-center gap-2 w-full sm:w-auto justify-center">
               {updating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Save Profile"}
             </button>
           </div>
@@ -292,7 +294,7 @@ function EditStudentModal({ student, cohortData, onClose, onRefetch }: { student
           <div className="flex items-center justify-between mb-4">
             <p className="font-mono text-[10px] uppercase tracking-widest text-[#878786]">Cohort Enrollments</p>
             {!newEnrollment && (
-              <button onClick={() => setNewEnrollment(true)} className="h-8 px-3 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[10px] uppercase tracking-widest hover:bg-[#F9F9F8] hover:border-[#0A0A0A] transition-colors rounded-none flex items-center gap-1.5">
+              <button onClick={() => setNewEnrollment(true)} className="h-8 px-3 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[10px] uppercase tracking-widest hover:bg-[#F9F9F8] hover:border-[#0A0A0A] transition-colors rounded-xl flex items-center gap-1.5">
                 <Plus className="w-3 h-3" /> Add Enrollment
               </button>
             )}
@@ -310,8 +312,8 @@ function EditStudentModal({ student, cohortData, onClose, onRefetch }: { student
                     {enrollSessions.map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>)}
                   </SelectField>
                   <div className="sm:col-span-2 flex flex-col sm:flex-row gap-2">
-                    <button onClick={handleEnroll} disabled={!selectedCohort || !selectedSession} className="h-10 px-5 bg-[#0A0A0A] text-white font-mono text-[11px] uppercase tracking-widest disabled:opacity-40 hover:bg-[#1C1C1C] transition-colors rounded-none w-full sm:w-auto justify-center">Enroll</button>
-                    <button onClick={() => { setNewEnrollment(false); setSelectedCohort(""); setSelectedSession("") }} className="hidden sm:block h-10 px-4 border border-[#E5E5E4] text-[#878786] font-mono text-[11px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-none w-full sm:w-auto justify-center">Cancel</button>
+                    <button onClick={handleEnroll} disabled={!selectedCohort || !selectedSession} className="h-10 px-5 bg-[#0A0A0A] text-white font-mono text-[11px] uppercase tracking-widest disabled:opacity-40 hover:bg-[#1C1C1C] transition-colors rounded-xl w-full sm:w-auto justify-center">Enroll</button>
+                    <button onClick={() => { setNewEnrollment(false); setSelectedCohort(""); setSelectedSession("") }} className="hidden sm:block h-10 px-4 border border-[#E5E5E4] text-[#878786] font-mono text-[11px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-xl w-full sm:w-auto justify-center">Cancel</button>
                   </div>
                 </div>
               </motion.div>
@@ -328,11 +330,11 @@ function EditStudentModal({ student, cohortData, onClose, onRefetch }: { student
                       <p className="font-mono text-[11px] text-[#878786] uppercase tracking-wide mt-0.5">{m.session?.name || "Unknown Session"}</p>
                     </div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <select className="h-9 px-2 border border-[#E5E5E4] bg-[#F9F9F8] text-[13px] font-sans text-[#0A0A0A] outline-none focus:border-[#0A0A0A] transition-colors rounded-none w-full md:w-36"
+                      <select className="h-9 px-2 border border-[#E5E5E4] bg-[#F9F9F8] text-[13px] font-sans text-[#0A0A0A] outline-none focus:border-[#0A0A0A] transition-colors rounded-xl w-full md:w-36"
                         value={m.sessionId} onChange={e => handleUpdateSession(m.cohortId, e.target.value)}>
                         {cohort?.sessions?.map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>)}
                       </select>
-                      <button onClick={() => handleRemoveCohort(m.cohortId)} className="h-9 px-3 border border-[#E54D2E]/30 text-[#E54D2E] font-mono text-[10px] uppercase tracking-widest hover:bg-[#E54D2E]/5 hover:border-[#E54D2E] transition-colors rounded-none flex-1 md:flex-none">Remove</button>
+                      <button onClick={() => handleRemoveCohort(m.cohortId)} className="h-9 px-3 border border-[#E54D2E]/30 text-[#E54D2E] font-mono text-[10px] uppercase tracking-widest hover:bg-[#E54D2E]/5 hover:border-[#E54D2E] transition-colors rounded-xl flex-1 md:flex-none">Remove</button>
                     </div>
                   </div>
                 )
@@ -351,7 +353,7 @@ function EditStudentModal({ student, cohortData, onClose, onRefetch }: { student
 
 export default function StudentsPage() {
   const { data, loading, refetch } = useQuery<{ listStudents: any[] }>(LIST_STUDENTS, { fetchPolicy: "cache-and-network" })
-  const { data: cohortData } = useQuery(LIST_COHORTS, { fetchPolicy: "cache-and-network" })
+  const { data: cohortData } = useQuery<StudentCohortListData>(LIST_COHORTS, { fetchPolicy: "cache-and-network" })
   const [deleteStudent, { loading: deleting }] = useMutation(DELETE_STUDENT)
   useSubscription(ON_STUDENTS_UPDATED, { onData: () => refetch() })
 
@@ -383,7 +385,7 @@ export default function StudentsPage() {
           <h1 className="font-serif text-4xl mb-1 text-[#0A0A0A]">Students</h1>
           <p className="font-mono text-[11px] text-[#878786] uppercase tracking-widest">Manage enrolled trainees</p>
         </div>
-        <button onClick={() => setShowCreate(true)} className="h-11 px-5 bg-[#0A0A0A] text-white font-mono text-[11px] uppercase tracking-widest hover:bg-[#1C1C1C] transition-colors rounded-none flex items-center gap-2 self-start sm:self-auto">
+        <button onClick={() => setShowCreate(true)} className="h-11 px-5 bg-[#0A0A0A] text-white font-mono text-[11px] uppercase tracking-widest hover:bg-[#1C1C1C] transition-colors rounded-xl flex items-center gap-2 self-start sm:self-auto">
           <Plus className="w-4 h-4" /> Register Student
         </button>
       </div>
@@ -391,10 +393,10 @@ export default function StudentsPage() {
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#878786]" />
         <input value={search} onChange={e => { setSearch(e.target.value); setPage(1) }} placeholder="Search by name, email, username..."
-          className="w-full h-11 pl-10 pr-3 border border-[#E5E5E4] bg-[#FFFFFF] text-[14px] font-sans text-[#0A0A0A] placeholder:text-[#878786]/50 outline-none focus:border-[#0A0A0A] transition-colors rounded-none" />
+          className="w-full h-11 pl-10 pr-3 border border-[#E5E5E4] bg-[#FFFFFF] text-[14px] font-sans text-[#0A0A0A] placeholder:text-[#878786]/50 outline-none focus:border-[#0A0A0A] transition-colors rounded-xl" />
       </div>
 
-      <div className="border border-[#E5E5E4] bg-white rounded-none overflow-hidden">
+      <div className="border border-[#E5E5E4] bg-white rounded-xl overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="border-b border-[#E5E5E4] bg-[#F9F9F8]">
@@ -430,8 +432,8 @@ export default function StudentsPage() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <button onClick={() => setEditingStudent(student)} className="h-8 w-8 border border-[#E5E5E4] flex items-center justify-center text-[#0A0A0A] hover:bg-[#F9F9F8] hover:border-[#0A0A0A] transition-colors rounded-none"><Edit2 className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => setConfirmDelete({ id: student.id, name: student.name })} className="h-8 w-8 border border-[#E54D2E]/20 flex items-center justify-center text-[#E54D2E] hover:bg-[#E54D2E]/5 hover:border-[#E54D2E]/50 transition-colors rounded-none"><Trash2 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => setEditingStudent(student)} className="h-8 w-8 border border-[#E5E5E4] flex items-center justify-center text-[#0A0A0A] hover:bg-[#F9F9F8] hover:border-[#0A0A0A] transition-colors rounded-xl"><Edit2 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => setConfirmDelete({ id: student.id, name: student.name })} className="h-8 w-8 border border-[#E54D2E]/20 flex items-center justify-center text-[#E54D2E] hover:bg-[#E54D2E]/5 hover:border-[#E54D2E]/50 transition-colors rounded-xl"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -442,8 +444,8 @@ export default function StudentsPage() {
                       <div className="flex items-center justify-between py-2">
                         <span className="font-mono text-[10px] uppercase tracking-widest text-[#878786]">Page {page} of {totalPages} - {filteredStudents.length} students</span>
                         <div className="flex gap-2">
-                          <button disabled={page === 1} onClick={() => setPage(p => Math.max(1, p - 1))} className="h-8 w-8 border border-[#E5E5E4] flex items-center justify-center text-[#0A0A0A] hover:bg-[#F9F9F8] disabled:opacity-30 transition-colors rounded-none"><ChevronLeft className="w-4 h-4" /></button>
-                          <button disabled={page === totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))} className="h-8 w-8 border border-[#E5E5E4] flex items-center justify-center text-[#0A0A0A] hover:bg-[#F9F9F8] disabled:opacity-30 transition-colors rounded-none"><ChevronRight className="w-4 h-4" /></button>
+                          <button disabled={page === 1} onClick={() => setPage(p => Math.max(1, p - 1))} className="h-8 w-8 border border-[#E5E5E4] flex items-center justify-center text-[#0A0A0A] hover:bg-[#F9F9F8] disabled:opacity-30 transition-colors rounded-xl"><ChevronLeft className="w-4 h-4" /></button>
+                          <button disabled={page === totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))} className="h-8 w-8 border border-[#E5E5E4] flex items-center justify-center text-[#0A0A0A] hover:bg-[#F9F9F8] disabled:opacity-30 transition-colors rounded-xl"><ChevronRight className="w-4 h-4" /></button>
                         </div>
                       </div>
                     </TableCell>

@@ -90,7 +90,7 @@ export function StudentProfile() {
         </div>
         <button 
           onClick={handleEdit}
-          className="opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 h-10 px-4 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[10px] uppercase tracking-widest hover:bg-[#F9F9F8] rounded-none shrink-0"
+          className="opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 h-10 px-4 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[10px] uppercase tracking-widest hover:bg-[#F9F9F8] rounded-xl shrink-0"
           aria-label="Edit Profile"
         >
           <Edit2 className="w-3 h-3" />
@@ -114,7 +114,7 @@ export function StudentProfile() {
                 value={editName}
                 onChange={e => setEditName(e.target.value)}
                 disabled={saving}
-                className="w-full h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] text-[14px] font-sans text-[#0A0A0A] placeholder:text-[#878786]/50 outline-none transition-[border-color] duration-150 focus:border-[#0A0A0A] disabled:opacity-40 rounded-none"
+                className="w-full h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] text-[14px] font-sans text-[#0A0A0A] placeholder:text-[#878786]/50 outline-none transition-[border-color] duration-150 focus:border-[#0A0A0A] disabled:opacity-40 rounded-xl"
               />
             </div>
             
@@ -131,7 +131,7 @@ export function StudentProfile() {
                   value={editUsername}
                   onChange={e => setEditUsername(e.target.value)}
                   disabled={saving}
-                  className="w-full h-11 pl-8 pr-3 bg-[#F9F9F8] border border-[#E5E5E4] text-[14px] font-sans text-[#0A0A0A] placeholder:text-[#878786]/50 outline-none transition-[border-color] duration-150 focus:border-[#0A0A0A] disabled:opacity-40 rounded-none"
+                  className="w-full h-11 pl-8 pr-3 bg-[#F9F9F8] border border-[#E5E5E4] text-[14px] font-sans text-[#0A0A0A] placeholder:text-[#878786]/50 outline-none transition-[border-color] duration-150 focus:border-[#0A0A0A] disabled:opacity-40 rounded-xl"
                 />
               </div>
             </div>
@@ -141,7 +141,7 @@ export function StudentProfile() {
           <button 
             type="button" 
             onClick={() => setIsEditing(false)} 
-            className="hidden sm:flex flex-1 sm:flex-none min-h-[56px] shrink-0 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-none order-2 sm:order-1 items-center justify-center"
+            className="hidden sm:flex flex-1 sm:flex-none min-h-[56px] shrink-0 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-xl order-2 sm:order-1 items-center justify-center"
           >
             Cancel
           </button>
@@ -149,7 +149,7 @@ export function StudentProfile() {
             type="button" 
             onClick={handleSave}
             disabled={saving || (!editName.trim() && !editUsername.trim())}
-            className="flex-1 sm:flex-auto min-h-[56px] shrink-0 py-3 px-6 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2"
+            className="flex-1 sm:flex-auto min-h-[56px] shrink-0 py-3 px-6 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-xl flex items-center justify-center gap-2 order-1 sm:order-2"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Changes"}
           </button>

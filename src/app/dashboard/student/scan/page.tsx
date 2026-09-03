@@ -202,7 +202,7 @@ export default function StudentScanPage() {
       </div>
 
       <div className="flex-1 flex flex-col gap-6 w-full">
-        <Card className="flex-1 bg-black overflow-hidden flex flex-col border-black relative rounded-none shadow-sm min-h-[450px]">
+        <Card className="flex-1 bg-black overflow-hidden flex flex-col border-black relative rounded-xl shadow-sm min-h-[450px]">
           <CardContent className="p-0 flex-1 relative w-full h-full">
             <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-30">
               <div className="text-white/80 font-mono text-[10px] uppercase tracking-widest bg-black/60 px-3 py-1 rounded-full">

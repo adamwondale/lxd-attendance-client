@@ -101,9 +101,9 @@ function AdminLoginContent() {
       subtitle=""
       footer={
         <>
-          Don&apos;t have an account?{" "}
+          First time here?{" "}
           <Link href="/admin/signup" className="text-[#1C1C1C] hover:underline underline-offset-4">
-            Create company account
+            Create company profile
           </Link>
         </>
       }

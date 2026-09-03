@@ -1,6 +1,6 @@
 "use client"
 
-import { HttpLink, split } from "@apollo/client";
+import { HttpLink, split, CombinedGraphQLErrors, ServerError } from "@apollo/client";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
@@ -54,18 +54,20 @@ function makeClient() {
     await signOut({ callbackUrl });
   };
 
-  const errorLink = onError(({ graphQLErrors, networkError }) => {
-    if (graphQLErrors) {
-      for (const err of graphQLErrors) {
-        if (
-          err.extensions?.code === "UNAUTHENTICATED" ||
-          err.message.includes("Unauthorized")
-        ) {
-          void handleUnauthorized();
-        }
+  // Apollo Client 4 exposes a single `error` value from ErrorLink.
+  // Keep authentication failures centralized so every protected screen behaves consistently.
+  const errorLink = onError(({ error }) => {
+    if (CombinedGraphQLErrors.is(error)) {
+      if (error.errors.some((err) =>
+        err.extensions?.code === "UNAUTHENTICATED" ||
+        err.message.includes("Unauthorized")
+      )) {
+        void handleUnauthorized();
       }
+      return;
     }
-    if (networkError && "statusCode" in networkError && networkError.statusCode === 401) {
+
+    if (ServerError.is(error) && error.statusCode === 401) {
       void handleUnauthorized();
     }
   });

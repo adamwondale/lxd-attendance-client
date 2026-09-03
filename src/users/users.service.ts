@@ -20,15 +20,61 @@ export class UsersService {
     });
   }
 
+  private async repairLegacyPortalStudents(tenantId: string) {
+    // Before portal registrations stored the selected cohort, legacy accounts
+    // were created as plain users. In a single-company installation, a
+    // password + phone account with no tenant role is unambiguously a portal
+    // student, so I attach it to the only tenant once.
+    const tenantCount = await this.prisma.tenant.count();
+    if (tenantCount !== 1) return;
+
+    const orphanUsers = await this.prisma.user.findMany({
+      where: {
+        password: { not: null },
+        phone: { not: null },
+        tenants: { none: {} },
+      },
+      select: { id: true },
+    });
+
+    if (!orphanUsers.length) return;
+
+    await Promise.all(
+      orphanUsers.map((user) =>
+        this.prisma.userTenantRole.upsert({
+          where: { userId_tenantId: { userId: user.id, tenantId } },
+          create: { userId: user.id, tenantId, role: 'STUDENT' },
+          update: {},
+        }),
+      ),
+    );
+  }
+
   async listStudents(tenantId: string) {
+    await this.repairLegacyPortalStudents(tenantId);
+
+    // Include both students with an explicit tenant role and older portal
+    // registrations that are linked to this tenant through a cohort membership.
+    // The latter were previously hidden from the admin Students page.
     return this.prisma.user.findMany({
       where: {
-        tenants: {
-          some: {
-            tenantId,
-            role: 'STUDENT',
+        OR: [
+          {
+            tenants: {
+              some: {
+                tenantId,
+                role: 'STUDENT',
+              },
+            },
           },
-        },
+          {
+            cohorts: {
+              some: {
+                cohort: { tenantId },
+              },
+            },
+          },
+        ],
       },
       orderBy: { name: 'asc' },
     });
@@ -89,13 +135,20 @@ export class UsersService {
     });
   }
 
-  async adminUpdateStudent(tenantId: string, id: string, name?: string, email?: string) {
+  async adminUpdateStudent(tenantId: string, id: string, name?: string, email?: string, username?: string) {
     const data: Record<string, string> = {};
     if (name !== undefined) data.name = name;
     if (email !== undefined) data.email = email;
+    if (username !== undefined) data.username = username;
 
     const result = await this.prisma.user.updateMany({
-      where: { id, tenants: { some: { tenantId, role: 'STUDENT' } } },
+      where: {
+        id,
+        OR: [
+          { tenants: { some: { tenantId, role: 'STUDENT' } } },
+          { cohorts: { some: { cohort: { tenantId } } } },
+        ],
+      },
       data,
     });
     if (!result.count) throw new Error('Student not found in this tenant');
@@ -103,21 +156,52 @@ export class UsersService {
   }
 
   async adminDeleteStudent(tenantId: string, id: string) {
-    const result = await this.prisma.userTenantRole.deleteMany({
+    const tenantRole = await this.prisma.userTenantRole.findFirst({
       where: { userId: id, tenantId, role: 'STUDENT' },
+      select: { id: true },
     });
-    if (!result.count) throw new Error('Student not found in this tenant');
+    const memberships = await this.prisma.cohortMembership.findMany({
+      where: { userId: id, cohort: { tenantId } },
+      select: { id: true },
+    });
+    if (!tenantRole && !memberships.length) throw new Error('Student not found in this tenant');
+
+    // Remove this student's tenant-scoped memberships and attendance history.
+    // The User record itself is kept because a person may belong to another tenant.
+    const tenantLogs = await this.prisma.attendanceLog.findMany({
+      where: { userId: id, session: { cohort: { tenantId } } },
+      select: { id: true },
+    });
+
+    await this.prisma.$transaction(async (tx) => {
+      if (tenantLogs.length) {
+        const logIds = tenantLogs.map((log) => log.id);
+        await tx.penalty.deleteMany({ where: { attendanceLogId: { in: logIds } } });
+        await tx.attendanceLog.deleteMany({ where: { id: { in: logIds } } });
+      }
+      if (memberships.length) {
+        await tx.cohortMembership.deleteMany({ where: { id: { in: memberships.map((m) => m.id) } } });
+      }
+      if (tenantRole) await tx.userTenantRole.delete({ where: { id: tenantRole.id } });
+    });
+
     return true;
   }
 
   async adminEnrollStudent(tenantId: string, userId: string, cohortId: string, sessionId: string) {
-    const [student, cohort, session] = await Promise.all([
+    const [student, legacyMembership, cohort, session] = await Promise.all([
       this.prisma.userTenantRole.findFirst({ where: { userId, tenantId, role: 'STUDENT' } }),
+      this.prisma.cohortMembership.findFirst({ where: { userId, cohort: { tenantId } }, select: { id: true } }),
       this.prisma.cohort.findFirst({ where: { id: cohortId, tenantId }, select: { id: true, isActive: true } }),
       this.prisma.cohortSession.findFirst({ where: { id: sessionId, cohort: { tenantId } }, select: { id: true, cohortId: true } }),
     ]);
-    if (!student || !cohort || !cohort.isActive || !session || session.cohortId !== cohortId) {
+    if ((!student && !legacyMembership) || !cohort || !cohort.isActive || !session || session.cohortId !== cohortId) {
       throw new Error('User, cohort, or session is not valid for this tenant');
+    }
+    if (!student) {
+      await this.prisma.userTenantRole.create({
+        data: { userId, tenantId, role: 'STUDENT' },
+      });
     }
     return this.prisma.cohortMembership.create({
       data: { userId, cohortId, sessionId, status: 'ACTIVE' },

@@ -52,7 +52,7 @@ export function Modal({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className={`pointer-events-auto relative w-full bg-white border border-[#E5E5E4] shadow-2xl sm:max-w-lg max-h-full sm:max-h-[90vh] flex flex-col rounded-t-xl sm:rounded-none overflow-hidden ${className}`}
+            className={`pointer-events-auto relative w-full bg-white border border-[#E5E5E4] shadow-2xl sm:max-w-lg max-h-full sm:max-h-[90vh] flex flex-col rounded-t-2xl sm:rounded-2xl overflow-hidden ${className}`}
           >
             {/* Mobile drag handle indicator */}
             <div className="w-full flex justify-center pt-3 pb-1 sm:hidden cursor-grab active:cursor-grabbing shrink-0" onClick={onClose}>
@@ -89,7 +89,7 @@ export function ModalHeader({
         <button
           onClick={onClose}
           type="button"
-          className="w-8 h-8 flex items-center justify-center text-[#878786] hover:text-[#0A0A0A] hover:bg-[#F9F9F8] transition-colors rounded-none"
+          className="w-8 h-8 flex items-center justify-center text-[#878786] hover:text-[#0A0A0A] hover:bg-[#F9F9F8] transition-colors rounded-xl"
         >
           <X className="w-4 h-4" />
         </button>
@@ -154,14 +154,14 @@ export function AlertModal({
         <div className="flex flex-col sm:flex-row gap-2">
           <button
             onClick={onClose}
-            className="flex-1 h-14 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-none order-2 sm:order-1"
+            className="flex-1 h-14 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-xl order-2 sm:order-1"
           >
             {cancelText}
           </button>
           <button
             onClick={onConfirm}
             disabled={loading}
-            className={`flex-1 h-14 text-white font-mono text-[13px] uppercase tracking-widest disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2 ${
+            className={`flex-1 h-14 text-white font-mono text-[13px] uppercase tracking-widest disabled:opacity-50 transition-colors rounded-xl flex items-center justify-center gap-2 order-1 sm:order-2 ${
               variant === "destructive" ? "bg-[#E54D2E] hover:bg-[#c73d20]" : "bg-[#0A0A0A] hover:bg-[#1C1C1C]"
             }`}
           >

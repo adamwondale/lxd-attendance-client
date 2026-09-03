@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { useQuery, useMutation, useSubscription } from "@apollo/client/react/index.js"
 import { gql } from "@apollo/client/core/index.js"
-import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
@@ -25,15 +24,18 @@ const LIST_COHORTS = gql`
   }
 `
 
+type CohortListItem = { id: string; name: string; pin: string; startDate: string; endDate: string; isActive: boolean; durationMonths?: number | null }
+type CohortListData = { listCohorts: CohortListItem[] }
+
 const CREATE_COHORT = gql`
-  mutation CreateCohort($name: String!, $pin: String!, $startDate: String!, $endDate: String!, $durationMonths: Int) {
-    createCohort(name: $name, pin: $pin, startDate: $startDate, endDate: $endDate, durationMonths: $durationMonths)
+  mutation CreateCohort($name: String!, $pin: String!, $startDate: String!, $endDate: String!) {
+    createCohort(name: $name, pin: $pin, startDate: $startDate, endDate: $endDate)
   }
 `
 
 const UPDATE_COHORT = gql`
-  mutation UpdateCohort($id: String!, $name: String, $pin: String, $startDate: String, $endDate: String, $isActive: Boolean, $durationMonths: Int) {
-    updateCohort(cohortId: $id, name: $name, pin: $pin, startDate: $startDate, endDate: $endDate, isActive: $isActive, durationMonths: $durationMonths)
+  mutation UpdateCohort($id: String!, $name: String, $pin: String, $startDate: String, $endDate: String, $isActive: Boolean) {
+    updateCohort(cohortId: $id, name: $name, pin: $pin, startDate: $startDate, endDate: $endDate, isActive: $isActive)
   }
 `
 
@@ -50,7 +52,7 @@ const ON_COHORTS_UPDATED = gql`
 `
 
 export default function CohortsPage() {
-  const { data, loading, refetch } = useQuery(LIST_COHORTS, { fetchPolicy: "cache-and-network" })
+  const { data, loading, refetch } = useQuery<CohortListData>(LIST_COHORTS, { fetchPolicy: "cache-and-network" })
   const [createCohort, { loading: creating }] = useMutation(CREATE_COHORT)
   const [updateCohort, { loading: updating }] = useMutation(UPDATE_COHORT)
   const [deleteCohort, { loading: deleting }] = useMutation(DELETE_COHORT)
@@ -66,8 +68,7 @@ export default function CohortsPage() {
     pin: "", 
     startDate: "", 
     endDate: "",
-    isActive: true,
-    durationMonths: 3
+    isActive: true
   })
 
   const openCreateDialog = () => {
@@ -83,14 +84,22 @@ export default function CohortsPage() {
       pin: cohort.pin, 
       startDate: new Date(cohort.startDate).toISOString().split('T')[0], 
       endDate: new Date(cohort.endDate).toISOString().split('T')[0],
-      isActive: cohort.isActive,
-      durationMonths: cohort.durationMonths || 3
+      isActive: cohort.isActive 
     })
     setIsDialogOpen(true)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!formData.startDate || !formData.endDate) {
+      toast.error("Start date and end date are required")
+      return
+    }
+    if (new Date(formData.endDate) < new Date(formData.startDate)) {
+      toast.error("End date must be on or after the start date")
+      return
+    }
+
     try {
       if (editingCohort) {
         await updateCohort({
@@ -100,8 +109,7 @@ export default function CohortsPage() {
             pin: formData.pin,
             startDate: new Date(formData.startDate).toISOString(),
             endDate: new Date(formData.endDate).toISOString(),
-            isActive: formData.isActive,
-            durationMonths: Number(formData.durationMonths)
+            isActive: formData.isActive
           }
         })
         toast.success("Cohort updated successfully")
@@ -111,8 +119,7 @@ export default function CohortsPage() {
             name: formData.name,
             pin: formData.pin,
             startDate: new Date(formData.startDate).toISOString(),
-            endDate: new Date(formData.endDate).toISOString(),
-            durationMonths: Number(formData.durationMonths)
+            endDate: new Date(formData.endDate).toISOString()
           }
         })
         toast.success("Cohort created successfully")
@@ -141,7 +148,7 @@ export default function CohortsPage() {
   }
 
   return (
-    <div className="p-10 space-y-8">
+    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 space-y-8">
       <div className="flex justify-between items-end">
         <div>
           <h1 className="font-serif text-4xl mb-2">Cohorts</h1>
@@ -149,7 +156,7 @@ export default function CohortsPage() {
             Manage training programs
           </p>
         </div>
-        <Button onClick={openCreateDialog} className="bg-black text-white hover:bg-black/80 font-mono text-[11px] uppercase tracking-widest h-11 px-5 rounded-none flex items-center gap-2">
+        <Button onClick={openCreateDialog} className="bg-black text-white hover:bg-black/80 font-mono text-[11px] uppercase tracking-widest h-11 px-5 rounded-xl flex items-center gap-2">
           <Plus className="w-4 h-4" /> New Cohort
         </Button>
       </div>
@@ -160,37 +167,35 @@ export default function CohortsPage() {
           <form id="cohort-form" onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="flex flex-col gap-1 md:col-span-2">
               <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Name</label>
-              <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-none" placeholder="e.g. Summer 2026 Batch" />
+              <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-xl" placeholder="e.g. Summer 2026 Batch" />
             </div>
             
             <div className="flex flex-col gap-1 md:col-span-2">
               <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Join PIN</label>
-              <input required type="text" value={formData.pin} onChange={e => setFormData({...formData, pin: e.target.value})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-none mb-3" placeholder="e.g. LXD-26" />
-              <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Duration</label>
-              <select value={formData.durationMonths} onChange={e => setFormData({...formData, durationMonths: Number(e.target.value)})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-none appearance-none"><option value={3}>3 months</option><option value={6}>6 months</option></select>
+              <input required type="text" value={formData.pin} onChange={e => setFormData({...formData, pin: e.target.value})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-xl mb-3" placeholder="e.g. LXD-26" />
             </div>
             
             <div className="flex flex-col gap-1">
               <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Start Date</label>
-              <input required type="date" value={formData.startDate} onChange={e => setFormData({...formData, startDate: e.target.value})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-none" />
+              <input required type="date" value={formData.startDate} onChange={e => setFormData({...formData, startDate: e.target.value})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-xl" />
             </div>
             
             <div className="flex flex-col gap-1">
               <label className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">End Date</label>
-              <input required type="date" value={formData.endDate} onChange={e => setFormData({...formData, endDate: e.target.value})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-none" />
+              <input required type="date" value={formData.endDate} onChange={e => setFormData({...formData, endDate: e.target.value})} className="h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] focus:border-[#0A0A0A] outline-none font-sans text-[14px] transition-colors rounded-xl" />
             </div>
 
             {editingCohort && (
                <div className="flex items-center gap-2 md:col-span-2 mt-2 p-4 bg-[#F9F9F8] border border-[#E5E5E4]">
-                  <input type="checkbox" id="isActive" checked={formData.isActive} onChange={e => setFormData({...formData, isActive: e.target.checked})} className="w-4 h-4 accent-[#0A0A0A] rounded-none" />
+                  <input type="checkbox" id="isActive" checked={formData.isActive} onChange={e => setFormData({...formData, isActive: e.target.checked})} className="w-4 h-4 accent-[#0A0A0A] rounded-xl" />
                   <label htmlFor="isActive" className="font-mono text-[11px] uppercase tracking-widest text-[#878786]">Cohort is Active (Visible to students)</label>
                </div>
             )}
           </form>
         </ModalBody>
         <ModalFooter>
-          <button type="button" onClick={() => setIsDialogOpen(false)} className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-none order-2 sm:order-1">Cancel</button>
-          <button type="submit" form="cohort-form" disabled={creating || updating} className="flex-1 sm:flex-auto h-14 px-6 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2">
+          <button type="button" onClick={() => setIsDialogOpen(false)} className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-xl order-2 sm:order-1">Cancel</button>
+          <button type="submit" form="cohort-form" disabled={creating || updating} className="flex-1 sm:flex-auto h-14 px-6 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-xl flex items-center justify-center gap-2 order-1 sm:order-2">
             {(creating || updating) ? "Saving..." : (editingCohort ? "Update Cohort" : "Create Cohort")}
           </button>
         </ModalFooter>

@@ -154,10 +154,6 @@ function StudentLoginContent() {
           </>
         )}
       </button>
-
-      <p className="font-mono text-[10px] text-[#878786]/60 uppercase tracking-widest text-center mt-4">
-        Students only · coordinators use Admin login
-      </p>
     </LoginPageShell>
   )
 }

@@ -1,12 +1,12 @@
 import { Resolver, Mutation, Query, Args, Int, Subscription, ResolveField, Parent } from '@nestjs/graphql';
 import { UseGuards, Inject } from '@nestjs/common';
-import { PubSub } from 'graphql-subscriptions';
+import type { PubSub } from 'graphql-subscriptions';
 import { Cohort, CohortSession, PublicCohort } from './dto/cohort.type';
 import { DashboardMetrics, CompanyProfile } from './dto/dashboard.type';
 import { CohortService } from './cohort.service';
 import { GqlAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
-import { AuthenticatedUser, CurrentUser } from '../auth/current-user.decorator';
+import { CurrentUser, type AuthenticatedUser } from '../auth/current-user.decorator';
 import { Roles } from '../auth/roles.decorator';
 
 @Resolver(() => Cohort)
@@ -25,7 +25,6 @@ export class CohortResolver {
     @Args('pin') pin: string,
     @Args('startDate') startDate: string,
     @Args('endDate') endDate: string,
-    @Args('durationMonths', { type: () => Int, nullable: true }) durationMonths?: number,
   ) {
     const cohort = await this.cohortService.createCohort(
       user.tenantId!,
@@ -33,7 +32,6 @@ export class CohortResolver {
       pin,
       new Date(startDate),
       new Date(endDate),
-      durationMonths
     );
     this.pubSub.publish('cohortsUpdated', { onCohortsUpdated: true });
     return cohort.id;
@@ -50,7 +48,6 @@ export class CohortResolver {
     @Args('startDate', { nullable: true }) startDate?: string,
     @Args('endDate', { nullable: true }) endDate?: string,
     @Args('isActive', { nullable: true }) isActive?: boolean,
-    @Args('durationMonths', { type: () => Int, nullable: true }) durationMonths?: number,
   ) {
     const cohort = await this.cohortService.updateCohort(
       user.tenantId!,
@@ -59,11 +56,10 @@ export class CohortResolver {
       pin,
       startDate ? new Date(startDate) : undefined,
       endDate ? new Date(endDate) : undefined,
-      isActive,
-      durationMonths
+      isActive
     );
     this.pubSub.publish('cohortsUpdated', { onCohortsUpdated: true });
-    return cohort.id;
+    return cohort!.id;
   }
 
   @Mutation(() => Boolean)

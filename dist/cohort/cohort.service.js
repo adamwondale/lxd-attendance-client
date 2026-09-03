@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CohortService = void 0;
 const common_1 = require("@nestjs/common");
@@ -17,7 +18,18 @@ let CohortService = class CohortService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async createCohort(userId, name, pin, startDate, endDate, durationMonths) {
+    calculateDurationMonths(startDate, endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || end < start) {
+            throw new common_1.BadRequestException('End date must be on or after the start date');
+        }
+        const monthDifference = (end.getUTCFullYear() - start.getUTCFullYear()) * 12 +
+            (end.getUTCMonth() - start.getUTCMonth());
+        const completedMonths = monthDifference - (end.getUTCDate() < start.getUTCDate() ? 1 : 0);
+        return Math.max(1, completedMonths);
+    }
+    async getTenantId(userId) {
         const user = await this.prisma.user.findUnique({
             where: { id: userId },
             include: { tenants: true },
@@ -25,8 +37,10 @@ let CohortService = class CohortService {
         const tenantId = user?.tenants?.[0]?.tenantId;
         if (!tenantId)
             throw new common_1.BadRequestException('User has no active tenant');
-        if (durationMonths !== undefined && ![3, 6].includes(durationMonths))
-            throw new common_1.BadRequestException('Cohort duration must be 3 or 6 months');
+        return tenantId;
+    }
+    async createCohort(tenantId, name, pin, startDate, endDate) {
+        const durationMonths = this.calculateDurationMonths(startDate, endDate);
         const existing = await this.prisma.cohort.findUnique({ where: { pin } });
         if (existing) {
             throw new common_1.BadRequestException('A cohort with this PIN already exists');
@@ -39,43 +53,46 @@ let CohortService = class CohortService {
                 startDate,
                 endDate,
                 isActive: true,
-                durationMonths: durationMonths ?? undefined,
+                durationMonths,
             },
         });
     }
-    async updateCohort(cohortId, name, pin, startDate, endDate, isActive, durationMonths) {
-        const cohort = await this.prisma.cohort.findUnique({
-            where: { id: cohortId },
+    async updateCohort(tenantId, cohortId, name, pin, startDate, endDate, isActive) {
+        const cohort = await this.prisma.cohort.findFirst({
+            where: { id: cohortId, tenantId },
         });
         if (!cohort)
             throw new common_1.BadRequestException('Cohort not found');
-        return this.prisma.cohort.update({
-            where: { id: cohortId },
+        const nextStartDate = startDate ?? cohort.startDate;
+        const nextEndDate = endDate ?? cohort.endDate;
+        const durationMonths = this.calculateDurationMonths(nextStartDate, nextEndDate);
+        const result = await this.prisma.cohort.updateMany({
+            where: { id: cohortId, tenantId },
             data: {
                 ...(name !== undefined && { name }),
                 ...(pin !== undefined && { pin }),
                 ...(startDate !== undefined && { startDate }),
                 ...(endDate !== undefined && { endDate }),
                 ...(isActive !== undefined && { isActive }),
-                ...(durationMonths !== undefined && { durationMonths }),
+                durationMonths,
             },
         });
-    }
-    async deleteCohort(cohortId) {
-        const cohort = await this.prisma.cohort.findUnique({
-            where: { id: cohortId },
-        });
-        if (!cohort)
+        if (!result.count)
             throw new common_1.BadRequestException('Cohort not found');
-        await this.prisma.cohort.update({
-            where: { id: cohortId },
+        return this.prisma.cohort.findUniqueOrThrow({ where: { id: cohortId } });
+    }
+    async deleteCohort(tenantId, cohortId) {
+        const result = await this.prisma.cohort.updateMany({
+            where: { id: cohortId, tenantId },
             data: { isActive: false },
         });
+        if (!result.count)
+            throw new common_1.BadRequestException('Cohort not found');
         return true;
     }
-    async createCohortSession(cohortId, name, startTime, gracePeriodMinutes, recurrenceDays, latePenaltyAmount, escalationThresholdMinutes = 15, escalationRate = 5, escalationIntervalMinutes = 5) {
-        const cohort = await this.prisma.cohort.findUnique({
-            where: { id: cohortId },
+    async createCohortSession(tenantId, cohortId, name, startTime, gracePeriodMinutes, recurrenceDays, latePenaltyAmount, escalationThresholdMinutes = 15, escalationRate = 5, escalationIntervalMinutes = 5) {
+        const cohort = await this.prisma.cohort.findFirst({
+            where: { id: cohortId, tenantId },
         });
         if (!cohort)
             throw new common_1.BadRequestException('Cohort not found');
@@ -93,9 +110,9 @@ let CohortService = class CohortService {
             },
         });
     }
-    async updateCohortSession(sessionId, name, startTime, gracePeriodMinutes, recurrenceDays, latePenaltyAmount, escalationThresholdMinutes, escalationRate, escalationIntervalMinutes) {
-        const session = await this.prisma.cohortSession.findUnique({
-            where: { id: sessionId },
+    async updateCohortSession(tenantId, sessionId, name, startTime, gracePeriodMinutes, recurrenceDays, latePenaltyAmount, escalationThresholdMinutes, escalationRate, escalationIntervalMinutes) {
+        const session = await this.prisma.cohortSession.findFirst({
+            where: { id: sessionId, cohort: { tenantId } },
         });
         if (!session)
             throw new common_1.BadRequestException('Session not found');
@@ -117,42 +134,58 @@ let CohortService = class CohortService {
             },
         });
     }
-    async deleteCohortSession(sessionId) {
-        const session = await this.prisma.cohortSession.findUnique({
-            where: { id: sessionId },
+    async deleteCohortSession(tenantId, sessionId) {
+        const result = await this.prisma.cohortSession.deleteMany({
+            where: { id: sessionId, cohort: { tenantId } },
         });
-        if (!session)
+        if (!result.count)
             throw new common_1.BadRequestException('Session not found');
-        await this.prisma.cohortSession.delete({ where: { id: sessionId } });
         return true;
     }
     async listCohorts(userId) {
-        const user = await this.prisma.user.findUnique({
-            where: { id: userId },
-            include: { tenants: true },
-        });
-        const tenantId = user?.tenants?.[0]?.tenantId;
-        if (!tenantId)
-            throw new common_1.BadRequestException('User has no active tenant');
-        return this.prisma.cohort.findMany({
+        const tenantId = await this.getTenantId(userId);
+        const cohorts = await this.prisma.cohort.findMany({
             where: { tenantId, isActive: true },
             orderBy: { startDate: 'desc' },
             include: { sessions: true },
         });
+        await Promise.all(cohorts
+            .filter((cohort) => cohort.durationMonths == null)
+            .map((cohort) => this.prisma.cohort.update({
+            where: { id: cohort.id },
+            data: { durationMonths: this.calculateDurationMonths(cohort.startDate, cohort.endDate) },
+        })));
+        return cohorts.map((cohort) => ({
+            ...cohort,
+            durationMonths: cohort.durationMonths ?? this.calculateDurationMonths(cohort.startDate, cohort.endDate),
+        }));
     }
     async getDashboardMetrics(userId) {
-        const user = await this.prisma.user.findUnique({
-            where: { id: userId },
-            include: { tenants: true },
-        });
-        const tenantId = user?.tenants?.[0]?.tenantId;
-        if (!tenantId)
-            throw new common_1.BadRequestException('User has no active tenant');
+        const tenantId = await this.getTenantId(userId);
+        const tenantCount = await this.prisma.tenant.count();
+        if (tenantCount === 1) {
+            const orphanStudents = await this.prisma.user.findMany({
+                where: { password: { not: null }, phone: { not: null }, tenants: { none: {} } },
+                select: { id: true },
+            });
+            if (orphanStudents.length) {
+                await Promise.all(orphanStudents.map((student) => this.prisma.userTenantRole.upsert({
+                    where: { userId_tenantId: { userId: student.id, tenantId } },
+                    create: { userId: student.id, tenantId, role: 'STUDENT' },
+                    update: {},
+                })));
+            }
+        }
         const activeCohorts = await this.prisma.cohort.count({
             where: { tenantId, isActive: true },
         });
         const totalStudents = await this.prisma.user.count({
-            where: { tenants: { some: { tenantId, role: 'STUDENT' } } },
+            where: {
+                OR: [
+                    { tenants: { some: { tenantId, role: 'STUDENT' } } },
+                    { cohorts: { some: { cohort: { tenantId } } } },
+                ],
+            },
         });
         const today = new Date();
         const tenant = await this.prisma.tenant.findUnique({
@@ -221,12 +254,20 @@ let CohortService = class CohortService {
     async updateCompanyProfile(userId, companyName, companyEmail, companyPhone, adminName, username) {
         const user = await this.prisma.user.findUnique({
             where: { id: userId },
-            include: { tenants: true },
+            select: {
+                username: true,
+                tenants: {
+                    where: { role: { in: ['ADMIN', 'COORDINATOR', 'SUPER_ADMIN'] } },
+                    include: { tenant: true },
+                    take: 1,
+                },
+            },
         });
         const tenantId = user?.tenants?.[0]?.tenantId;
-        if (!tenantId)
-            throw new common_1.BadRequestException('User has no active tenant');
-        if (username && username !== user?.username) {
+        if (!user || !tenantId) {
+            throw new common_1.BadRequestException('User has no active company profile');
+        }
+        if (username && username !== user.username) {
             const duplicate = await this.prisma.user.findFirst({
                 where: { username, NOT: { id: userId } },
             });
@@ -258,9 +299,9 @@ let CohortService = class CohortService {
         }
         return this.getCompanyProfile(userId);
     }
-    async getCohortDetails(cohortId) {
-        return this.prisma.cohort.findUnique({
-            where: { id: cohortId },
+    async getCohortDetails(tenantId, cohortId) {
+        return this.prisma.cohort.findFirst({
+            where: { id: cohortId, tenantId },
             include: {
                 sessions: true,
                 memberships: {
@@ -274,7 +315,15 @@ let CohortService = class CohortService {
     async publicActiveCohorts() {
         return this.prisma.cohort.findMany({
             where: { isActive: true, endDate: { gte: new Date() } },
-            include: { sessions: true },
+            select: {
+                id: true,
+                name: true,
+                startDate: true,
+                endDate: true,
+                isActive: true,
+                durationMonths: true,
+                sessions: true,
+            },
             orderBy: { startDate: 'desc' },
         });
     }
@@ -286,7 +335,15 @@ let CohortService = class CohortService {
                     none: { userId },
                 },
             },
-            include: { sessions: true },
+            select: {
+                id: true,
+                name: true,
+                startDate: true,
+                endDate: true,
+                isActive: true,
+                durationMonths: true,
+                sessions: true,
+            },
             orderBy: { startDate: 'desc' },
         });
     }
@@ -357,6 +414,6 @@ let CohortService = class CohortService {
 exports.CohortService = CohortService;
 exports.CohortService = CohortService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_service_1.PrismaService !== "undefined" && prisma_service_1.PrismaService) === "function" ? _a : Object])
 ], CohortService);
 //# sourceMappingURL=cohort.service.js.map

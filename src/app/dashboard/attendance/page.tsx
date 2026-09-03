@@ -6,7 +6,6 @@ import {
   useSubscription,
 } from '@apollo/client/react/index.js';
 import { gql } from '@apollo/client/core/index.js';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -16,9 +15,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Download, Loader2, Check } from 'lucide-react';
+import { Loader2, Check, FileSpreadsheet, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const GET_ATTENDANCE_LOGS = gql`
   query GetAttendanceLogs {
@@ -94,6 +93,16 @@ export default function AttendancePage() {
 
   const [waivePenalty, { loading: waiving }] = useMutation(WAIVE_PENALTY);
   const [waivingId, setWaivingId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [printing, setPrinting] = useState(false);
+  const PAGE_SIZE = 7;
+  const totalPages = Math.max(1, Math.ceil(attendanceLogs.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const pagedLogs = attendanceLogs.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
 
   const handleWaive = async (penaltyId: string) => {
     const reason = window.prompt("Enter reason for waiving this penalty:");
@@ -111,60 +120,38 @@ export default function AttendancePage() {
     }
   };
 
-  const exportToCSV = () => {
-    if (attendanceLogs.length === 0) {
-      toast('No data to export');
-      return;
-    }
+  const exportToExcel = () => {
+    if (!attendanceLogs.length) { toast('No data to export'); return; }
+    const escape = (value: unknown) => String(value ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+    const body = attendanceLogs.map((log) => `<tr>
+      <td>${escape(log.user.name)}</td><td>${escape(log.user.email)}</td><td>${escape(log.date)}</td>
+      <td>${escape(new Date(log.scannedAt).toLocaleTimeString())}</td><td>${log.isLate ? 'Late' : 'Present'}</td>
+      <td>${log.latenessMinutes || 0}</td><td>${log.penalty?.amount ?? 0}</td><td>${escape(log.penalty?.status ?? 'N/A')}</td>
+    </tr>`).join('');
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
+      body{font-family:Arial,sans-serif;color:#111} h1{font-size:22px;margin:0 0 6px} p{color:#666;margin:0 0 18px;font-size:12px}
+      table{border-collapse:collapse;width:100%} th{background:#0A0A0A;color:#fff;font-weight:700;text-align:left;padding:10px;border:1px solid #ddd} td{padding:9px;border:1px solid #ddd} tr:nth-child(even){background:#f7f7f5}
+    </style></head><body><h1>LXD Attendance Report</h1><p>Generated ${escape(new Date().toLocaleString())} · ${attendanceLogs.length} records</p>
+    <table><thead><tr><th>Student Name</th><th>Email</th><th>Date</th><th>Time</th><th>Status</th><th>Late Minutes</th><th>Penalty (ETB)</th><th>Penalty Status</th></tr></thead><tbody>${body}</tbody></table></body></html>`;
+    const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8' });
+    const url = URL.createObjectURL(blob); const a = document.createElement('a');
+    a.href = url; a.download = `attendance-${new Date().toISOString().slice(0,10)}.xls`; a.click(); URL.revokeObjectURL(url);
+  };
 
-    const headers = [
-      'Student Name',
-      'Email',
-      'Date',
-      'Time',
-      'Status',
-      'Late Minutes',
-      'Penalty Amount',
-      'Penalty Status',
-    ];
-
-    const rows = attendanceLogs.map((log: any) => {
-      const date = new Date(log.scannedAt).toLocaleDateString();
-      const time = new Date(log.scannedAt).toLocaleTimeString();
-      const status = log.isLate ? 'Late' : 'Present';
-      const penaltyAmount = log.penalty ? log.penalty.amount : 0;
-      const penaltyStatus = log.penalty ? log.penalty.status : 'N/A';
-
-      return [
-        `"${log.user.name}"`,
-        `"${log.user.email}"`,
-        date,
-        time,
-        status,
-        log.latenessMinutes || 0,
-        penaltyAmount,
-        penaltyStatus,
-      ].join(',');
-    });
-
-    const csvContent = [headers.join(','), ...rows].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-
-    link.setAttribute('href', url);
-    link.setAttribute(
-      'download',
-      `attendance_export_${new Date().toISOString().split('T')[0]}.csv`,
-    );
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const exportToPDF = () => {
+    if (!attendanceLogs.length) { toast('No data to export'); return; }
+    // Uses the browser's native print engine so Chrome, Edge, Firefox, macOS and Windows can save a clean PDF.
+    setPrinting(true);
+    window.setTimeout(() => {
+      window.print();
+      setPrinting(false);
+    }, 50);
   };
 
   return (
-    <div className="p-10 space-y-8">
+    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 space-y-8">
       <div className="flex justify-between items-end">
         <div>
           <h1 className="font-serif text-4xl mb-2">Attendance</h1>
@@ -172,13 +159,14 @@ export default function AttendancePage() {
             All Cohort Scans
           </p>
         </div>
-        <Button
-          onClick={exportToCSV}
-          variant="outline"
-          className="flex items-center gap-2"
-        >
-          <Download className="w-4 h-4" /> Export CSV
-        </Button>
+        <div className="print:hidden flex flex-wrap gap-2">
+          <Button onClick={exportToExcel} variant="outline" className="flex items-center gap-2 rounded-xl">
+            <FileSpreadsheet className="w-4 h-4" /> Export Excel
+          </Button>
+          <Button onClick={exportToPDF} variant="outline" className="flex items-center gap-2 rounded-xl">
+            <FileText className="w-4 h-4" /> Export PDF
+          </Button>
+        </div>
       </div>
 
       <Table>
@@ -214,7 +202,7 @@ export default function AttendancePage() {
             </>
           ) : attendanceLogs.length > 0 ? (
             <>
-              {attendanceLogs.map((log: any) => (
+              {(printing ? attendanceLogs : pagedLogs).map((log: any) => (
                 <TableRow key={log.id}>
                   <TableCell>
                     <div className="font-medium text-[15px]">
@@ -289,6 +277,16 @@ export default function AttendancePage() {
           )}
         </TableBody>
       </Table>
+
+      {attendanceLogs.length > PAGE_SIZE && (
+        <div className="print:hidden flex flex-col sm:flex-row items-center justify-between gap-3 rounded-2xl border border-[#E5E5E4] bg-white px-4 py-3">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-[#878786]">Page {safePage} of {totalPages} · {attendanceLogs.length} records</span>
+          <div className="flex items-center gap-2">
+            <button aria-label="Previous page" disabled={safePage === 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className="h-9 w-9 rounded-xl border border-[#E5E5E4] hover:bg-[#F9F9F8] disabled:opacity-30 transition-all"><ChevronLeft className="w-4 h-4 mx-auto" /></button>
+            <button aria-label="Next page" disabled={safePage === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))} className="h-9 w-9 rounded-xl border border-[#E5E5E4] hover:bg-[#F9F9F8] disabled:opacity-30 transition-all"><ChevronRight className="w-4 h-4 mx-auto" /></button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

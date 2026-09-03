@@ -8,9 +8,6 @@ const withSerwist = withSerwistInit({
 });
 
 const nextConfig: NextConfig = {
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   // Added to silence Next.js 16 Turbopack/Webpack conflict warning when using Serwist
   turbopack: {},
 };

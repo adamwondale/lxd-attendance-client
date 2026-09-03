@@ -1,10 +1,10 @@
 import { Resolver, Query, Mutation, Args, Subscription, ResolveField, Parent } from '@nestjs/graphql';
 import { CohortMembership } from '../cohort/dto/cohort.type';
 import { UseGuards, Inject } from '@nestjs/common';
-import { PubSub } from 'graphql-subscriptions';
+import type { PubSub } from 'graphql-subscriptions';
 import { GqlAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
-import { AuthenticatedUser, CurrentUser } from '../auth/current-user.decorator';
+import { CurrentUser, type AuthenticatedUser } from '../auth/current-user.decorator';
 import { Roles } from '../auth/roles.decorator';
 import { UsersService } from './users.service';
 import { User } from './dto/user.type';
@@ -65,8 +65,9 @@ export class UsersResolver {
     @Args('id') id: string,
     @Args('name', { nullable: true }) name?: string,
     @Args('email', { nullable: true }) email?: string,
+    @Args('username', { nullable: true }) username?: string,
   ) {
-    const updated = await this.usersService.adminUpdateStudent(user.tenantId!, id, name, email);
+    const updated = await this.usersService.adminUpdateStudent(user.tenantId!, id, name, email, username);
     this.pubSub.publish('studentsUpdated', { onStudentsUpdated: true });
     return updated;
   }

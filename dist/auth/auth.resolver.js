@@ -11,19 +11,24 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var _a, _b;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthResolver = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const auth_service_1 = require("./auth.service");
 const auth_response_dto_1 = require("./dto/auth-response.dto");
+const register_admin_args_1 = require("./dto/register-admin.args");
 let AuthResolver = class AuthResolver {
     authService;
     constructor(authService) {
         this.authService = authService;
     }
-    async registerAdmin(email, passwordRaw, name, tenantName, companyPhone, username, companyEmail) {
-        const user = await this.authService.registerAdmin(email, passwordRaw, name, tenantName, companyPhone, username, companyEmail);
+    async registerAdmin(args) {
+        const user = await this.authService.registerAdmin(args.email, args.password, args.name, args.tenantName, args.companyPhone, args.username, args.companyEmail);
         return user.id;
+    }
+    async hasCompanyProfile() {
+        return this.authService.hasCompanyProfile();
     }
     async loginAdmin(email, passwordRaw) {
         return this.authService.loginAdmin(email, passwordRaw);
@@ -38,21 +43,27 @@ let AuthResolver = class AuthResolver {
     async loginStudent(identifier, passwordRaw) {
         return this.authService.loginStudent(identifier, passwordRaw);
     }
+    async forgotPassword(email, role) {
+        return this.authService.forgotPassword(email, role);
+    }
+    async resetPassword(token, passwordRaw) {
+        return this.authService.resetPassword(token, passwordRaw);
+    }
 };
 exports.AuthResolver = AuthResolver;
 __decorate([
     (0, graphql_1.Mutation)(() => String),
-    __param(0, (0, graphql_1.Args)('email')),
-    __param(1, (0, graphql_1.Args)('password')),
-    __param(2, (0, graphql_1.Args)('name')),
-    __param(3, (0, graphql_1.Args)('tenantName')),
-    __param(4, (0, graphql_1.Args)('companyPhone', { nullable: true })),
-    __param(5, (0, graphql_1.Args)('username', { nullable: true })),
-    __param(6, (0, graphql_1.Args)('companyEmail', { nullable: true })),
+    __param(0, (0, graphql_1.Args)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String, String, String, String]),
+    __metadata("design:paramtypes", [typeof (_b = typeof register_admin_args_1.RegisterAdminArgs !== "undefined" && register_admin_args_1.RegisterAdminArgs) === "function" ? _b : Object]),
     __metadata("design:returntype", Promise)
 ], AuthResolver.prototype, "registerAdmin", null);
+__decorate([
+    (0, graphql_1.Query)(() => Boolean),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AuthResolver.prototype, "hasCompanyProfile", null);
 __decorate([
     (0, graphql_1.Mutation)(() => auth_response_dto_1.AuthResponse),
     __param(0, (0, graphql_1.Args)('email')),
@@ -90,8 +101,24 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], AuthResolver.prototype, "loginStudent", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => Boolean),
+    __param(0, (0, graphql_1.Args)('email')),
+    __param(1, (0, graphql_1.Args)('role')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], AuthResolver.prototype, "forgotPassword", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => Boolean),
+    __param(0, (0, graphql_1.Args)('token')),
+    __param(1, (0, graphql_1.Args)('password')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], AuthResolver.prototype, "resetPassword", null);
 exports.AuthResolver = AuthResolver = __decorate([
     (0, graphql_1.Resolver)(),
-    __metadata("design:paramtypes", [auth_service_1.AuthService])
+    __metadata("design:paramtypes", [typeof (_a = typeof auth_service_1.AuthService !== "undefined" && auth_service_1.AuthService) === "function" ? _a : Object])
 ], AuthResolver);
 //# sourceMappingURL=auth.resolver.js.map

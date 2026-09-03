@@ -1,8 +1,6 @@
 "use client"
 
 import { use, useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Card, CardHeader, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useQuery, useMutation } from "@apollo/client/react/index.js"
 import { gql } from "@apollo/client/core/index.js"
@@ -10,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Modal, ModalHeader, ModalBody, ModalFooter, AlertModal } from "@/components/ui/modal"
 import { toast } from "sonner"
 import Link from "next/link"
+import { ArrowLeft, Plus } from "lucide-react"
 
 const COHORT_DETAILS = gql`
   query CohortDetails($id: String!) {
@@ -32,6 +31,10 @@ const COHORT_DETAILS = gql`
   }
 `
 
+type CohortSessionData = {
+  cohortDetails: { id: string; name: string; pin: string; sessions: Array<{ id: string; name: string; startTime: string; gracePeriodMinutes: number; recurrenceDays: string[]; latePenaltyAmount: number; escalationThresholdMinutes: number; escalationRate: number; escalationIntervalMinutes: number }> } | null
+}
+
 const CREATE_SESSION = gql`
   mutation CreateCohortSession($cohortId: String!, $name: String!, $startTime: String!, $gracePeriodMinutes: Int!, $recurrenceDays: [String!]!, $latePenaltyAmount: Int!, $escalationThresholdMinutes: Int, $escalationRate: Int, $escalationIntervalMinutes: Int) {
     createCohortSession(cohortId: $cohortId, name: $name, startTime: $startTime, gracePeriodMinutes: $gracePeriodMinutes, recurrenceDays: $recurrenceDays, latePenaltyAmount: $latePenaltyAmount, escalationThresholdMinutes: $escalationThresholdMinutes, escalationRate: $escalationRate, escalationIntervalMinutes: $escalationIntervalMinutes)
@@ -52,12 +55,13 @@ const DELETE_SESSION = gql`
 
 export default function CohortDetailsPage({ params }: { params: Promise<{ cohortId: string }> }) {
   const unwrappedParams = use(params)
-  const { data: cohortData, loading: cohortLoading, refetch } = useQuery(COHORT_DETAILS, { 
+  const { data: cohortData, loading: cohortLoading, refetch } = useQuery<CohortSessionData>(COHORT_DETAILS, { 
     variables: { id: unwrappedParams.cohortId },
     fetchPolicy: "cache-and-network"
   })
 
   const [createSession, { loading: creating }] = useMutation(CREATE_SESSION)
+  const [updateSession, { loading: updating }] = useMutation(UPDATE_SESSION)
   const [deleteSession, { loading: deleting }] = useMutation(DELETE_SESSION)
 
   const [editingSession, setEditingSession] = useState<any>(null)
@@ -71,6 +75,8 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
   const [escalationIntervalMinutes, setEscalationIntervalMinutes] = useState(5)
   const [recurrenceDays, setRecurrenceDays] = useState<string[]>(['EVERYDAY'])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [sessionPage, setSessionPage] = useState(1)
+  const SESSION_PAGE_SIZE = 7
 
   const openEdit = (session: any) => {
     setEditingSession(session)
@@ -171,11 +177,14 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
 
   const cohort = cohortData?.cohortDetails
   const sessions = cohort?.sessions || []
+  const sessionTotalPages = Math.max(1, Math.ceil(sessions.length / SESSION_PAGE_SIZE))
+  const safeSessionPage = Math.min(sessionPage, sessionTotalPages)
+  const pagedSessions = sessions.slice((safeSessionPage - 1) * SESSION_PAGE_SIZE, safeSessionPage * SESSION_PAGE_SIZE)
 
   return (
-    <div className="p-10 space-y-8 relative">
+    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 space-y-8 relative">
       <div className="mb-4">
-        <Link href="/dashboard/cohorts" className="text-sm font-mono uppercase tracking-widest text-[#878786] hover:text-black flex items-center gap-2">
+        <Link href="/dashboard/cohorts" className="text-sm font-mono uppercase tracking-widest text-[#878786] hover:text-black flex items-center gap-2 transition-all duration-300 hover:-translate-x-0.5">
           <ArrowLeft className="w-4 h-4" /> Back to Cohorts
         </Link>
       </div>
@@ -215,7 +224,7 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
                     onChange={(e: any) => setSessionName(e.target.value)}
                     placeholder="e.g. Day 1: React Basics" 
                     required 
-                    className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans placeholder:text-[#878786]/50 focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                    className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans placeholder:text-[#878786]/50 focus:border-[#0A0A0A] outline-none transition-colors rounded-xl"
                   />
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
@@ -227,7 +236,7 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
                       value={startTime}
                       onChange={(e: any) => setStartTime(e.target.value)}
                       required 
-                      className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                      className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-xl"
                     />
                   </div>
                   <div className="space-y-2">
@@ -238,7 +247,7 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
                       value={lateTime}
                       onChange={(e: any) => setLateTime(e.target.value)}
                       required 
-                      className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                      className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-xl"
                     />
                   </div>
                 </div>
@@ -251,7 +260,7 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
                     value={latePenaltyAmount}
                     onChange={(e: any) => setLatePenaltyAmount(parseInt(e.target.value))}
                     required 
-                    className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                    className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-xl"
                   />
                   <p className="text-[11px] text-[#878786] font-mono uppercase tracking-wide">Scans after the late time will automatically receive the cohort's penalty.</p>
                 </div>
@@ -261,15 +270,15 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
                   <div className="grid sm:grid-cols-3 gap-3">
                     <label className="space-y-1">
                       <span className="text-[10px] font-mono uppercase tracking-widest text-[#878786]">Threshold (min)</span>
-                      <input type="number" min="0" value={escalationThresholdMinutes} onChange={e=>setEscalationThresholdMinutes(Number(e.target.value))} className="h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none" />
+                      <input type="number" min="0" value={escalationThresholdMinutes} onChange={e=>setEscalationThresholdMinutes(Number(e.target.value))} className="h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-xl" />
                     </label>
                     <label className="space-y-1">
                       <span className="text-[10px] font-mono uppercase tracking-widest text-[#878786]">+ ETB</span>
-                      <input type="number" min="0" value={escalationRate} onChange={e=>setEscalationRate(Number(e.target.value))} className="h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none" />
+                      <input type="number" min="0" value={escalationRate} onChange={e=>setEscalationRate(Number(e.target.value))} className="h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-xl" />
                     </label>
                     <label className="space-y-1">
                       <span className="text-[10px] font-mono uppercase tracking-widest text-[#878786]">Every (min)</span>
-                      <input type="number" min="1" value={escalationIntervalMinutes} onChange={e=>setEscalationIntervalMinutes(Number(e.target.value))} className="h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none" />
+                      <input type="number" min="1" value={escalationIntervalMinutes} onChange={e=>setEscalationIntervalMinutes(Number(e.target.value))} className="h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-xl" />
                     </label>
                   </div>
                   <p className="text-[11px] text-[#878786] font-mono uppercase tracking-wide mt-2">After the threshold, penalty increases by rate for each interval.</p>
@@ -313,8 +322,8 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
               </form>
             </ModalBody>
             <ModalFooter>
-              <button type="button" onClick={closeDialog} className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-none order-2 sm:order-1">Cancel</button>
-              <button type="submit" form="session-form" disabled={creating || updating} className="flex-1 sm:flex-auto h-14 px-6 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2">
+              <button type="button" onClick={closeDialog} className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-xl order-2 sm:order-1">Cancel</button>
+              <button type="submit" form="session-form" disabled={creating || updating} className="flex-1 sm:flex-auto h-14 px-6 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-xl flex items-center justify-center gap-2 order-1 sm:order-2">
                 {(creating || updating) ? "Saving..." : "Save Session"}
               </button>
             </ModalFooter>
@@ -332,6 +341,7 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
         loading={deleting}
       />
 
+      <div className="rounded-2xl border border-[#E5E5E4] bg-white overflow-hidden">
       <Table>
         <TableHeader className="hidden sm:table-header-group">
           <TableRow>
@@ -341,7 +351,7 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sessions.map((session: any) => {
+          {pagedSessions.map((session: any) => {
             const [h, m] = session.startTime.split(':').map(Number)
             const totalM = h * 60 + m + session.gracePeriodMinutes
             const lateH = Math.floor(totalM / 60) % 24
@@ -391,6 +401,16 @@ export default function CohortDetailsPage({ params }: { params: Promise<{ cohort
           )}
         </TableBody>
       </Table>
+      </div>
+      {sessions.length > SESSION_PAGE_SIZE && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 rounded-2xl border border-[#E5E5E4] bg-white px-4 py-3">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-[#878786]">Page {safeSessionPage} of {sessionTotalPages} · {sessions.length} sessions</span>
+          <div className="flex items-center gap-2">
+            <button aria-label="Previous sessions page" disabled={safeSessionPage === 1} onClick={() => setSessionPage((p) => Math.max(1, p - 1))} className="h-9 w-9 rounded-xl border border-[#E5E5E4] hover:bg-[#F9F9F8] disabled:opacity-30 transition-all">‹</button>
+            <button aria-label="Next sessions page" disabled={safeSessionPage === sessionTotalPages} onClick={() => setSessionPage((p) => Math.min(sessionTotalPages, p + 1))} className="h-9 w-9 rounded-xl border border-[#E5E5E4] hover:bg-[#F9F9F8] disabled:opacity-30 transition-all">›</button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

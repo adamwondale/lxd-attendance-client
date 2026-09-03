@@ -1,7 +1,6 @@
 import {
   Users,
   LayoutDashboard,
-  QrCode,
   LogOut,
   Calendar,
   GraduationCap,
@@ -9,7 +8,6 @@ import {
   FileBarChart2,
   UserCircle,
   Home,
-  Link
 } from "lucide-react";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
@@ -31,7 +29,7 @@ export default async function DashboardLayout({
 
   if (role === "STUDENT") {
     // ------------------------------------------------------------------
-    // Student Layout — Mobile-First with Bottom Navigation
+    // Student Layout — responsive shell with persistent navigation
     // ------------------------------------------------------------------
     return (
       <div className="flex flex-col min-h-screen bg-background pb-16">

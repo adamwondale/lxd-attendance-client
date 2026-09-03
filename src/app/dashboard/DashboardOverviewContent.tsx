@@ -19,6 +19,8 @@ const DASHBOARD_METRICS = gql`
   }
 `
 
+type DashboardMetricsData = { dashboardMetrics: { activeCohorts: number; totalStudents: number; presentToday: number; absentToday: number; lateToday: number; todayRevenue: number } }
+
 const ON_COHORTS_UPDATED = gql`
   subscription OnCohortsUpdated {
     onCohortsUpdated
@@ -38,7 +40,7 @@ const ON_ATTENDANCE_UPDATED = gql`
 `
 
 export default function DashboardOverviewContent() {
-  const { data, loading, error, refetch } = useQuery(DASHBOARD_METRICS, { fetchPolicy: "cache-and-network" })
+  const { data, loading, error, refetch } = useQuery<DashboardMetricsData>(DASHBOARD_METRICS, { fetchPolicy: "cache-and-network" })
 
   useSubscription(ON_COHORTS_UPDATED, { onData: () => refetch() })
   useSubscription(ON_STUDENTS_UPDATED, { onData: () => refetch() })

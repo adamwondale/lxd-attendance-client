@@ -7,10 +7,12 @@ import { Loader2, Save, Building2 } from "lucide-react"
 import { toast } from "sonner"
 
 const PROFILE = gql`query CompanyProfile { companyProfile { id companyName companyEmail companyPhone adminName username timezone } }`
+type CompanyProfileData = { companyProfile: { id: string; companyName: string; companyEmail?: string; companyPhone?: string; adminName?: string; username?: string; timezone: string } | null }
+
 const UPDATE = gql`mutation UpdateCompanyProfile($companyName:String,$companyEmail:String,$companyPhone:String,$adminName:String,$username:String) { updateCompanyProfile(companyName:$companyName,companyEmail:$companyEmail,companyPhone:$companyPhone,adminName:$adminName,username:$username) { id companyName companyEmail companyPhone adminName username timezone } }`
 
 export default function CompanyProfilePage() {
-  const { data, loading } = useQuery(PROFILE)
+  const { data, loading } = useQuery<CompanyProfileData>(PROFILE)
   const [update, { loading: saving }] = useMutation(UPDATE)
   const [form, setForm] = useState({companyName:"",companyEmail:"",companyPhone:"",adminName:"",username:""})
   useEffect(() => { if (data?.companyProfile) setForm({ companyName:data.companyProfile.companyName||"", companyEmail:data.companyProfile.companyEmail||"", companyPhone:data.companyProfile.companyPhone||"", adminName:data.companyProfile.adminName||"", username:data.companyProfile.username||"" }) }, [data])

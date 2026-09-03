@@ -90,7 +90,7 @@ export default function StudentCohortsPage() {
   }
 
   return (
-    <div className="p-6 max-w-lg mx-auto space-y-8 bg-[#F9F9F8] min-h-[calc(100vh-68px)] font-sans text-[#0A0A0A]">
+    <div className="w-full max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 space-y-8 bg-[#F9F9F8] min-h-full font-sans text-[#0A0A0A]">
 
       {/* Header Area */}
       <div>
@@ -104,7 +104,7 @@ export default function StudentCohortsPage() {
           <Users className="w-4 h-4" />
           Enrolled Cohorts
         </h3>
-        <div className="bg-[#FFFFFF] border border-[#E5E5E4] rounded-none shadow-sm">
+        <div className="bg-[#FFFFFF] border border-[#E5E5E4] rounded-2xl shadow-sm interactive">
           {myCohortsLoading && !myCohortsData?.myCohorts ? (
             <div className="divide-y divide-[#E5E5E4]">
               {[1, 2].map((i) => (
@@ -150,7 +150,7 @@ export default function StudentCohortsPage() {
           <Search className="w-4 h-4" />
           Available to Join
         </h3>
-        <div className="bg-[#FFFFFF] border border-[#E5E5E4] rounded-none shadow-sm">
+        <div className="bg-[#FFFFFF] border border-[#E5E5E4] rounded-2xl shadow-sm interactive">
           {availableCohortsLoading && !availableCohortsData?.availableCohorts ? (
             <div className="divide-y divide-[#E5E5E4]">
               {[1, 2].map((i) => (
@@ -173,7 +173,7 @@ export default function StudentCohortsPage() {
                   </div>
                   <button 
                     onClick={() => setJoiningCohort(cohort)}
-                    className="h-8 px-4 rounded-none bg-[#0A0A0A] text-[#FFFFFF] text-[11px] font-mono uppercase tracking-widest flex items-center gap-1 active:scale-95 transition-transform"
+                    className="h-8 px-4 rounded-xl bg-[#0A0A0A] text-[#FFFFFF] text-[11px] font-mono uppercase tracking-widest flex items-center gap-1 active:scale-95 transition-transform"
                   >
                     Join
                   </button>
@@ -203,7 +203,7 @@ export default function StudentCohortsPage() {
                 value={selectedSessionId}
                 onChange={(e) => setSelectedSessionId(e.target.value)}
                 required
-                className="w-full h-11 px-3 border border-[#E5E5E4] bg-[#F9F9F8] text-[14px] focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                className="w-full h-11 px-3 border border-[#E5E5E4] bg-[#F9F9F8] text-[14px] focus:border-[#0A0A0A] outline-none transition-colors rounded-xl"
               >
                 <option value="" disabled>Choose a session...</option>
                 {joiningCohort?.sessions?.map((s: any) => (
@@ -221,7 +221,7 @@ export default function StudentCohortsPage() {
                 onChange={(e) => setPin(e.target.value)}
                 required
                 placeholder="Enter PIN"
-                className="w-full h-11 px-3 border border-[#E5E5E4] bg-[#F9F9F8] text-[14px] focus:border-[#0A0A0A] outline-none transition-colors rounded-none text-center tracking-widest"
+                className="w-full h-11 px-3 border border-[#E5E5E4] bg-[#F9F9F8] text-[14px] focus:border-[#0A0A0A] outline-none transition-colors rounded-xl text-center tracking-widest"
               />
             </div>
           </form>
@@ -230,7 +230,7 @@ export default function StudentCohortsPage() {
           <button 
             type="button" 
             onClick={() => setJoiningCohort(null)} 
-            className="hidden sm:flex flex-1 sm:flex-none min-h-[56px] shrink-0 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-none order-2 sm:order-1 items-center justify-center"
+            className="hidden sm:flex flex-1 sm:flex-none min-h-[56px] shrink-0 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-xl order-2 sm:order-1 items-center justify-center"
           >
             Cancel
           </button>
@@ -238,7 +238,7 @@ export default function StudentCohortsPage() {
             type="submit" 
             form="join-cohort-form"
             disabled={joining || !pin}
-            className="flex-1 sm:flex-auto min-h-[56px] shrink-0 py-3 px-6 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2"
+            className="flex-1 sm:flex-auto min-h-[56px] shrink-0 py-3 px-6 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-xl flex items-center justify-center gap-2 order-1 sm:order-2"
           >
             {joining ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify & Join"}
           </button>

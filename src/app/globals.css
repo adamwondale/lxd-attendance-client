@@ -23,6 +23,10 @@
     --spacing-base: 4px;
   }
   
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-text);
@@ -48,10 +52,27 @@
   .surface-lift:hover { box-shadow: 0 18px 45px rgba(10,10,10,.09); }
 }
 
-/* Sharp, brutalist icon styles - overrides rounded vibe-coded look */
 svg.lucide {
-  stroke-linecap: square !important;
-  stroke-linejoin: miter !important;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+button, a, input, select, textarea {
+  transition-timing-function: var(--ease-studio);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
 
 ::selection { background: #E54D2E; color: white; }
+
+
+@media print {
+  aside, nav, header, .print\:hidden { display: none !important; }
+  main { padding: 0 !important; overflow: visible !important; }
+  body { background: #fff !important; }
+  table { page-break-inside: auto; }
+  tr { page-break-inside: avoid; page-break-after: auto; }
+}

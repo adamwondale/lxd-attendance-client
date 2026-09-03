@@ -5,6 +5,9 @@ import { useQuery } from "@apollo/client/react/index.js"
 import { gql } from "@apollo/client/core/index.js"
 import { QrCode, Loader2 } from "lucide-react"
 
+type ProjectorCohort = { id: string; name: string; sessions: Array<{ id: string; name: string }> }
+type ProjectorData = { publicActiveCohorts: ProjectorCohort[] }
+
 const LIST_PUBLIC_COHORTS = gql`
   query ProjectorCohorts {
     publicActiveCohorts {
@@ -22,7 +25,7 @@ export function ProjectorLauncher() {
   const [isOpen, setIsOpen] = useState(false)
   const [activeSession, setActiveSession] = useState<{ sessionName: string } | null>(null)
   
-  const { data, loading } = useQuery(LIST_PUBLIC_COHORTS, {
+  const { data, loading } = useQuery<ProjectorData>(LIST_PUBLIC_COHORTS, {
     skip: !isOpen
   })
 
@@ -49,7 +52,7 @@ export function ProjectorLauncher() {
     <>
       <button
         onClick={openLauncher}
-        className="flex items-center space-x-3 w-full px-3 py-2 rounded-none text-text hover:bg-black/5 font-medium text-[14px] transition-colors"
+        className="flex items-center space-x-3 w-full px-3 py-2 rounded-xl text-text hover:bg-black/5 font-medium text-[14px] transition-colors"
       >
         <QrCode className="w-4 h-4" />
         <span>Launch Projector</span>

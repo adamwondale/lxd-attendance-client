@@ -11,11 +11,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var _a, _b;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CohortResolver = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const common_1 = require("@nestjs/common");
-const graphql_subscriptions_1 = require("graphql-subscriptions");
 const cohort_type_1 = require("./dto/cohort.type");
 const dashboard_type_1 = require("./dto/dashboard.type");
 const cohort_service_1 = require("./cohort.service");
@@ -30,35 +30,35 @@ let CohortResolver = class CohortResolver {
         this.cohortService = cohortService;
         this.pubSub = pubSub;
     }
-    async createCohort(user, name, pin, startDate, endDate, durationMonths) {
-        const cohort = await this.cohortService.createCohort(user.userId, name, pin, new Date(startDate), new Date(endDate), durationMonths);
+    async createCohort(user, name, pin, startDate, endDate) {
+        const cohort = await this.cohortService.createCohort(user.tenantId, name, pin, new Date(startDate), new Date(endDate));
         this.pubSub.publish('cohortsUpdated', { onCohortsUpdated: true });
         return cohort.id;
     }
-    async updateCohort(cohortId, name, pin, startDate, endDate, isActive, durationMonths) {
-        const cohort = await this.cohortService.updateCohort(cohortId, name, pin, startDate ? new Date(startDate) : undefined, endDate ? new Date(endDate) : undefined, isActive, durationMonths);
+    async updateCohort(user, cohortId, name, pin, startDate, endDate, isActive) {
+        const cohort = await this.cohortService.updateCohort(user.tenantId, cohortId, name, pin, startDate ? new Date(startDate) : undefined, endDate ? new Date(endDate) : undefined, isActive);
         this.pubSub.publish('cohortsUpdated', { onCohortsUpdated: true });
         return cohort.id;
     }
-    async deleteCohort(cohortId) {
-        const deleted = await this.cohortService.deleteCohort(cohortId);
+    async deleteCohort(user, cohortId) {
+        const deleted = await this.cohortService.deleteCohort(user.tenantId, cohortId);
         if (deleted) {
             this.pubSub.publish('cohortsUpdated', { onCohortsUpdated: true });
         }
         return deleted;
     }
-    async createCohortSession(cohortId, name, startTime, gracePeriodMinutes, recurrenceDays, latePenaltyAmount, escalationThresholdMinutes, escalationRate, escalationIntervalMinutes) {
-        const session = await this.cohortService.createCohortSession(cohortId, name, startTime, gracePeriodMinutes, recurrenceDays, latePenaltyAmount, escalationThresholdMinutes, escalationRate, escalationIntervalMinutes);
+    async createCohortSession(user, cohortId, name, startTime, gracePeriodMinutes, recurrenceDays, latePenaltyAmount, escalationThresholdMinutes, escalationRate, escalationIntervalMinutes) {
+        const session = await this.cohortService.createCohortSession(user.tenantId, cohortId, name, startTime, gracePeriodMinutes, recurrenceDays, latePenaltyAmount, escalationThresholdMinutes, escalationRate, escalationIntervalMinutes);
         this.pubSub.publish('cohortsUpdated', { onCohortsUpdated: true });
         return session.id;
     }
-    async updateCohortSession(sessionId, name, startTime, gracePeriodMinutes, recurrenceDays, latePenaltyAmount, escalationThresholdMinutes, escalationRate, escalationIntervalMinutes) {
-        const session = await this.cohortService.updateCohortSession(sessionId, name, startTime, gracePeriodMinutes, recurrenceDays, latePenaltyAmount, escalationThresholdMinutes, escalationRate, escalationIntervalMinutes);
+    async updateCohortSession(user, sessionId, name, startTime, gracePeriodMinutes, recurrenceDays, latePenaltyAmount, escalationThresholdMinutes, escalationRate, escalationIntervalMinutes) {
+        const session = await this.cohortService.updateCohortSession(user.tenantId, sessionId, name, startTime, gracePeriodMinutes, recurrenceDays, latePenaltyAmount, escalationThresholdMinutes, escalationRate, escalationIntervalMinutes);
         this.pubSub.publish('cohortsUpdated', { onCohortsUpdated: true });
         return session.id;
     }
-    async deleteCohortSession(sessionId) {
-        const deleted = await this.cohortService.deleteCohortSession(sessionId);
+    async deleteCohortSession(user, sessionId) {
+        const deleted = await this.cohortService.deleteCohortSession(user.tenantId, sessionId);
         if (deleted) {
             this.pubSub.publish('cohortsUpdated', { onCohortsUpdated: true });
         }
@@ -67,8 +67,8 @@ let CohortResolver = class CohortResolver {
     async listCohorts(user) {
         return this.cohortService.listCohorts(user.userId);
     }
-    async cohortDetails(id) {
-        return this.cohortService.getCohortDetails(id);
+    async cohortDetails(user, id) {
+        return this.cohortService.getCohortDetails(user.tenantId, id);
     }
     async dashboardMetrics(user) {
         return this.cohortService.getDashboardMetrics(user.userId);
@@ -115,76 +115,79 @@ __decorate([
     __param(2, (0, graphql_1.Args)('pin')),
     __param(3, (0, graphql_1.Args)('startDate')),
     __param(4, (0, graphql_1.Args)('endDate')),
-    __param(5, (0, graphql_1.Args)('durationMonths', { type: () => graphql_1.Int, nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, String, String, String, Number]),
+    __metadata("design:paramtypes", [Object, String, String, String, String]),
     __metadata("design:returntype", Promise)
 ], CohortResolver.prototype, "createCohort", null);
 __decorate([
     (0, graphql_1.Mutation)(() => String),
     (0, common_1.UseGuards)(jwt_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('COORDINATOR', 'SUPER_ADMIN', 'ADMIN'),
-    __param(0, (0, graphql_1.Args)('cohortId')),
-    __param(1, (0, graphql_1.Args)('name', { nullable: true })),
-    __param(2, (0, graphql_1.Args)('pin', { nullable: true })),
-    __param(3, (0, graphql_1.Args)('startDate', { nullable: true })),
-    __param(4, (0, graphql_1.Args)('endDate', { nullable: true })),
-    __param(5, (0, graphql_1.Args)('isActive', { nullable: true })),
-    __param(6, (0, graphql_1.Args)('durationMonths', { type: () => graphql_1.Int, nullable: true })),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, graphql_1.Args)('cohortId')),
+    __param(2, (0, graphql_1.Args)('name', { nullable: true })),
+    __param(3, (0, graphql_1.Args)('pin', { nullable: true })),
+    __param(4, (0, graphql_1.Args)('startDate', { nullable: true })),
+    __param(5, (0, graphql_1.Args)('endDate', { nullable: true })),
+    __param(6, (0, graphql_1.Args)('isActive', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String, String, Boolean, Number]),
+    __metadata("design:paramtypes", [Object, String, String, String, String, String, Boolean]),
     __metadata("design:returntype", Promise)
 ], CohortResolver.prototype, "updateCohort", null);
 __decorate([
     (0, graphql_1.Mutation)(() => Boolean),
     (0, common_1.UseGuards)(jwt_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('COORDINATOR', 'SUPER_ADMIN', 'ADMIN'),
-    __param(0, (0, graphql_1.Args)('cohortId')),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, graphql_1.Args)('cohortId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], CohortResolver.prototype, "deleteCohort", null);
 __decorate([
     (0, graphql_1.Mutation)(() => String),
     (0, common_1.UseGuards)(jwt_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('COORDINATOR', 'SUPER_ADMIN', 'ADMIN'),
-    __param(0, (0, graphql_1.Args)('cohortId')),
-    __param(1, (0, graphql_1.Args)('name')),
-    __param(2, (0, graphql_1.Args)('startTime')),
-    __param(3, (0, graphql_1.Args)('gracePeriodMinutes', { type: () => graphql_1.Int })),
-    __param(4, (0, graphql_1.Args)('recurrenceDays', { type: () => [String] })),
-    __param(5, (0, graphql_1.Args)('latePenaltyAmount', { type: () => graphql_1.Int })),
-    __param(6, (0, graphql_1.Args)('escalationThresholdMinutes', { type: () => graphql_1.Int, nullable: true })),
-    __param(7, (0, graphql_1.Args)('escalationRate', { type: () => graphql_1.Int, nullable: true })),
-    __param(8, (0, graphql_1.Args)('escalationIntervalMinutes', { type: () => graphql_1.Int, nullable: true })),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, graphql_1.Args)('cohortId')),
+    __param(2, (0, graphql_1.Args)('name')),
+    __param(3, (0, graphql_1.Args)('startTime')),
+    __param(4, (0, graphql_1.Args)('gracePeriodMinutes', { type: () => graphql_1.Int })),
+    __param(5, (0, graphql_1.Args)('recurrenceDays', { type: () => [String] })),
+    __param(6, (0, graphql_1.Args)('latePenaltyAmount', { type: () => graphql_1.Int })),
+    __param(7, (0, graphql_1.Args)('escalationThresholdMinutes', { type: () => graphql_1.Int, nullable: true })),
+    __param(8, (0, graphql_1.Args)('escalationRate', { type: () => graphql_1.Int, nullable: true })),
+    __param(9, (0, graphql_1.Args)('escalationIntervalMinutes', { type: () => graphql_1.Int, nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, Number, Array, Number, Number, Number, Number]),
+    __metadata("design:paramtypes", [Object, String, String, String, Number, Array, Number, Number, Number, Number]),
     __metadata("design:returntype", Promise)
 ], CohortResolver.prototype, "createCohortSession", null);
 __decorate([
     (0, graphql_1.Mutation)(() => String),
     (0, common_1.UseGuards)(jwt_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('COORDINATOR', 'SUPER_ADMIN', 'ADMIN'),
-    __param(0, (0, graphql_1.Args)('sessionId')),
-    __param(1, (0, graphql_1.Args)('name', { nullable: true })),
-    __param(2, (0, graphql_1.Args)('startTime', { nullable: true })),
-    __param(3, (0, graphql_1.Args)('gracePeriodMinutes', { type: () => graphql_1.Int, nullable: true })),
-    __param(4, (0, graphql_1.Args)('recurrenceDays', { type: () => [String], nullable: true })),
-    __param(5, (0, graphql_1.Args)('latePenaltyAmount', { type: () => graphql_1.Int, nullable: true })),
-    __param(6, (0, graphql_1.Args)('escalationThresholdMinutes', { type: () => graphql_1.Int, nullable: true })),
-    __param(7, (0, graphql_1.Args)('escalationRate', { type: () => graphql_1.Int, nullable: true })),
-    __param(8, (0, graphql_1.Args)('escalationIntervalMinutes', { type: () => graphql_1.Int, nullable: true })),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, graphql_1.Args)('sessionId')),
+    __param(2, (0, graphql_1.Args)('name', { nullable: true })),
+    __param(3, (0, graphql_1.Args)('startTime', { nullable: true })),
+    __param(4, (0, graphql_1.Args)('gracePeriodMinutes', { type: () => graphql_1.Int, nullable: true })),
+    __param(5, (0, graphql_1.Args)('recurrenceDays', { type: () => [String], nullable: true })),
+    __param(6, (0, graphql_1.Args)('latePenaltyAmount', { type: () => graphql_1.Int, nullable: true })),
+    __param(7, (0, graphql_1.Args)('escalationThresholdMinutes', { type: () => graphql_1.Int, nullable: true })),
+    __param(8, (0, graphql_1.Args)('escalationRate', { type: () => graphql_1.Int, nullable: true })),
+    __param(9, (0, graphql_1.Args)('escalationIntervalMinutes', { type: () => graphql_1.Int, nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, Number, Array, Number, Number, Number, Number]),
+    __metadata("design:paramtypes", [Object, String, String, String, Number, Array, Number, Number, Number, Number]),
     __metadata("design:returntype", Promise)
 ], CohortResolver.prototype, "updateCohortSession", null);
 __decorate([
     (0, graphql_1.Mutation)(() => Boolean),
     (0, common_1.UseGuards)(jwt_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('COORDINATOR', 'SUPER_ADMIN', 'ADMIN'),
-    __param(0, (0, graphql_1.Args)('sessionId')),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, graphql_1.Args)('sessionId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], CohortResolver.prototype, "deleteCohortSession", null);
 __decorate([
@@ -200,9 +203,10 @@ __decorate([
     (0, graphql_1.Query)(() => cohort_type_1.Cohort, { nullable: true }),
     (0, common_1.UseGuards)(jwt_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('COORDINATOR', 'SUPER_ADMIN', 'ADMIN'),
-    __param(0, (0, graphql_1.Args)('id')),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], CohortResolver.prototype, "cohortDetails", null);
 __decorate([
@@ -215,13 +219,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], CohortResolver.prototype, "dashboardMetrics", null);
 __decorate([
-    (0, graphql_1.Query)(() => [cohort_type_1.Cohort]),
+    (0, graphql_1.Query)(() => [cohort_type_1.PublicCohort]),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], CohortResolver.prototype, "publicActiveCohorts", null);
 __decorate([
-    (0, graphql_1.Query)(() => [cohort_type_1.Cohort]),
+    (0, graphql_1.Query)(() => [cohort_type_1.PublicCohort]),
     (0, common_1.UseGuards)(jwt_auth_guard_1.GqlAuthGuard),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
@@ -281,13 +285,12 @@ __decorate([
     __param(0, (0, graphql_1.Parent)()),
     __param(1, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [cohort_type_1.Cohort, Object]),
+    __metadata("design:paramtypes", [typeof (_b = typeof cohort_type_1.Cohort !== "undefined" && cohort_type_1.Cohort) === "function" ? _b : Object, Object]),
     __metadata("design:returntype", Promise)
 ], CohortResolver.prototype, "joinedSession", null);
 exports.CohortResolver = CohortResolver = __decorate([
     (0, graphql_1.Resolver)(() => cohort_type_1.Cohort),
     __param(1, (0, common_1.Inject)('PUB_SUB')),
-    __metadata("design:paramtypes", [cohort_service_1.CohortService,
-        graphql_subscriptions_1.PubSub])
+    __metadata("design:paramtypes", [typeof (_a = typeof cohort_service_1.CohortService !== "undefined" && cohort_service_1.CohortService) === "function" ? _a : Object, Object])
 ], CohortResolver);
 //# sourceMappingURL=cohort.resolver.js.map
