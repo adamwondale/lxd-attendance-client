@@ -107,7 +107,7 @@ export default function StudentScanPage() {
   }, [status, canStartScanning, isActive, scanStatus, startScanning])
 
   const cameraError = cameraErrorObj?.message || ""
-  const isPermissionDenied = cameraErrorObj?.name === "NotAllowedError"
+  const isPermissionDenied = cameraErrorObj?.type === "permission"
 
   return (
     <div className="p-6 space-y-8 h-full flex flex-col max-w-lg mx-auto">
