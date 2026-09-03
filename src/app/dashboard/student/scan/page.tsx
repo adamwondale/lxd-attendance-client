@@ -107,6 +107,7 @@ export default function StudentScanPage() {
   }, [status, canStartScanning, isActive, scanStatus, startScanning])
 
   const cameraError = cameraErrorObj?.message || ""
+  const isPermissionDenied = cameraErrorObj?.name === "NotAllowedError"
 
   return (
     <div className="p-6 space-y-8 h-full flex flex-col max-w-lg mx-auto">
@@ -133,7 +134,7 @@ export default function StudentScanPage() {
             </div>
 
             {isSupported === false && (
-              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-white/55">
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-white/55 bg-black/90">
                 <AlertCircle className="w-16 h-16 mb-4 opacity-50" />
                 <p className="font-mono text-[11px] uppercase tracking-widest">Camera not supported</p>
               </div>
@@ -155,7 +156,16 @@ export default function StudentScanPage() {
               </div>
             )}
 
-            {!isActive && !cameraLoading && !scanStatus.includes("loading") && (
+            {isPermissionDenied && (
+              <div className="absolute inset-0 z-20 bg-black/90 text-white flex flex-col items-center justify-center p-6 text-center">
+                <AlertCircle className="w-16 h-16 mb-4 text-red-500" />
+                <p className="font-serif text-2xl mb-2">Camera Access Denied</p>
+                <p className="font-mono text-[10px] uppercase tracking-widest text-white/60 mb-5 max-w-xs">Please allow camera permissions in your browser settings to scan your badge.</p>
+                <Button onClick={() => window.location.reload()} className="bg-white text-black hover:bg-white/90">Reload Page</Button>
+              </div>
+            )}
+
+            {!isActive && !cameraLoading && !scanStatus.includes("loading") && !isPermissionDenied && (
               <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-white/55 pointer-events-none">
                 <Scan className="w-16 h-16 mb-4 opacity-50" />
                 <p className="font-mono text-[11px] uppercase tracking-widest">Camera is Paused</p>
