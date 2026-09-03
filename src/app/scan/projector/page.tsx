@@ -190,8 +190,7 @@ function ProjectorContent() {
         const newValue = e.newValue ? JSON.parse(e.newValue) : null;
         if (!newValue || newValue.launchedAt.toString() !== launchedAt) {
           // Session was ended or a new one was started
-          window.close();
-          window.location.href = '/dashboard';
+          window.location.href = '/dashboard/attendance';
         }
       }
     }
@@ -201,14 +200,13 @@ function ProjectorContent() {
 
   const endSession = () => {
     localStorage.removeItem('activeProjector')
-    window.close()
-    window.location.href = '/dashboard'
+    window.location.href = '/dashboard/attendance'
   }
 
   const scanUrl = qrData?.projectorQr || "";
 
   return (
-    <div className="min-h-screen bg-[var(--color-primary)] text-[var(--color-surface)] flex flex-row relative overflow-hidden">
+    <div className="min-h-screen bg-[#0A0A0A] text-white flex flex-row relative overflow-hidden">
       <button
         onClick={endSession}
         aria-label="End Session"
@@ -220,9 +218,9 @@ function ProjectorContent() {
 
       <div className="absolute top-10 left-10 flex flex-col z-10 pr-52">
         <h1 className="font-serif text-5xl">Live Attendance</h1>
-        <p className="font-mono text-xl text-[var(--color-muted)] mt-2 uppercase tracking-widest">Open Hulu Track App to Scan</p>
+        <p className="font-mono text-xl text-white/50 mt-2 uppercase tracking-widest">Open Hulu Track App to Scan</p>
         {selectedCohort && (
-          <p className="font-mono text-xs text-[var(--color-muted)]/70 mt-3 uppercase tracking-widest">
+          <p className="font-mono text-xs text-[var(--color-primary)] mt-3 uppercase tracking-widest">
             {selectedCohort.name}{selectedSession ? ` · ${selectedSession.name}` : ""}
           </p>
         )}
@@ -246,24 +244,8 @@ function ProjectorContent() {
         ) : (
           <>
             <div className="relative flex items-center justify-center">
-              <svg className="absolute -inset-10 w-[400px] h-[400px] -rotate-90 transform" viewBox="0 0 300 300" aria-hidden="true">
-                <circle cx="150" cy="150" r="120" className="stroke-[var(--color-surface)]/20 fill-none" strokeWidth="4" />
-                <motion.circle
-                  cx="150"
-                  cy="150"
-                  r="120"
-                  className="stroke-[var(--color-surface)] fill-none"
-                  strokeWidth="4"
-                  strokeDasharray={2 * Math.PI * 120}
-                  initial={false}
-                  animate={{ strokeDashoffset: 2 * Math.PI * 120 * (1 - timeLeft / QR_TTL_SECONDS) }}
-                  transition={{ duration: 1, ease: "linear" }}
-                  strokeLinecap="square"
-                />
-              </svg>
-
-              <div className="bg-[var(--color-surface)] p-8 relative z-10 shadow-2xl">
-                <div className="w-[260px] h-[260px] bg-white flex items-center justify-center p-4">
+              <div className="bg-[#161616] p-10 rounded-3xl relative z-10 shadow-2xl border border-white/5 flex flex-col items-center">
+                <div className="w-[280px] h-[280px] bg-white flex items-center justify-center p-5 rounded-2xl">
                   {scanUrl ? (
                     <QRCode 
                       value={`${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'}/attend?code=${scanUrl}`} 
@@ -282,33 +264,50 @@ function ProjectorContent() {
                     <Loader2 className="w-8 h-8 text-black/30 animate-spin" />
                   )}
                 </div>
+
+                <div className="w-full mt-8">
+                  <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-[var(--color-primary)]"
+                      initial={false}
+                      animate={{ width: `${(timeLeft / QR_TTL_SECONDS) * 100}%` }}
+                      transition={{ duration: 1, ease: "linear" }}
+                    />
+                  </div>
+                  <div className="flex justify-between items-center mt-3">
+                    <p className="font-mono text-[10px] uppercase tracking-widest text-white/40">
+                      QR Refreshes{refreshingQr ? " · Updating" : ""}
+                    </p>
+                    <div className="font-mono text-sm tabular-nums text-white/60">
+                      00:{timeLeft.toString().padStart(2, "0")}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="font-mono text-4xl tabular-nums mt-16">00:{timeLeft.toString().padStart(2, "0")}</div>
-            <p className="font-mono text-[10px] uppercase tracking-widest text-gray-500 mt-3">QR refreshes every 20 seconds{refreshingQr ? " · updating" : ""}</p>
           </>
         )}
       </div>
 
-      <div className="w-96 border-l border-white/10 p-8 flex flex-col pt-28">
-        <div className="flex flex-col items-center justify-center mb-8 bg-white/5 rounded-2xl py-8 border border-white/10 shadow-lg">
-          <span className="font-mono text-7xl font-bold tabular-nums text-emerald-400 leading-none">{scans.length}</span>
-          <h2 className="font-mono text-xs tracking-widest uppercase text-gray-400 mt-4">Students Present</h2>
+      <div className="w-96 border-l border-white/5 p-8 flex flex-col pt-28 bg-[#111111]">
+        <div className="flex flex-col items-center justify-center mb-8 bg-white/5 rounded-2xl py-8 border border-white/5 shadow-lg">
+          <span className="font-mono text-7xl font-bold tabular-nums text-[var(--color-primary)] leading-none">{scans.length}</span>
+          <h2 className="font-mono text-xs tracking-widest uppercase text-white/40 mt-4">Students Present</h2>
         </div>
-        <h3 className="font-mono text-xs tracking-widest uppercase text-gray-500 mb-4">Recent Scans</h3>
-        <ul className="flex-1 space-y-4 overflow-y-auto">
+        <h3 className="font-mono text-xs tracking-widest uppercase text-white/30 mb-4">Recent Scans</h3>
+        <ul className="flex-1 space-y-3 overflow-y-auto pr-2">
           <AnimatePresence>
             {scans.map((scan) => (
-              <motion.li key={scan.id} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="bg-white/5 p-4 rounded-lg flex justify-between items-center">
+              <motion.li key={scan.id} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="bg-[#1C1C1C] border border-white/5 p-4 rounded-xl flex justify-between items-center">
                 <div>
-                  <div className="font-sans font-medium">{scan.name}</div>
+                  <div className="font-sans font-medium text-[14px]">{scan.name}</div>
                   <div className="font-mono text-[10px] uppercase text-white/40 mt-1">{scan.status}</div>
                 </div>
-                <div className="font-mono text-xs text-green-400">{scan.time}</div>
+                <div className="font-mono text-[11px] text-[var(--color-primary)] bg-[var(--color-primary)]/10 px-2 py-1 rounded-md">{scan.time}</div>
               </motion.li>
             ))}
             {scans.length === 0 && (
-              <div className="text-gray-500 font-mono text-xs uppercase text-center mt-10">Waiting for students...</div>
+              <div className="text-white/30 font-mono text-xs uppercase text-center mt-10">Waiting for students...</div>
             )}
           </AnimatePresence>
         </ul>
@@ -320,7 +319,7 @@ function ProjectorContent() {
 export default function ProjectorView() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[var(--color-primary)] text-[var(--color-surface)] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin" />
       </div>
     }>
