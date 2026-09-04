@@ -23,6 +23,7 @@ import { ActiveNavLink } from "@/components/navigation/ActiveNavLink"
 import { ProjectorLauncher } from "@/components/ProjectorLauncher"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { SignOutProvider, useSignOutModal } from "@/components/navigation/SignOutContext"
+import { ProjectorProvider } from "@/components/projector/ProjectorContext"
 
 interface DashboardShellProps {
   children: React.ReactNode
@@ -424,9 +425,11 @@ function DashboardShellContent({ children, isStudent }: DashboardShellProps) {
 export function DashboardShell({ children, isStudent }: DashboardShellProps) {
   return (
     <SignOutProvider isStudent={isStudent}>
-      <DashboardShellContent isStudent={isStudent}>
-        {children}
-      </DashboardShellContent>
+      <ProjectorProvider>
+        <DashboardShellContent isStudent={isStudent}>
+          {children}
+        </DashboardShellContent>
+      </ProjectorProvider>
     </SignOutProvider>
   )
 }

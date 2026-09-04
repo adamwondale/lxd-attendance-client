@@ -5,7 +5,8 @@ import { gql } from "@apollo/client/core/index.js"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { ArrowUpRight } from "lucide-react"
+import { ArrowUpRight, QrCode } from "lucide-react"
+import { useProjectorModal } from "@/components/projector/ProjectorContext"
 
 const DASHBOARD_METRICS = gql`
   query DashboardMetrics {
@@ -41,6 +42,7 @@ const ON_ATTENDANCE_UPDATED = gql`
 `
 
 export default function DashboardOverviewContent() {
+  const { openProjectorModal } = useProjectorModal()
   const { data, loading, error, refetch } = useQuery<DashboardMetricsData>(DASHBOARD_METRICS, { fetchPolicy: "cache-and-network" })
 
   useSubscription(ON_COHORTS_UPDATED, { onData: () => refetch() })
@@ -175,12 +177,23 @@ export default function DashboardOverviewContent() {
       </div>
 
       <div className="pt-8 border-t border-border mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        <Link href="/dashboard/cohorts" className="w-full sm:w-auto">
-          <Button variant="default" className="w-full sm:w-auto justify-center">Manage Cohorts</Button>
-        </Link>
-        <Link href="/dashboard/attendance" className="w-full sm:w-auto">
-          <Button variant="outline" className="w-full sm:w-auto justify-center border-border hover:bg-surface-hover">Live Attendance Log</Button>
-        </Link>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <Link href="/dashboard/cohorts" className="w-full sm:w-auto">
+            <Button variant="default" className="w-full sm:w-auto justify-center">Manage Cohorts</Button>
+          </Link>
+          <Link href="/dashboard/attendance" className="w-full sm:w-auto">
+            <Button variant="outline" className="w-full sm:w-auto justify-center border-border hover:bg-surface-hover">Live Attendance Log</Button>
+          </Link>
+        </div>
+        <Button
+          type="button"
+          onClick={openProjectorModal}
+          variant="outline"
+          className="w-full sm:w-auto justify-center border-primary/40 text-primary hover:bg-primary/10 hover:border-primary flex items-center gap-2 active:scale-[0.98] cursor-pointer"
+        >
+          <QrCode className="w-4 h-4" />
+          <span>Launch Projector</span>
+        </Button>
       </div>
     </>
   )
