@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -11,6 +12,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 const ACTIVE_COHORTS = gql`
   query PublicActiveCohorts {
@@ -144,10 +146,28 @@ export default function StudentSignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-background text-foreground font-sans selection:bg-secondary selection:text-surface overflow-y-auto">
-      <div className="w-full max-w-[440px] my-auto py-12">
+    <div className="min-h-screen flex items-center justify-center p-6 bg-background text-foreground font-sans selection:bg-primary/20 selection:text-foreground overflow-y-auto relative overflow-hidden">
+      {/* Ambient Brand Atmospheric Lighting */}
+      <div className="pointer-events-none fixed -top-32 -right-32 w-96 h-96 rounded-full bg-[#36AC86]/10 blur-[120px] dark:bg-[#36AC86]/10 z-0" aria-hidden="true" />
+      <div className="pointer-events-none fixed -bottom-32 -left-32 w-96 h-96 rounded-full bg-[#4D6C84]/15 blur-[120px] dark:bg-[#4D6C84]/12 z-0" aria-hidden="true" />
+
+      <div className="absolute top-5 right-5 z-20">
+        <ThemeToggle />
+      </div>
+
+      <div className="w-full max-w-[440px] my-auto py-12 relative z-10">
         {/* Header */}
         <div className="mb-8 text-center">
+          <div className="mb-4 inline-flex p-2.5 rounded-2xl bg-surface/80 border border-border/80 backdrop-blur-xl shadow-sm">
+            <Image
+              src="/hulu7.svg"
+              alt="Hulu Track Logo"
+              width={36}
+              height={36}
+              priority
+              className="drop-shadow-sm"
+            />
+          </div>
           <h1 className="text-3xl font-serif leading-tight text-foreground">Join Hulu Track</h1>
           <p className="text-muted text-xs font-mono uppercase tracking-widest mt-2">
             Student Registration
@@ -155,7 +175,7 @@ export default function StudentSignupPage() {
         </div>
 
         {/* Form Container */}
-        <div className="bg-surface border border-border p-8 rounded-none shadow-sm">
+        <div className="bg-surface/85 backdrop-blur-2xl border border-border/80 p-8 rounded-2xl shadow-2xl">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <AnimatePresence>
               {globalError && (
@@ -163,7 +183,7 @@ export default function StudentSignupPage() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="p-4 bg-danger-surface border border-danger/20 text-danger text-sm flex gap-3 items-start rounded-none"
+                  className="p-4 bg-danger-surface border border-danger/20 text-danger text-sm flex gap-3 items-start rounded-xl"
                 >
                   <AlertCircle className="w-5 h-5 shrink-0" />
                   <p className="mt-0.5">{globalError}</p>
@@ -178,7 +198,7 @@ export default function StudentSignupPage() {
                 </label>
                 <input
                   {...register('name')}
-                  className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 text-foreground ${
+                  className={`w-full h-[44px] px-3.5 bg-surface-subtle border text-sm outline-none transition-colors rounded-xl placeholder:text-muted/50 text-foreground ${
                     errors.name
                       ? 'border-danger focus:border-danger'
                       : 'border-border focus:border-foreground'
@@ -201,7 +221,7 @@ export default function StudentSignupPage() {
                 </label>
                 <input
                   {...register('username')}
-                  className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 text-foreground ${
+                  className={`w-full h-[44px] px-3.5 bg-surface-subtle border text-sm outline-none transition-colors rounded-xl placeholder:text-muted/50 text-foreground ${
                     errors.username
                       ? 'border-danger focus:border-danger'
                       : 'border-border focus:border-foreground'
@@ -225,7 +245,7 @@ export default function StudentSignupPage() {
                 <input
                   type="email"
                   {...register('email')}
-                  className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 text-foreground ${
+                  className={`w-full h-[44px] px-3.5 bg-surface-subtle border text-sm outline-none transition-colors rounded-xl placeholder:text-muted/50 text-foreground ${
                     errors.email
                       ? 'border-danger focus:border-danger'
                       : 'border-border focus:border-foreground'
@@ -254,7 +274,7 @@ export default function StudentSignupPage() {
                       e.target.value = e.target.value.replace(/[^\d+]/g, '');
                     },
                   })}
-                  className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 text-foreground ${
+                  className={`w-full h-[44px] px-3.5 bg-surface-subtle border text-sm outline-none transition-colors rounded-xl placeholder:text-muted/50 text-foreground ${
                     errors.phone
                       ? 'border-danger focus:border-danger'
                       : 'border-border focus:border-foreground'
@@ -278,7 +298,7 @@ export default function StudentSignupPage() {
                 <input
                   type="password"
                   {...register('password')}
-                  className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 text-foreground ${
+                  className={`w-full h-[44px] px-3.5 bg-surface-subtle border text-sm outline-none transition-colors rounded-xl placeholder:text-muted/50 text-foreground ${
                     errors.password
                       ? 'border-danger focus:border-danger'
                       : 'border-border focus:border-foreground'
@@ -304,7 +324,7 @@ export default function StudentSignupPage() {
                     <select
                       {...register('cohortId')}
                       onChange={handleCohortChange}
-                      className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-none text-foreground ${
+                      className={`w-full h-[44px] px-3.5 bg-surface-subtle border text-sm outline-none transition-colors rounded-xl text-foreground ${
                         errors.cohortId
                           ? 'border-danger focus:border-danger'
                           : 'border-border focus:border-foreground'
@@ -324,7 +344,7 @@ export default function StudentSignupPage() {
                       <div>
                         <select
                           {...register('sessionId')}
-                          className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-none text-foreground ${
+                          className={`w-full h-[44px] px-3.5 bg-surface-subtle border text-sm outline-none transition-colors rounded-xl text-foreground ${
                             errors.sessionId
                               ? 'border-danger focus:border-danger'
                               : 'border-border focus:border-foreground'
@@ -356,7 +376,7 @@ export default function StudentSignupPage() {
                           type="password"
                           {...register('cohortPin')}
                           placeholder="Cohort PIN"
-                          className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 text-foreground ${
+                          className={`w-full h-[44px] px-3.5 bg-surface-subtle border text-sm outline-none transition-colors rounded-xl placeholder:text-muted/50 text-foreground ${
                             errors.cohortPin
                               ? 'border-danger focus:border-danger'
                               : 'border-border focus:border-foreground'
@@ -381,7 +401,7 @@ export default function StudentSignupPage() {
             <button
               type="submit"
               disabled={isSubmitting || (isDirty && !isValid)}
-              className="w-full h-[48px] bg-primary text-primary-foreground rounded-none hover:bg-primary-hover transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium mt-8 tracking-widest"
+              className="w-full h-[48px] bg-primary text-primary-foreground rounded-xl hover:bg-primary-hover transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium mt-8 tracking-widest active:scale-[0.98] shadow-sm"
             >
               {isSubmitting ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

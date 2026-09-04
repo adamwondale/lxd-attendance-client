@@ -98,7 +98,7 @@ function ForgotPasswordContent() {
         <motion.div
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-4 p-3 border border-danger/30 bg-danger-surface rounded-none"
+          className="mb-4 p-3.5 border border-danger/30 bg-danger-surface rounded-xl"
         >
           <p className="font-mono text-[11px] text-danger uppercase tracking-wide">
             {error}
@@ -120,7 +120,7 @@ function ForgotPasswordContent() {
         <button
           type="submit"
           disabled={loading || !email}
-          className="button mt-2 w-full h-11 flex items-center justify-center gap-2 bg-primary text-primary-foreground font-sans font-medium text-[14px] border border-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-[150ms] hover:bg-primary-hover rounded-none"
+          className="button mt-2 w-full h-11 flex items-center justify-center gap-2 bg-primary text-primary-foreground font-sans font-medium text-[14px] border border-primary disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 hover:bg-primary-hover rounded-xl active:scale-[0.98] shadow-sm"
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><span>Send reset link</span><ArrowRight className="w-4 h-4" /></>}
         </button>

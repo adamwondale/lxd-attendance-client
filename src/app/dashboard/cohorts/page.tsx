@@ -212,7 +212,7 @@ export default function CohortsPage() {
         </div>
         <Button
           onClick={openCreateDialog}
-          className="bg-primary text-primary-foreground hover:bg-primary-hover font-mono text-[11px] uppercase tracking-widest h-11 px-5 rounded-none flex items-center gap-2"
+          className="bg-primary text-primary-foreground hover:bg-primary-hover font-mono text-[11px] uppercase tracking-widest h-11 px-5 rounded-xl flex items-center gap-2 active:scale-[0.98] shadow-sm"
         >
           <Plus className="w-4 h-4" /> New Cohort
         </Button>
@@ -245,7 +245,7 @@ export default function CohortsPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
-                className="h-11 px-3 bg-surface-subtle border border-border focus:border-foreground outline-none font-sans text-[14px] text-foreground transition-colors rounded-none"
+                className="h-11 px-3.5 bg-surface-subtle border border-border focus:border-primary outline-none font-sans text-[14px] text-foreground transition-colors rounded-xl"
                 placeholder="e.g. Summer 2026 Batch"
               />
             </div>
@@ -261,7 +261,7 @@ export default function CohortsPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, pin: e.target.value })
                 }
-                className="h-11 px-3 bg-surface-subtle border border-border focus:border-foreground outline-none font-sans text-[14px] text-foreground transition-colors rounded-none mb-3"
+                className="h-11 px-3.5 bg-surface-subtle border border-border focus:border-primary outline-none font-sans text-[14px] text-foreground transition-colors rounded-xl mb-3"
                 placeholder="e.g. LXD-26"
               />
 
@@ -278,7 +278,7 @@ export default function CohortsPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, startDate: e.target.value })
                 }
-                className="h-11 px-3 bg-surface-subtle border border-border focus:border-foreground outline-none font-sans text-[14px] text-foreground transition-colors rounded-none"
+                className="h-11 px-3.5 bg-surface-subtle border border-border focus:border-primary outline-none font-sans text-[14px] text-foreground transition-colors rounded-xl"
               />
             </div>
 
@@ -293,12 +293,12 @@ export default function CohortsPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, endDate: e.target.value })
                 }
-                className="h-11 px-3 bg-surface-subtle border border-border focus:border-foreground outline-none font-sans text-[14px] text-foreground transition-colors rounded-none"
+                className="h-11 px-3.5 bg-surface-subtle border border-border focus:border-primary outline-none font-sans text-[14px] text-foreground transition-colors rounded-xl"
               />
             </div>
 
             {editingCohort && (
-              <div className="flex items-center gap-2 md:col-span-2 mt-2 p-4 bg-surface-subtle border border-border">
+              <div className="flex items-center gap-2 md:col-span-2 mt-2 p-4 bg-surface-subtle border border-border rounded-xl">
                 <input
                   type="checkbox"
                   id="isActive"
@@ -306,7 +306,7 @@ export default function CohortsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, isActive: e.target.checked })
                   }
-                  className="w-4 h-4 accent-primary rounded-none"
+                  className="w-4 h-4 accent-primary rounded-md"
                 />
                 <label
                   htmlFor="isActive"
@@ -322,7 +322,7 @@ export default function CohortsPage() {
           <button
             type="button"
             onClick={() => setIsDialogOpen(false)}
-            className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-border bg-surface text-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-surface-hover transition-colors rounded-none order-2 sm:order-1"
+            className="hidden sm:block flex-1 sm:flex-none h-12 px-6 border border-border bg-surface text-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-surface-hover transition-colors rounded-xl order-2 sm:order-1 active:scale-[0.98]"
           >
             Cancel
           </button>
@@ -330,7 +330,7 @@ export default function CohortsPage() {
             type="submit"
             form="cohort-form"
             disabled={creating || updating}
-            className="flex-1 sm:flex-auto h-14 px-6 bg-primary text-primary-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-primary-hover disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2"
+            className="flex-1 sm:flex-auto h-12 px-6 bg-primary text-primary-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-primary-hover disabled:opacity-50 transition-all rounded-xl flex items-center justify-center gap-2 order-1 sm:order-2 active:scale-[0.98] shadow-sm"
           >
             {creating || updating
               ? 'Saving...'
@@ -357,24 +357,24 @@ export default function CohortsPage() {
             {[...Array(6)].map((_, i) => (
               <Card
                 key={i}
-                className="animate-pulse relative overflow-hidden h-full border-border bg-surface"
+                className="animate-pulse relative overflow-hidden h-full border-border/80 bg-surface/85 backdrop-blur-xl"
               >
                 <CardHeader>
-                  <div className="h-8 w-48 bg-surface-subtle rounded-none mb-2"></div>
-                  <div className="h-3 w-20 bg-surface-subtle rounded-none"></div>
+                  <div className="h-8 w-48 bg-surface-subtle rounded-md mb-2"></div>
+                  <div className="h-3 w-20 bg-surface-subtle rounded-md"></div>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-4 w-40 bg-surface-subtle rounded-none mt-2 mb-6"></div>
+                  <div className="h-4 w-40 bg-surface-subtle rounded-md mt-2 mb-6"></div>
                   <div className="flex gap-2">
-                    <div className="flex-1 h-8 bg-surface-subtle rounded-none"></div>
-                    <div className="flex-1 h-8 bg-surface-subtle rounded-none"></div>
+                    <div className="flex-1 h-8 bg-surface-subtle rounded-xl"></div>
+                    <div className="flex-1 h-8 bg-surface-subtle rounded-xl"></div>
                   </div>
                 </CardContent>
               </Card>
             ))}
           </>
         ) : data?.listCohorts?.length === 0 ? (
-          <div className="col-span-full p-12 text-center border border-dashed border-border text-muted font-mono text-[13px] uppercase">
+          <div className="col-span-full p-12 text-center border border-dashed border-border text-muted font-mono text-[13px] uppercase rounded-2xl">
             No cohorts found. Create one above.
           </div>
         ) : (
@@ -385,11 +385,11 @@ export default function CohortsPage() {
               className="block"
             >
               <Card
-                className={`group hover:border-foreground transition-colors cursor-pointer relative overflow-hidden h-full ${!cohort.isActive ? 'opacity-50' : ''}`}
+                className={`group hover:border-primary/50 transition-all hover:shadow-lg cursor-pointer relative overflow-hidden h-full ${!cohort.isActive ? 'opacity-50' : ''}`}
               >
                 <div className="absolute top-0 right-0 p-3 flex gap-2">
                   <span
-                    className={`w-2 h-2 rounded-full inline-block ${cohort.isActive ? 'bg-success' : 'bg-danger'}`}
+                    className={`w-2.5 h-2.5 rounded-full inline-block ${cohort.isActive ? 'bg-primary ring-4 ring-primary/20' : 'bg-danger ring-4 ring-danger/20'}`}
                   />
                 </div>
                 <CardHeader>
@@ -414,7 +414,7 @@ export default function CohortsPage() {
                         e.preventDefault();
                         openEditDialog(cohort);
                       }}
-                      className="flex-1 h-8 text-[11px] uppercase tracking-widest font-mono"
+                      className="flex-1 h-8 text-[11px] uppercase tracking-widest font-mono rounded-xl active:scale-[0.98]"
                     >
                       <Pencil className="w-3 h-3 mr-2" /> Edit
                     </Button>
@@ -426,7 +426,7 @@ export default function CohortsPage() {
                         setDeletingCohortId(cohort.id);
                       }}
                       disabled={deleting}
-                      className="flex-1 h-8 text-[11px] uppercase tracking-widest font-mono text-danger hover:text-danger hover:bg-danger-surface"
+                      className="flex-1 h-8 text-[11px] uppercase tracking-widest font-mono rounded-xl text-danger border-danger/30 hover:text-danger hover:bg-danger-surface active:scale-[0.98]"
                     >
                       <Trash2 className="w-3 h-3 mr-2" /> Delete
                     </Button>

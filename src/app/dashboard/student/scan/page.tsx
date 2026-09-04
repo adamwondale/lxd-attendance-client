@@ -116,7 +116,7 @@ export default function StudentScanPage() {
       </div>
 
       <div className="flex-1 flex flex-col gap-6 w-full">
-        <Card className="flex-1 bg-black overflow-hidden flex flex-col border border-border relative rounded-none shadow-sm min-h-[450px]">
+        <Card className="flex-1 bg-black overflow-hidden flex flex-col border border-border/80 relative rounded-2xl shadow-2xl min-h-[450px]">
           <CardContent className="p-0 flex-1 relative w-full h-full">
             <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-30">
               <div className="text-white/80 font-mono text-[10px] uppercase tracking-widest bg-black/60 px-3 py-1 rounded-full">
@@ -152,16 +152,16 @@ export default function StudentScanPage() {
               <div className="absolute inset-0 z-20 bg-black/90 text-white flex flex-col items-center justify-center p-6 text-center">
                 <p className="font-serif text-2xl mb-2">Student sign-in required</p>
                 <p className="font-mono text-[10px] uppercase tracking-widest text-white/60 mb-5">Sign in before scanning the projector QR.</p>
-                <Button onClick={() => void signIn(undefined, { callbackUrl: window.location.href })} className="bg-white text-black hover:bg-white/90">Sign in</Button>
+                <Button onClick={() => void signIn(undefined, { callbackUrl: window.location.href })} className="bg-white text-black hover:bg-white/90 rounded-xl">Sign in</Button>
               </div>
             )}
 
             {isPermissionDenied && (
               <div className="absolute inset-0 z-20 bg-black/90 text-white flex flex-col items-center justify-center p-6 text-center">
-                <AlertCircle className="w-16 h-16 mb-4 text-red-500" />
+                <AlertCircle className="w-16 h-16 mb-4 text-danger" />
                 <p className="font-serif text-2xl mb-2">Camera Access Denied</p>
                 <p className="font-mono text-[10px] uppercase tracking-widest text-white/60 mb-5 max-w-xs">Please allow camera permissions in your browser settings to scan your badge.</p>
-                <Button onClick={() => window.location.reload()} className="bg-white text-black hover:bg-white/90">Reload Page</Button>
+                <Button onClick={() => window.location.reload()} className="bg-white text-black hover:bg-white/90 rounded-xl">Reload Page</Button>
               </div>
             )}
 
@@ -175,7 +175,7 @@ export default function StudentScanPage() {
             {(cameraError || (scanStatus === "error" && errorMsg)) && (
               <div className="absolute inset-x-0 bottom-0 z-40 bg-black/90 text-white p-5">
                 <div className="flex items-start gap-3">
-                  <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+                  <AlertCircle className="w-5 h-5 text-danger shrink-0 mt-0.5" />
                   <div>
                     <p className="font-medium text-sm">{scanStatus === "error" ? "Scan failed" : "Camera error"}</p>
                     <p className="font-mono text-[10px] uppercase opacity-70 mt-1">{errorMsg || cameraError}</p>
@@ -190,7 +190,7 @@ export default function StudentScanPage() {
                   initial={{ opacity: 0, scale: 0.96 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  className="absolute inset-0 z-50 bg-green-500/95 text-white flex flex-col items-center justify-center"
+                  className="absolute inset-0 z-50 bg-[#2A9E80]/95 text-white flex flex-col items-center justify-center"
                 >
                   <CheckCircle2 className="w-16 h-16 mb-4" />
                   <h2 className="font-serif text-3xl">Attendance Recorded</h2>
@@ -216,7 +216,7 @@ export default function StudentScanPage() {
             <Button
               onClick={() => void startScanning()}
               disabled={!canStartScanning || cameraLoading}
-              className="flex-1 h-12 bg-primary text-primary-foreground hover:bg-primary-hover font-sans text-[14px]"
+              className="flex-1 h-12 bg-primary text-primary-foreground hover:bg-primary-hover font-sans text-[14px] rounded-xl active:scale-[0.98] shadow-sm"
             >
               {cameraLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Camera className="w-4 h-4 mr-2" />}
               {cameraLoading ? "Starting..." : "Start Scanner"}
@@ -224,7 +224,7 @@ export default function StudentScanPage() {
           ) : (
             <Button
               onClick={() => void stopScanning()}
-              className="flex-1 h-12 bg-surface text-foreground border border-border hover:bg-surface-hover font-sans text-[14px]"
+              className="flex-1 h-12 bg-surface text-foreground border border-border hover:bg-surface-hover font-sans text-[14px] rounded-xl active:scale-[0.98] shadow-sm"
             >
               Stop Scanner
             </Button>

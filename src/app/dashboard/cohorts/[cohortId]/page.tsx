@@ -274,7 +274,7 @@ export default function CohortDetailsPage({
       <div className="mb-4">
         <Link
           href="/dashboard/cohorts"
-          className="text-sm font-mono uppercase tracking-widest text-[#878786] hover:text-black flex items-center gap-2 transition-all duration-300 hover:-translate-x-0.5"
+          className="text-sm font-mono uppercase tracking-widest text-muted hover:text-foreground flex items-center gap-2 transition-all duration-300 hover:-translate-x-0.5"
         >
           <ArrowLeft className="w-4 h-4" /> Back to Cohorts
         </Link>
@@ -282,10 +282,10 @@ export default function CohortDetailsPage({
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 md:gap-0">
         <div>
-          <h1 className="font-serif text-3xl md:text-4xl mb-2 break-words max-w-[200px] sm:max-w-none">
+          <h1 className="font-serif text-3xl md:text-4xl mb-2 break-words max-w-[200px] sm:max-w-none text-foreground">
             {cohort?.name}
           </h1>
-          <p className="font-mono text-[13px] text-[var(--color-muted)] uppercase">
+          <p className="font-mono text-[13px] text-muted uppercase">
             PIN: {cohort?.pin}
           </p>
         </div>
@@ -296,13 +296,14 @@ export default function CohortDetailsPage({
             rel="noopener noreferrer"
             className="w-full sm:w-auto"
           >
-            <Button className="w-full sm:w-auto bg-white border border-gray-200 text-black hover:bg-gray-50 flex items-center justify-center gap-2">
+            <Button variant="outline" className="w-full sm:w-auto rounded-xl flex items-center justify-center gap-2 active:scale-[0.98]">
               Launch Projector
             </Button>
           </Link>
           <Button
             onClick={() => setIsDialogOpen(true)}
-            className="w-full sm:w-auto bg-black text-white hover:bg-black/80 flex items-center justify-center gap-2"
+            variant="default"
+            className="w-full sm:w-auto rounded-xl flex items-center justify-center gap-2 active:scale-[0.98] shadow-sm"
           >
             <Plus className="w-4 h-4" /> New Session
           </Button>
@@ -337,7 +338,7 @@ export default function CohortDetailsPage({
                     onChange={(e: any) => setSessionName(e.target.value)}
                     placeholder="e.g. Day 1: React Basics"
                     required
-                    className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans placeholder:text-[#878786]/50 focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                    className="flex h-11 w-full border border-border bg-surface-subtle px-3.5 py-2 text-[14px] font-sans text-foreground placeholder:text-muted/50 focus:border-primary outline-none transition-colors rounded-xl"
                   />
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
@@ -354,7 +355,7 @@ export default function CohortDetailsPage({
                       value={startTime}
                       onChange={(e: any) => setStartTime(e.target.value)}
                       required
-                      className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                      className="flex h-11 w-full border border-border bg-surface-subtle px-3.5 py-2 text-[14px] font-sans text-foreground focus:border-primary outline-none transition-colors rounded-xl"
                     />
                   </div>
                   <div className="space-y-2">
@@ -370,7 +371,7 @@ export default function CohortDetailsPage({
                       value={lateTime}
                       onChange={(e: any) => setLateTime(e.target.value)}
                       required
-                      className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                      className="flex h-11 w-full border border-border bg-surface-subtle px-3.5 py-2 text-[14px] font-sans text-foreground focus:border-primary outline-none transition-colors rounded-xl"
                     />
                   </div>
                 </div>
@@ -390,7 +391,7 @@ export default function CohortDetailsPage({
                       setLatePenaltyAmount(parseInt(e.target.value))
                     }
                     required
-                    className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                    className="flex h-11 w-full border border-border bg-surface-subtle px-3.5 py-2 text-[14px] font-sans text-foreground focus:border-primary outline-none transition-colors rounded-xl"
                   />
                   <p className="text-[11px] text-muted font-mono uppercase tracking-wide">
                     Scans after the late time will automatically receive the
@@ -404,7 +405,7 @@ export default function CohortDetailsPage({
                   </p>
                   <div className="grid sm:grid-cols-3 gap-3">
                     <label className="space-y-1">
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-[#878786]">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-muted">
                         Threshold (min)
                       </span>
                       <input
@@ -414,11 +415,11 @@ export default function CohortDetailsPage({
                         onChange={(e) =>
                           setEscalationThresholdMinutes(Number(e.target.value))
                         }
-                        className="h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                        className="h-11 w-full border border-border bg-surface-subtle px-3.5 text-[14px] font-sans text-foreground focus:border-primary outline-none transition-colors rounded-xl"
                       />
                     </label>
                     <label className="space-y-1">
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-[#878786]">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-muted">
                         + ETB
                       </span>
                       <input
@@ -428,11 +429,11 @@ export default function CohortDetailsPage({
                         onChange={(e) =>
                           setEscalationRate(Number(e.target.value))
                         }
-                        className="h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                        className="h-11 w-full border border-border bg-surface-subtle px-3.5 text-[14px] font-sans text-foreground focus:border-primary outline-none transition-colors rounded-xl"
                       />
                     </label>
                     <label className="space-y-1">
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-[#878786]">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-muted">
                         Every (min)
                       </span>
                       <input
@@ -442,7 +443,7 @@ export default function CohortDetailsPage({
                         onChange={(e) =>
                           setEscalationIntervalMinutes(Number(e.target.value))
                         }
-                        className="h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                        className="h-11 w-full border border-border bg-surface-subtle px-3.5 text-[14px] font-sans text-foreground focus:border-primary outline-none transition-colors rounded-xl"
                       />
                     </label>
                   </div>
@@ -468,7 +469,7 @@ export default function CohortDetailsPage({
                     ].map((day) => (
                       <label
                         key={day}
-                        className={`flex items-center justify-center h-10 px-3 text-[11px] font-mono uppercase tracking-widest border cursor-pointer transition-colors ${recurrenceDays.includes(day) || recurrenceDays.includes('EVERYDAY') ? 'bg-secondary text-white border-secondary' : 'bg-background border-border text-muted hover:bg-white'}`}
+                        className={`flex items-center justify-center h-10 px-3 text-[11px] font-mono uppercase tracking-widest border cursor-pointer transition-all rounded-xl active:scale-95 ${recurrenceDays.includes(day) || recurrenceDays.includes('EVERYDAY') ? 'bg-primary text-primary-foreground border-primary shadow-sm' : 'bg-surface border-border text-muted hover:bg-surface-hover'}`}
                       >
                         <input
                           type="checkbox"
@@ -494,7 +495,7 @@ export default function CohortDetailsPage({
                       </label>
                     ))}
                     <label
-                      className={`flex items-center justify-center h-10 px-3 text-[11px] font-mono uppercase tracking-widest border cursor-pointer transition-colors font-bold ${recurrenceDays.includes('EVERYDAY') ? 'bg-primary text-white border-primary' : 'bg-background border-border text-muted hover:bg-white'}`}
+                      className={`flex items-center justify-center h-10 px-3.5 text-[11px] font-mono uppercase tracking-widest border cursor-pointer transition-all rounded-xl font-bold active:scale-95 ${recurrenceDays.includes('EVERYDAY') ? 'bg-primary text-primary-foreground border-primary shadow-sm' : 'bg-surface border-border text-muted hover:bg-surface-hover'}`}
                     >
                       <input
                         type="checkbox"
@@ -515,7 +516,7 @@ export default function CohortDetailsPage({
               <button
                 type="button"
                 onClick={closeDialog}
-                className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-none order-2 sm:order-1"
+                className="hidden sm:block flex-1 sm:flex-none h-12 px-6 border border-border bg-surface text-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-surface-hover transition-colors rounded-xl order-2 sm:order-1 active:scale-[0.98]"
               >
                 Cancel
               </button>
@@ -523,7 +524,7 @@ export default function CohortDetailsPage({
                 type="submit"
                 form="session-form"
                 disabled={creating || updating}
-                className="flex-1 sm:flex-auto h-14 px-6 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2"
+                className="flex-1 sm:flex-auto h-12 px-6 bg-primary text-primary-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-primary-hover disabled:opacity-50 transition-all rounded-xl flex items-center justify-center gap-2 order-1 sm:order-2 active:scale-[0.98] shadow-sm"
               >
                 {creating || updating ? 'Saving...' : 'Save Session'}
               </button>
@@ -568,21 +569,21 @@ export default function CohortDetailsPage({
                     >
                       {session.name}
                     </Link>
-                    <div className="sm:hidden text-[13px] text-black/50 flex flex-wrap items-center gap-2 mt-1">
+                    <div className="sm:hidden text-[13px] text-muted-foreground flex flex-wrap items-center gap-2 mt-1">
                       <span>
                         {session.startTime} (Late: {lateTimeStr})
                       </span>
-                      <span className="text-[var(--color-accent)] font-mono">
+                      <span className="text-danger font-mono font-medium">
                         {session.latePenaltyAmount} ETB
                       </span>
                     </div>
                   </TableCell>
                   <TableCell className="hidden sm:table-cell">
-                    <div className="text-[14px] text-black/70 flex items-center gap-2">
+                    <div className="text-[14px] text-muted-foreground flex items-center gap-2">
                       <span>
                         {session.startTime} (Late: {lateTimeStr})
                       </span>
-                      <span className="text-[var(--color-accent)] text-xs font-mono">
+                      <span className="text-danger text-xs font-mono font-medium">
                         {session.latePenaltyAmount} ETB
                       </span>
                     </div>
@@ -592,14 +593,14 @@ export default function CohortDetailsPage({
                       variant="outline"
                       size="sm"
                       onClick={() => openEdit(session)}
-                      className="h-8"
+                      className="h-8 rounded-xl active:scale-[0.98]"
                     >
                       Edit
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="h-8 text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                      className="h-8 rounded-xl text-danger border-danger/30 hover:bg-danger-surface hover:text-danger active:scale-[0.98]"
                       onClick={() => setDeletingSessionId(session.id)}
                     >
                       Delete
@@ -609,14 +610,14 @@ export default function CohortDetailsPage({
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <Button variant="outline" size="sm" className="h-8">
+                      <Button variant="outline" size="sm" className="h-8 rounded-xl active:scale-[0.98]">
                         Projector
                       </Button>
                     </Link>
                     <Link
                       href={`/dashboard/cohorts/${unwrappedParams.cohortId}/sessions/${session.id}`}
                     >
-                      <Button variant="outline" size="sm" className="h-8">
+                      <Button variant="outline" size="sm" className="h-8 rounded-xl active:scale-[0.98]">
                         Live View
                       </Button>
                     </Link>
@@ -628,7 +629,7 @@ export default function CohortDetailsPage({
               <TableRow>
                 <TableCell
                   colSpan={3}
-                  className="text-center p-8 text-[var(--color-muted)] font-mono text-[13px] uppercase"
+                  className="text-center p-8 text-muted font-mono text-[13px] uppercase"
                 >
                   No sessions created yet
                 </TableCell>
@@ -638,8 +639,8 @@ export default function CohortDetailsPage({
         </Table>
       </div>
       {sessions.length > SESSION_PAGE_SIZE && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 rounded-2xl border border-[#E5E5E4] bg-white px-4 py-3">
-          <span className="font-mono text-[10px] uppercase tracking-widest text-[#878786]">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 rounded-2xl border border-border/80 bg-surface/85 backdrop-blur-xl px-4 py-3 shadow-sm">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-muted">
             Page {safeSessionPage} of {sessionTotalPages} · {sessions.length}{' '}
             sessions
           </span>
@@ -648,7 +649,7 @@ export default function CohortDetailsPage({
               aria-label="Previous sessions page"
               disabled={safeSessionPage === 1}
               onClick={() => setSessionPage((p) => Math.max(1, p - 1))}
-              className="h-9 w-9 rounded-xl border border-[#E5E5E4] hover:bg-[#F9F9F8] disabled:opacity-30 transition-all"
+              className="h-9 w-9 rounded-xl border border-border bg-surface text-foreground hover:bg-surface-hover disabled:opacity-30 transition-all active:scale-95"
             >
               ‹
             </button>
@@ -658,7 +659,7 @@ export default function CohortDetailsPage({
               onClick={() =>
                 setSessionPage((p) => Math.min(sessionTotalPages, p + 1))
               }
-              className="h-9 w-9 rounded-xl border border-[#E5E5E4] hover:bg-[#F9F9F8] disabled:opacity-30 transition-all"
+              className="h-9 w-9 rounded-xl border border-border bg-surface text-foreground hover:bg-surface-hover disabled:opacity-30 transition-all active:scale-95"
             >
               ›
             </button>

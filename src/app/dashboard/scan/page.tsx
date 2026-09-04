@@ -181,8 +181,8 @@ export default function AdminScanPage() {
   return (
     <div className="p-10 space-y-8 h-full flex flex-col">
       <div>
-        <h1 className="font-serif text-4xl mb-2">Scan Badge</h1>
-        <p className="font-mono text-[13px] text-[var(--color-muted)] uppercase">Scan a student ID QR code. The student&apos;s active session is detected automatically.</p>
+        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-foreground mb-2">Scan Badge</h1>
+        <p className="text-sm text-muted-foreground">Scan a student ID QR code. The student&apos;s active session is detected automatically.</p>
       </div>
 
       <div className="flex-1 flex flex-col gap-6 max-w-lg mx-auto w-full">
@@ -217,7 +217,7 @@ export default function AdminScanPage() {
             {(cameraError || (scanStatus === "error" && errorMsg)) && (
               <div className="absolute inset-x-0 bottom-0 z-40 bg-black/90 text-white p-5">
                 <div className="flex items-start gap-3">
-                  <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+                  <AlertCircle className="w-5 h-5 text-danger shrink-0 mt-0.5" />
                   <div>
                     <p className="font-medium text-sm">{scanStatus === "error" ? "Scan failed" : "Camera error"}</p>
                     <p className="font-mono text-[10px] uppercase opacity-70 mt-1">{errorMsg || cameraError}</p>
@@ -232,7 +232,7 @@ export default function AdminScanPage() {
                   initial={{ opacity: 0, scale: 0.96 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  className="absolute inset-0 z-50 bg-green-500/95 text-white flex flex-col items-center justify-center"
+                  className="absolute inset-0 z-50 bg-[#2A9E80]/95 text-white flex flex-col items-center justify-center"
                 >
                   <CheckCircle2 className="w-16 h-16 mb-4" />
                   <h2 className="font-serif text-3xl">Attendance Recorded</h2>
@@ -258,7 +258,7 @@ export default function AdminScanPage() {
             <Button
               onClick={() => void startScanner()}
               disabled={cameraLoading}
-              className="flex-1 h-12 bg-black text-white hover:bg-black/80 font-sans text-[14px]"
+              className="flex-1 h-12 bg-primary text-primary-foreground hover:bg-primary-hover font-sans text-[14px] rounded-xl active:scale-[0.98] shadow-sm"
             >
               {cameraLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Camera className="w-4 h-4 mr-2" />}
               {cameraLoading ? "Starting..." : "Start Scanner"}
@@ -266,7 +266,7 @@ export default function AdminScanPage() {
           ) : (
             <Button
               onClick={() => void stopScanner()}
-              className="flex-1 h-12 bg-white text-black border border-black/20 hover:bg-black/5 font-sans text-[14px]"
+              className="flex-1 h-12 bg-surface text-foreground border border-border hover:bg-surface-hover font-sans text-[14px] rounded-xl active:scale-[0.98] shadow-sm"
             >
               Stop Scanner
             </Button>

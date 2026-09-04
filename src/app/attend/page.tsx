@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
+import Image from "next/image"
 import { getSession, signIn } from "next-auth/react"
 import { useMutation } from "@apollo/client/react/index.js"
 import { gql } from "@apollo/client/core/index.js"
@@ -46,12 +47,21 @@ function AttendContent() {
 
   if (!code) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-background">
-        <Card className="w-full max-w-sm border-black">
-          <CardHeader>
-            <CardTitle className="text-center font-serif text-2xl">Invalid Link</CardTitle>
+      <div className="min-h-screen flex items-center justify-center p-6 bg-background relative overflow-hidden">
+        <div className="pointer-events-none absolute -top-32 -left-32 w-96 h-96 rounded-full bg-primary/10 blur-[100px]" />
+        <div className="pointer-events-none absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-secondary/15 blur-[120px]" />
+        <Card className="w-full max-w-sm rounded-3xl border border-border/80 bg-surface/85 backdrop-blur-2xl shadow-2xl">
+          <CardHeader className="text-center">
+            <Image
+              src="/512-512.png"
+              alt="Hulu Track Logo"
+              width={56}
+              height={56}
+              className="mx-auto mb-3 w-14 h-14 rounded-2xl shadow-md border border-border/80 object-cover"
+            />
+            <CardTitle className="text-2xl font-semibold tracking-tight text-foreground">Invalid Link</CardTitle>
           </CardHeader>
-          <CardContent className="text-center text-[var(--color-muted)] font-mono text-sm">
+          <CardContent className="text-center text-muted-foreground text-sm">
             No attendance code was provided in the URL.
           </CardContent>
         </Card>
@@ -61,8 +71,11 @@ function AttendContent() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-background">
-        <div className="animate-pulse font-mono uppercase tracking-widest text-sm text-[var(--color-muted)]">
+      <div className="min-h-screen flex items-center justify-center p-6 bg-background relative overflow-hidden">
+        <div className="pointer-events-none absolute -top-32 -left-32 w-96 h-96 rounded-full bg-primary/10 blur-[100px]" />
+        <div className="pointer-events-none absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-secondary/15 blur-[120px]" />
+        <div className="animate-pulse text-sm text-muted-foreground flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-primary animate-ping" />
           Authenticating...
         </div>
       </div>
@@ -71,15 +84,27 @@ function AttendContent() {
 
   if (status === 'unauthenticated') {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-[radial-gradient(circle_at_top,#fff_0,#F5F5F3_55%,#ecece8_100%)]">
-        <Card className="w-full max-w-md border-black/10 shadow-2xl rounded-3xl overflow-hidden">
+      <div className="min-h-screen flex items-center justify-center p-6 bg-background relative overflow-hidden">
+        <div className="pointer-events-none absolute -top-32 -left-32 w-96 h-96 rounded-full bg-primary/10 blur-[100px]" />
+        <div className="pointer-events-none absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-secondary/15 blur-[120px]" />
+        <Card className="w-full max-w-md border border-border/80 bg-surface/85 backdrop-blur-2xl shadow-2xl rounded-3xl overflow-hidden">
           <CardHeader className="text-center pb-3">
-            <div className="mx-auto mb-4 h-12 w-12 rounded-2xl bg-black text-white flex items-center justify-center text-xl font-semibold">L</div>
-            <CardTitle className="font-serif text-3xl">Sign in to Check In</CardTitle>
-            <p className="text-sm text-muted mt-2">Your attendance QR is valid for 20 seconds. Sign in with your student account and you will be checked in automatically.</p>
+            <Image
+              src="/512-512.png"
+              alt="Hulu Track Logo"
+              width={64}
+              height={64}
+              className="mx-auto mb-4 w-16 h-16 rounded-2xl shadow-md border border-border/80 object-cover"
+            />
+            <CardTitle className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">Sign in to Check In</CardTitle>
+            <p className="text-sm text-muted-foreground mt-2">Your attendance QR is valid for 20 seconds. Sign in with your student account and you will be checked in automatically.</p>
           </CardHeader>
           <CardContent className="pt-3">
-            <Button onClick={() => signIn(undefined, { callbackUrl: `/attend?code=${encodeURIComponent(code || '')}` })} className="w-full h-14 rounded-2xl bg-black text-white hover:bg-[#222]">
+            <Button 
+              variant="brand"
+              onClick={() => signIn(undefined, { callbackUrl: `/attend?code=${encodeURIComponent(code || '')}` })} 
+              className="w-full h-12 rounded-xl text-base font-medium shadow-sm active:scale-[0.98]"
+            >
               Sign in to continue
             </Button>
           </CardContent>
@@ -89,32 +114,38 @@ function AttendContent() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-background">
+    <div className="min-h-screen flex items-center justify-center p-6 bg-background relative overflow-hidden">
+      <div className="pointer-events-none absolute -top-32 -left-32 w-96 h-96 rounded-full bg-primary/10 blur-[100px]" />
+      <div className="pointer-events-none absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-secondary/15 blur-[120px]" />
       <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
+        initial={{ scale: 0.94, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: "spring", bounce: 0.5 }}
+        transition={{ type: "spring", stiffness: 350, damping: 25 }}
         className="w-full max-w-sm"
       >
-        <Card className={`border-2 shadow-xl ${result === 'SUCCESS' ? 'border-green-500' : result === 'ERROR' ? 'border-red-500' : 'border-black'}`}>
+        <Card className={`rounded-3xl shadow-2xl border backdrop-blur-2xl bg-surface/90 transition-all ${
+          result === 'SUCCESS' ? 'border-primary/40 shadow-primary/10' : 
+          result === 'ERROR' ? 'border-danger/40 shadow-danger/10' : 
+          'border-border/80'
+        }`}>
           <CardHeader className="text-center">
-            <CardTitle className="font-serif text-3xl">
+            <CardTitle className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
               {loading ? "Recording..." : result === 'SUCCESS' ? "Success!" : result === 'ERROR' ? "Failed" : "Waiting"}
             </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col items-center pb-8 text-center">
             {loading && (
-              <div className="w-12 h-12 border-4 border-black/20 border-t-black rounded-full animate-spin my-4" />
+              <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin my-4" />
             )}
             
             {result === 'SUCCESS' && (
               <motion.div 
                 initial={{ scale: 0 }} 
                 animate={{ scale: 1 }} 
-                className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-white mb-4"
+                className="w-16 h-16 bg-primary text-primary-foreground rounded-full flex items-center justify-center shadow-lg shadow-primary/25 mb-4"
               >
                 <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                 </svg>
               </motion.div>
             )}
@@ -123,15 +154,15 @@ function AttendContent() {
               <motion.div 
                 initial={{ scale: 0 }} 
                 animate={{ scale: 1 }} 
-                className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center text-white mb-4"
+                className="w-16 h-16 bg-danger text-danger-foreground rounded-full flex items-center justify-center shadow-lg shadow-danger/25 mb-4"
               >
                 <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </motion.div>
             )}
 
-            <p className="font-mono text-[13px] uppercase text-muted mt-2">
+            <p className="text-sm text-muted-foreground mt-2 font-medium">
               {loading ? "Verifying cryptographic signature..." : 
                result === 'SUCCESS' ? "Attendance successfully logged. You can close this page." : 
                result === 'ERROR' ? errorMsg : ""}
@@ -147,7 +178,8 @@ export default function AttendPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center p-6 bg-background">
-        <div className="animate-pulse font-mono uppercase tracking-widest text-sm text-[var(--color-muted)]">
+        <div className="animate-pulse text-sm text-muted-foreground flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
           Loading...
         </div>
       </div>

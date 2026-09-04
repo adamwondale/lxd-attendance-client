@@ -54,53 +54,58 @@ export function ProjectorLauncher() {
     <>
       <button
         onClick={openLauncher}
-        className="flex items-center space-x-3 w-full px-3 py-2 rounded-xl text-text hover:bg-black/5 font-medium text-[14px] transition-colors"
+        className="flex items-center space-x-3 w-full px-3.5 py-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-surface-hover font-medium text-[14px] transition-colors active:scale-[0.98]"
       >
-        <QrCode className="w-4 h-4" />
+        <QrCode className="w-4 h-4 text-primary" />
         <span>Launch Projector</span>
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden">
-            <div className="p-4 border-b border-black/10 flex justify-between items-center">
-              <h2 className="font-serif text-xl">Launch Projector</h2>
-              <button onClick={() => setIsOpen(false)} className="text-gray-500 hover:text-black font-bold px-2 py-1">&times;</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-surface/95 backdrop-blur-2xl border border-border/80 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-5 border-b border-border/70 flex justify-between items-center">
+              <h2 className="text-xl font-semibold tracking-tight text-foreground">Launch Projector</h2>
+              <button 
+                onClick={() => setIsOpen(false)} 
+                className="text-muted-foreground hover:text-foreground rounded-lg p-1 hover:bg-surface transition-colors text-xl font-bold leading-none cursor-pointer"
+              >
+                &times;
+              </button>
             </div>
-            <div className="p-4 max-h-[60vh] overflow-y-auto space-y-4">
+            <div className="p-5 max-h-[60vh] overflow-y-auto space-y-4">
               {activeSession ? (
-                <div className="bg-red-50 border border-red-100 p-4 rounded-lg text-center space-y-4">
-                  <div className="font-medium text-red-800">You already have an open session!</div>
-                  <div className="text-sm text-red-600">
-                    Session <strong>{activeSession.sessionName}</strong> is currently active on a projector.
+                <div className="bg-danger-surface border border-danger/30 p-5 rounded-xl text-center space-y-3">
+                  <div className="font-semibold text-danger">Active Session Open</div>
+                  <div className="text-sm text-muted-foreground">
+                    Session <strong className="text-foreground">{activeSession.sessionName}</strong> is currently active on a projector.
                   </div>
                   <button 
                     onClick={() => handleLaunch(activeSession.cohortId!, activeSession.sessionId!, activeSession.sessionName)}
-                    className="w-full bg-red-600 text-white px-4 py-2 rounded text-sm hover:bg-red-700 font-medium"
+                    className="w-full bg-danger text-danger-foreground px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-danger/90 active:scale-[0.98] transition-all cursor-pointer shadow-xs"
                   >
-                    Close older session and start a new one
+                    Close older session and start new
                   </button>
                   <button 
                     onClick={() => setActiveSession(null)}
-                    className="w-full bg-transparent text-gray-600 border border-gray-300 px-4 py-2 rounded text-sm hover:bg-black/5 font-medium mt-2"
+                    className="w-full border border-border/80 bg-surface px-4 py-2.5 rounded-xl text-sm text-foreground hover:bg-surface-hover active:scale-[0.98] transition-all font-medium cursor-pointer"
                   >
                     Cancel
                   </button>
                 </div>
               ) : loading ? (
-                <div className="flex justify-center p-4"><Loader2 className="w-6 h-6 animate-spin text-gray-400" /></div>
+                <div className="flex justify-center p-6"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
               ) : data?.publicActiveCohorts?.length === 0 ? (
-                <div className="text-center text-gray-500 font-mono text-xs">No active cohorts found.</div>
+                <div className="text-center text-muted-foreground font-mono text-xs py-4">No active cohorts found.</div>
               ) : (
                 data?.publicActiveCohorts.map((cohort: any) => (
                   <div key={cohort.id} className="space-y-2">
-                    <div className="font-medium text-sm">{cohort.name}</div>
-                    <div className="space-y-1 pl-2 border-l-2 border-black/10">
+                    <div className="font-medium text-sm text-foreground">{cohort.name}</div>
+                    <div className="space-y-1 pl-3 border-l-2 border-border/80">
                       {cohort.sessions.map((session: any) => (
                         <button
                           key={session.id}
                           onClick={() => handleSessionClick(cohort.id, session.id, session.name)}
-                          className="block w-full text-left px-3 py-2 text-sm hover:bg-black/5 rounded"
+                          className="block w-full text-left px-3 py-2 text-sm text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl transition-colors cursor-pointer"
                         >
                           Launch {session.name}
                         </button>

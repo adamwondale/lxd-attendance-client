@@ -129,19 +129,19 @@ export default function StudentCohortsPage() {
       {/* My Cohorts */}
       <section className="space-y-3">
         <h3 className="font-mono text-[11px] uppercase tracking-widest text-muted px-1 flex items-center gap-2">
-          <Users className="w-4 h-4" />
+          <Users className="w-4 h-4 text-primary" />
           Enrolled Cohorts
         </h3>
-        <div className="bg-surface border border-border rounded-none shadow-sm">
+        <div className="bg-surface/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-sm overflow-hidden">
           {myCohortsLoading && !myCohortsData?.myCohorts ? (
             <div className="divide-y divide-border">
               {[1, 2].map((i) => (
                 <div key={i} className="p-4 flex items-center justify-between">
                   <div className="space-y-2">
-                    <div className="h-5 w-32 bg-surface-subtle animate-pulse" />
-                    <div className="h-4 w-24 bg-surface-subtle animate-pulse" />
+                    <div className="h-5 w-32 bg-surface-subtle animate-pulse rounded-md" />
+                    <div className="h-4 w-24 bg-surface-subtle animate-pulse rounded-md" />
                   </div>
-                  <div className="h-6 w-16 bg-surface-subtle animate-pulse" />
+                  <div className="h-6 w-16 bg-surface-subtle animate-pulse rounded-full" />
                 </div>
               ))}
             </div>
@@ -150,7 +150,7 @@ export default function StudentCohortsPage() {
               {myCohortsData?.myCohorts?.map((cohort: any) => (
                 <li
                   key={cohort.id}
-                  className="p-4 flex items-center justify-between hover:bg-surface-hover transition-colors"
+                  className="p-4 flex items-center justify-between hover:bg-surface-hover/80 transition-colors"
                 >
                   <div>
                     <h4 className="font-medium text-[15px] text-foreground">{cohort.name}</h4>
@@ -160,7 +160,7 @@ export default function StudentCohortsPage() {
                         : `Started: ${new Date(cohort.startDate).toLocaleDateString()}`}
                     </p>
                   </div>
-                  <span className="text-[10px] font-mono tracking-widest uppercase bg-success-surface text-success px-2 py-1 rounded-full border border-success/20">
+                  <span className="text-[10px] font-mono tracking-widest uppercase bg-primary/10 text-primary px-2.5 py-1 rounded-full border border-primary/20">
                     Active
                   </span>
                 </li>
@@ -182,20 +182,20 @@ export default function StudentCohortsPage() {
       {/* Available Cohorts */}
       <section className="space-y-3">
         <h3 className="font-mono text-[11px] uppercase tracking-widest text-muted px-1 flex items-center gap-2">
-          <Search className="w-4 h-4" />
+          <Search className="w-4 h-4 text-secondary" />
           Available to Join
         </h3>
-        <div className="bg-surface border border-border rounded-none shadow-sm">
+        <div className="bg-surface/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-sm overflow-hidden">
           {availableCohortsLoading &&
           !availableCohortsData?.availableCohorts ? (
             <div className="divide-y divide-border">
               {[1, 2].map((i) => (
                 <div key={i} className="p-4 flex items-center justify-between">
                   <div className="space-y-2">
-                    <div className="h-5 w-32 bg-surface-subtle animate-pulse" />
-                    <div className="h-4 w-24 bg-surface-subtle animate-pulse" />
+                    <div className="h-5 w-32 bg-surface-subtle animate-pulse rounded-md" />
+                    <div className="h-4 w-24 bg-surface-subtle animate-pulse rounded-md" />
                   </div>
-                  <div className="h-8 w-16 bg-surface-subtle animate-pulse" />
+                  <div className="h-8 w-16 bg-surface-subtle animate-pulse rounded-xl" />
                 </div>
               ))}
             </div>
@@ -204,7 +204,7 @@ export default function StudentCohortsPage() {
               {availableCohortsData?.availableCohorts?.map((cohort: any) => (
                 <li
                   key={cohort.id}
-                  className="p-4 flex items-center justify-between hover:bg-surface-hover transition-colors group"
+                  className="p-4 flex items-center justify-between hover:bg-surface-hover/80 transition-colors group"
                 >
                   <div>
                     <h4 className="font-medium text-[15px] text-foreground">{cohort.name}</h4>
@@ -214,7 +214,7 @@ export default function StudentCohortsPage() {
                   </div>
                   <button
                     onClick={() => setJoiningCohort(cohort)}
-                    className="h-8 px-4 rounded-none bg-primary text-primary-foreground text-[11px] font-mono uppercase tracking-widest hover:bg-primary-hover flex items-center gap-1 active:scale-95 transition-all"
+                    className="h-8 px-4 rounded-xl bg-primary text-primary-foreground text-[11px] font-mono uppercase tracking-widest hover:bg-primary-hover flex items-center gap-1 active:scale-95 transition-all shadow-sm"
                   >
                     Join
                   </button>
@@ -262,7 +262,7 @@ export default function StudentCohortsPage() {
                 value={selectedSessionId}
                 onChange={(e) => setSelectedSessionId(e.target.value)}
                 required
-                className="w-full h-11 px-3 border border-border bg-surface-subtle text-foreground text-[14px] focus:border-foreground outline-none transition-colors rounded-none"
+                className="w-full h-11 px-3.5 border border-border bg-surface-subtle text-foreground text-[14px] focus:border-primary outline-none transition-colors rounded-xl"
               >
                 <option value="" disabled>
                   Choose a session...
@@ -286,7 +286,7 @@ export default function StudentCohortsPage() {
                 onChange={(e) => setPin(e.target.value)}
                 required
                 placeholder="Enter PIN"
-                className="w-full h-11 px-3 border border-border bg-surface-subtle text-foreground text-[14px] focus:border-foreground outline-none transition-colors rounded-none text-center tracking-widest"
+                className="w-full h-11 px-3.5 border border-border bg-surface-subtle text-foreground text-[14px] focus:border-primary outline-none transition-colors rounded-xl text-center tracking-widest"
               />
             </div>
           </form>
@@ -295,7 +295,7 @@ export default function StudentCohortsPage() {
           <button
             type="button"
             onClick={() => setJoiningCohort(null)}
-            className="hidden sm:flex flex-1 sm:flex-none min-h-[56px] shrink-0 px-6 border border-border bg-surface text-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-surface-hover transition-colors rounded-none order-2 sm:order-1 items-center justify-center"
+            className="hidden sm:flex flex-1 sm:flex-none min-h-[50px] shrink-0 px-6 border border-border bg-surface text-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-surface-hover transition-colors rounded-xl order-2 sm:order-1 items-center justify-center active:scale-[0.98]"
           >
             Cancel
           </button>
@@ -303,7 +303,7 @@ export default function StudentCohortsPage() {
             type="submit"
             form="join-cohort-form"
             disabled={joining || !pin}
-            className="flex-1 sm:flex-auto min-h-[56px] shrink-0 py-3 px-6 bg-primary text-primary-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-primary-hover disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2"
+            className="flex-1 sm:flex-auto min-h-[50px] shrink-0 py-3 px-6 bg-primary text-primary-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-primary-hover disabled:opacity-50 transition-all rounded-xl flex items-center justify-center gap-2 order-1 sm:order-2 active:scale-[0.98] shadow-sm"
           >
             {joining ? (
               <Loader2 className="w-4 h-4 animate-spin" />

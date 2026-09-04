@@ -52,7 +52,7 @@ export default function StudentProfilePage() {
         <p className="text-[13px] text-muted">Manage your account and view your badge.</p>
       </div>
 
-      <section className="bg-surface border border-border rounded-none p-6 shadow-sm">
+      <section className="bg-surface/85 backdrop-blur-xl border border-border/80 rounded-2xl p-6 shadow-sm">
         <StudentProfile />
       </section>
 
@@ -60,15 +60,15 @@ export default function StudentProfilePage() {
       <section className="space-y-4">
         <h3 className="font-serif text-2xl text-foreground">Identity Badge</h3>
         
-        <div className="border border-border bg-surface p-6 sm:p-10 flex flex-col items-center justify-center gap-6 sm:gap-8 rounded-none shadow-sm text-center">
+        <div className="border border-border/80 bg-surface/85 backdrop-blur-xl p-6 sm:p-10 flex flex-col items-center justify-center gap-6 sm:gap-8 rounded-2xl shadow-sm text-center">
           <p className="font-sans text-[14px] sm:text-[15px] text-muted leading-relaxed max-w-sm">
             Present this badge to the coordinator to log your attendance.
           </p>
 
           {qrLoading && !qrData?.myQrBadge ? (
-            <div className="w-[200px] sm:w-[240px] h-[200px] sm:h-[240px] bg-surface-subtle border border-border animate-pulse rounded-none" />
+            <div className="w-[200px] sm:w-[240px] h-[200px] sm:h-[240px] bg-surface-subtle border border-border animate-pulse rounded-2xl" />
           ) : qrData?.myQrBadge ? (
-            <div className="bg-white p-3 sm:p-4 border border-border rounded-none shadow-sm">
+            <div className="bg-white p-4 border border-border/50 rounded-2xl shadow-md">
               <QRCode
                 id="student-qr-code"
                 value={`${typeof window !== 'undefined' ? window.location.origin : ''}/dashboard/scan?studentBadge=${encodeURIComponent(qrData.myQrBadge)}`}
@@ -78,7 +78,7 @@ export default function StudentProfilePage() {
               />
             </div>
           ) : (
-            <div className="w-[200px] sm:w-[240px] h-[200px] sm:h-[240px] flex items-center justify-center bg-surface-subtle border border-border rounded-none">
+            <div className="w-[200px] sm:w-[240px] h-[200px] sm:h-[240px] flex items-center justify-center bg-surface-subtle border border-border rounded-2xl">
               <p className="text-[10px] sm:text-[11px] font-mono tracking-widest uppercase text-muted">Error loading QR</p>
             </div>
           )}
@@ -86,7 +86,7 @@ export default function StudentProfilePage() {
           <button
             onClick={handleDownload}
             disabled={qrLoading || !qrData?.myQrBadge}
-            className="flex items-center justify-center gap-2 px-6 h-[44px] border border-border bg-surface text-foreground font-mono text-[11px] uppercase tracking-widest hover:bg-surface-hover hover:border-foreground transition-colors disabled:opacity-50 rounded-none w-full max-w-[260px]"
+            className="flex items-center justify-center gap-2 px-6 h-[44px] border border-border bg-surface text-foreground font-mono text-[11px] uppercase tracking-widest hover:bg-surface-hover hover:border-foreground transition-all disabled:opacity-50 rounded-xl w-full max-w-[260px] active:scale-[0.98] shadow-sm"
           >
             <Download className="w-4 h-4" />
             <span>Download PNG</span>
@@ -97,12 +97,12 @@ export default function StudentProfilePage() {
       <section className="space-y-4 pt-4">
         <h3 className="font-mono text-[11px] uppercase tracking-widest text-muted px-1">Account Actions</h3>
         
-        <div className="bg-surface border border-border rounded-none overflow-hidden shadow-sm">
+        <div className="bg-surface/85 backdrop-blur-xl border border-border/80 rounded-2xl overflow-hidden shadow-sm">
           <ul className="divide-y divide-border">
             <li>
-              <a href="/api/auth/signout" className="flex items-center justify-between p-4 hover:bg-surface-hover transition-colors group">
+              <a href="/api/auth/signout" className="flex items-center justify-between p-4 hover:bg-surface-hover/80 transition-colors group">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-none bg-danger-surface flex items-center justify-center border border-danger/20">
+                  <div className="w-8 h-8 rounded-xl bg-danger-surface flex items-center justify-center border border-danger/20">
                     <LogOut className="w-4 h-4 text-danger" />
                   </div>
                   <span className="font-medium text-[15px] text-danger">Sign Out</span>

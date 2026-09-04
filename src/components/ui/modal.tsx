@@ -36,7 +36,7 @@ export function Modal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="absolute inset-0 bg-black/20 backdrop-blur-[4px] pointer-events-auto"
+            className="absolute inset-0 bg-black/40 backdrop-blur-md pointer-events-auto"
             onClick={onClose}
           />
           <motion.div
@@ -51,8 +51,8 @@ export function Modal({
             initial={{ opacity: 0, y: "100%" }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className={`pointer-events-auto relative w-full bg-surface border border-border shadow-2xl sm:max-w-lg max-h-full sm:max-h-[90vh] flex flex-col rounded-t-none sm:rounded-none overflow-hidden ${className}`}
+            transition={{ type: "spring", damping: 28, stiffness: 280 }}
+            className={`pointer-events-auto relative w-full bg-surface/95 backdrop-blur-2xl border border-border/80 shadow-2xl sm:max-w-lg max-h-full sm:max-h-[90vh] flex flex-col rounded-t-3xl sm:rounded-2xl overflow-hidden ${className}`}
           >
             {/* Mobile drag handle indicator */}
             <div className="w-full flex justify-center pt-3 pb-1 sm:hidden cursor-grab active:cursor-grabbing shrink-0" onClick={onClose}>
@@ -76,7 +76,7 @@ export function ModalHeader({
   onClose?: () => void
 }) {
   return (
-    <div className="flex items-start justify-between px-6 pt-4 sm:pt-6 pb-5 border-b border-border flex-shrink-0">
+    <div className="flex items-start justify-between px-6 pt-4 sm:pt-6 pb-5 border-b border-border/70 flex-shrink-0">
       <div>
         {subtitle && (
           <p className="font-mono text-[10px] uppercase tracking-widest text-muted mb-1">
@@ -89,7 +89,7 @@ export function ModalHeader({
         <button
           onClick={onClose}
           type="button"
-          className="w-8 h-8 flex items-center justify-center text-muted hover:text-foreground hover:bg-surface-hover transition-colors rounded-none"
+          className="w-8 h-8 flex items-center justify-center text-muted hover:text-foreground hover:bg-surface-hover transition-colors rounded-full"
         >
           <X className="w-4 h-4" />
         </button>
@@ -100,7 +100,7 @@ export function ModalHeader({
 
 export function ModalBody({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`overflow-y-auto flex-1 p-6 overscroll-contain bg-surface text-foreground ${className}`}>
+    <div className={`overflow-y-auto flex-1 p-6 overscroll-contain bg-transparent text-foreground ${className}`}>
       {children}
     </div>
   )
@@ -108,7 +108,7 @@ export function ModalBody({ children, className = "" }: { children: React.ReactN
 
 export function ModalFooter({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`px-6 py-4 border-t border-border bg-surface-subtle flex flex-col sm:flex-row gap-3 flex-shrink-0 ${className}`}>
+    <div className={`px-6 py-4 border-t border-border/70 bg-surface-subtle/50 flex flex-col sm:flex-row gap-3 flex-shrink-0 ${className}`}>
       {children}
     </div>
   )
@@ -140,7 +140,7 @@ export function AlertModal({
       <div className="p-6">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 mb-6 text-center sm:text-left">
           {variant === "destructive" && (
-            <div className="w-10 h-10 border border-danger/30 bg-danger-surface flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0">
+            <div className="w-10 h-10 border border-danger/30 bg-danger-surface rounded-xl flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0">
               <AlertTriangle className="w-5 h-5 text-danger" />
             </div>
           )}
@@ -154,15 +154,15 @@ export function AlertModal({
         <div className="flex flex-col sm:flex-row gap-2">
           <button
             onClick={onClose}
-            className="flex-1 h-14 border border-border bg-surface text-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-surface-hover transition-colors rounded-none order-2 sm:order-1"
+            className="flex-1 h-12 border border-border bg-surface text-foreground font-mono text-[12px] uppercase tracking-widest hover:bg-surface-hover transition-colors rounded-xl order-2 sm:order-1 active:scale-[0.98]"
           >
             {cancelText}
           </button>
           <button
             onClick={onConfirm}
             disabled={loading}
-            className={`flex-1 h-14 font-mono text-[13px] uppercase tracking-widest disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2 ${
-              variant === "destructive" ? "bg-danger text-danger-foreground hover:opacity-90" : "bg-primary text-primary-foreground hover:bg-primary-hover"
+            className={`flex-1 h-12 font-mono text-[12px] uppercase tracking-widest disabled:opacity-50 transition-all rounded-xl flex items-center justify-center gap-2 order-1 sm:order-2 active:scale-[0.98] ${
+              variant === "destructive" ? "bg-danger text-danger-foreground hover:opacity-90 shadow-sm" : "bg-primary text-primary-foreground hover:bg-primary-hover shadow-sm"
             }`}
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : confirmText}

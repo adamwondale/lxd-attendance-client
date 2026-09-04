@@ -301,11 +301,11 @@ export default function ReportsPage() {
   };
 
   return (
-    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 space-y-8 text-[#0A0A0A]">
+    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 space-y-8 text-foreground">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
         <div>
-          <h1 className="font-serif text-4xl mb-2 tracking-tight">
+          <h1 className="font-serif text-4xl mb-2 tracking-tight text-foreground">
             Attendance Reports
           </h1>
           <p className="font-mono text-[13px] text-muted uppercase">
@@ -316,14 +316,14 @@ export default function ReportsPage() {
           <button
             onClick={printFullReport}
             disabled={printing}
-            className="h-11 px-5 border border-[#E5E5E4] bg-white text-[#0A0A0A] hover:bg-[#F9F9F8] transition-colors rounded-none flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest disabled:opacity-50"
+            className="h-11 px-5 border border-border bg-surface text-foreground hover:bg-surface-hover transition-all rounded-xl flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest disabled:opacity-50 active:scale-[0.98] shadow-sm"
           >
             {printing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Printer className="w-4 h-4" />} Print
           </button>
           <button
             onClick={exportExcel}
             disabled={exporting}
-            className="h-11 px-5 bg-[#0A0A0A] text-white hover:bg-[#1C1C1C] transition-colors rounded-none flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest disabled:opacity-50"
+            className="h-11 px-5 bg-primary text-primary-foreground hover:bg-primary-hover transition-all rounded-xl flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest disabled:opacity-50 active:scale-[0.98] shadow-sm"
           >
             {exporting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <FileSpreadsheet className="w-4 h-4" />} Export Excel
           </button>
@@ -331,11 +331,11 @@ export default function ReportsPage() {
       </div>
 
       {/* Filters (Print Hidden) */}
-      <div className="print:hidden bg-[#FFFFFF] border border-[#E5E5E4] p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
+      <div className="print:hidden bg-surface/85 backdrop-blur-xl border border-border/80 p-6 rounded-2xl shadow-sm grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
         <select
           value={period}
           onChange={(e) => setPreset(e.target.value)}
-          className="h-11 border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none appearance-none cursor-pointer"
+          className="h-11 border border-border bg-surface-subtle text-foreground px-3.5 text-[14px] font-sans focus:border-primary outline-none transition-colors rounded-xl appearance-none cursor-pointer"
         >
           <option value="week">Last 7 days</option>
           <option value="month">This month</option>
@@ -349,7 +349,7 @@ export default function ReportsPage() {
             setPeriod('custom');
             setStartDate(e.target.value);
           }}
-          className="h-11 border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+          className="h-11 border border-border bg-surface-subtle text-foreground px-3.5 text-[14px] font-sans focus:border-primary outline-none transition-colors rounded-xl"
         />
         <input
           type="date"
@@ -358,7 +358,7 @@ export default function ReportsPage() {
             setPeriod('custom');
             setEndDate(e.target.value);
           }}
-          className="h-11 border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+          className="h-11 border border-border bg-surface-subtle text-foreground px-3.5 text-[14px] font-sans focus:border-primary outline-none transition-colors rounded-xl"
         />
         <select
           value={cohortId}
@@ -366,7 +366,7 @@ export default function ReportsPage() {
             setCohortId(e.target.value);
             setSessionId('');
           }}
-          className="h-11 border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none appearance-none cursor-pointer"
+          className="h-11 border border-border bg-surface-subtle text-foreground px-3.5 text-[14px] font-sans focus:border-primary outline-none transition-colors rounded-xl appearance-none cursor-pointer"
         >
           <option value="">All Cohorts</option>
           {cohorts.map((c: any) => (
@@ -379,7 +379,7 @@ export default function ReportsPage() {
           <select
             value={sessionId}
             onChange={(e) => setSessionId(e.target.value)}
-            className="h-11 border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none appearance-none cursor-pointer flex-1"
+            className="h-11 border border-border bg-surface-subtle text-foreground px-3.5 text-[14px] font-sans focus:border-primary outline-none transition-colors rounded-xl appearance-none cursor-pointer flex-1"
           >
             <option value="">All Sessions</option>
             {(
@@ -393,17 +393,17 @@ export default function ReportsPage() {
           </select>
           <button
             onClick={() => refetch()}
-            className="h-11 w-11 border border-[#E5E5E4] bg-white hover:bg-[#F9F9F8] hover:text-[#0A0A0A] text-[#878786] transition-colors rounded-none flex items-center justify-center shrink-0"
+            className="h-11 w-11 border border-border bg-surface hover:bg-surface-hover text-muted hover:text-foreground transition-all rounded-xl flex items-center justify-center shrink-0 active:scale-95 shadow-sm"
           >
             <RefreshCw
-              className={`w-4 h-4 ${loading ? 'animate-spin text-[#0A0A0A]' : ''}`}
+              className={`w-4 h-4 ${loading ? 'animate-spin text-primary' : ''}`}
             />
           </button>
         </div>
       </div>
 
       {/* Stats Summary */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 border border-border bg-surface">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 border border-border/80 bg-surface/85 backdrop-blur-xl rounded-2xl overflow-hidden shadow-sm">
         <Stat label="Present" value={totals.present} />
         <Stat label="Late" value={totals.late} />
         <Stat label="Absent" value={totals.absent} />
@@ -411,15 +411,15 @@ export default function ReportsPage() {
       </div>
 
       {/* Detailed Report Table */}
-      <div className="bg-[#FFFFFF] border border-[#E5E5E4] rounded-none overflow-hidden">
-        <div className="p-6 border-b border-[#E5E5E4] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-surface/85 backdrop-blur-xl border border-border/80 rounded-2xl overflow-hidden shadow-sm">
+        <div className="p-6 border-b border-border/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="font-serif text-2xl">Detailed Report</h2>
+            <h2 className="font-serif text-2xl text-foreground">Detailed Report</h2>
             <p className="text-[13px] text-muted font-mono mt-1 uppercase tracking-widest">
               {startDate} → {endDate}
             </p>
           </div>
-          <div className="text-[11px] font-mono text-muted uppercase tracking-widest border border-border px-4 py-2 bg-background">
+          <div className="text-[11px] font-mono text-muted uppercase tracking-widest border border-border/80 px-4 py-2 bg-surface-subtle rounded-xl">
             {totalCount} records found
           </div>
         </div>
@@ -490,12 +490,12 @@ export default function ReportsPage() {
                     </td>
                     <td className="p-4">
                       <span
-                        className={`inline-flex px-2 py-1 text-[11px] font-mono uppercase tracking-widest border ${
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
                           r.status === 'Present'
-                            ? 'border-green-600 text-green-700'
+                            ? 'border-primary/20 bg-primary/10 text-primary'
                             : r.status === 'Late'
-                              ? 'border-[var(--color-accent)] text-[var(--color-accent)]'
-                              : 'border-red-600 text-red-700'
+                              ? 'border-secondary/20 bg-secondary/10 text-secondary'
+                              : 'border-danger/20 bg-danger/10 text-danger'
                         }`}
                       >
                         {r.status}
@@ -528,8 +528,8 @@ export default function ReportsPage() {
       </div>
 
       {totalCount > PAGE_SIZE && (
-        <div className="print:hidden flex flex-col sm:flex-row items-center justify-between gap-3 rounded-2xl border border-[#E5E5E4] bg-white px-4 py-3">
-          <span className="font-mono text-[10px] uppercase tracking-widest text-[#878786]">
+        <div className="print:hidden flex flex-col sm:flex-row items-center justify-between gap-3 rounded-2xl border border-border/80 bg-surface/85 backdrop-blur-xl px-4 py-3 shadow-sm">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-muted">
             Page {safePage} of {totalPages} · {totalCount} records
           </span>
           <div className="flex items-center gap-2">
@@ -537,7 +537,7 @@ export default function ReportsPage() {
               aria-label="Previous page"
               disabled={safePage === 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="h-9 w-9 rounded-xl border border-[#E5E5E4] hover:bg-[#F9F9F8] disabled:opacity-30 transition-all"
+              className="h-9 w-9 rounded-xl border border-border bg-surface text-foreground hover:bg-surface-hover disabled:opacity-30 transition-all active:scale-95"
             >
               <ChevronLeft className="w-4 h-4 mx-auto" />
             </button>
@@ -545,7 +545,7 @@ export default function ReportsPage() {
               aria-label="Next page"
               disabled={safePage === totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="h-9 w-9 rounded-xl border border-[#E5E5E4] hover:bg-[#F9F9F8] disabled:opacity-30 transition-all"
+              className="h-9 w-9 rounded-xl border border-border bg-surface text-foreground hover:bg-surface-hover disabled:opacity-30 transition-all active:scale-95"
             >
               <ChevronRight className="w-4 h-4 mx-auto" />
             </button>
@@ -558,11 +558,11 @@ export default function ReportsPage() {
 
 function Stat({ label, value }: { label: string; value: any }) {
   return (
-    <div className="p-6 border-r border-border last:border-r-0 flex flex-col justify-center">
+    <div className="p-6 border-r border-border/80 last:border-r-0 flex flex-col justify-center">
       <p className="text-[11px] font-mono uppercase tracking-widest text-muted mb-2">
         {label}
       </p>
-      <p className="text-3xl font-serif text-secondary">{value}</p>
+      <p className="text-3xl font-serif text-foreground">{value}</p>
     </div>
   );
 }

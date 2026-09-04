@@ -244,13 +244,13 @@ function Field({
           placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
           onBlur={onBlur}
-          className={`w-full h-11 px-3 ${isPassword ? 'pr-10' : ''} bg-[#F9F9F8] border text-[14px] font-sans text-[#0A0A0A] placeholder:text-[#878786]/50 outline-none transition-[border-color] duration-150 focus:border-[#0A0A0A] disabled:opacity-40 rounded-xl ${error ? 'border-[#E54D2E]' : 'border-[#E5E5E4]'}`}
+          className={`w-full h-11 px-3.5 ${isPassword ? 'pr-10' : ''} bg-surface-subtle border text-[14px] font-sans text-foreground placeholder:text-muted/50 outline-none transition-all duration-150 focus:border-primary disabled:opacity-40 rounded-xl ${error ? 'border-danger focus:border-danger' : 'border-border'}`}
         />
         {isPassword && (
           <button
             type="button"
             onClick={() => setShow((s) => !s)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-secondary transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground transition-colors"
           >
             {show ? (
               <EyeOff className="w-4 h-4" />
@@ -264,7 +264,7 @@ function Field({
         <motion.p
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="font-mono text-[11px] text-primary uppercase tracking-wide"
+          className="font-mono text-[11px] text-danger uppercase tracking-wide"
         >
           {error}
         </motion.p>
@@ -306,7 +306,7 @@ function SelectField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        className="w-full h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] text-[14px] font-sans text-[#0A0A0A] outline-none focus:border-[#0A0A0A] transition-[border-color] duration-150 rounded-none disabled:opacity-40 appearance-none"
+        className="w-full h-11 px-3.5 bg-surface-subtle border border-border text-[14px] font-sans text-foreground outline-none focus:border-primary transition-all duration-150 rounded-xl disabled:opacity-40 appearance-none"
       >
         {children}
       </select>
@@ -521,7 +521,7 @@ function CreateStudentModal({
         <button
           type="button"
           onClick={onClose}
-          className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-none order-2 sm:order-1"
+          className="hidden sm:block flex-1 sm:flex-none h-12 px-6 border border-border bg-surface text-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-surface-hover transition-colors rounded-xl order-2 sm:order-1 active:scale-[0.98]"
         >
           Cancel
         </button>
@@ -529,7 +529,7 @@ function CreateStudentModal({
           type="submit"
           form="create-student-form"
           disabled={loading}
-          className="flex-1 sm:flex-auto h-14 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2"
+          className="flex-1 sm:flex-auto h-12 bg-primary text-primary-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-primary-hover disabled:opacity-50 transition-all rounded-xl flex items-center justify-center gap-2 order-1 sm:order-2 active:scale-[0.98] shadow-sm"
         >
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -743,7 +743,7 @@ function EditStudentModal({
             <button
               type="submit"
               disabled={updating}
-              className="h-10 px-6 bg-[#0A0A0A] text-white font-mono text-[11px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-none flex items-center gap-2 w-full sm:w-auto justify-center"
+              className="h-10 px-6 bg-primary text-primary-foreground font-mono text-[11px] uppercase tracking-widest hover:bg-primary-hover disabled:opacity-50 transition-all rounded-xl flex items-center gap-2 w-full sm:w-auto justify-center active:scale-[0.98] shadow-sm"
             >
               {updating ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -761,9 +761,9 @@ function EditStudentModal({
             {!newEnrollment && (
               <button
                 onClick={() => setNewEnrollment(true)}
-                className="h-8 px-3 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[10px] uppercase tracking-widest hover:bg-[#F9F9F8] hover:border-[#0A0A0A] transition-colors rounded-none flex items-center gap-1.5"
+                className="h-8 px-3 border border-border bg-surface text-foreground font-mono text-[10px] uppercase tracking-widest hover:bg-surface-hover transition-all rounded-xl flex items-center gap-1.5 active:scale-[0.98] shadow-sm"
               >
-                <Plus className="w-3 h-3" /> Add Enrollment
+                <Plus className="w-3 h-3 text-primary" /> Add Enrollment
               </button>
             )}
           </div>
@@ -775,7 +775,7 @@ function EditStudentModal({
                 exit={{ opacity: 0, height: 0 }}
                 className="overflow-hidden"
               >
-                <div className="bg-background border border-border p-4 mb-4 grid sm:grid-cols-2 gap-3">
+                <div className="bg-surface-subtle/80 border border-border p-4 mb-4 grid sm:grid-cols-2 gap-3 rounded-xl">
                   <SelectField
                     id="enroll-cohort"
                     label="Cohort"
@@ -810,7 +810,7 @@ function EditStudentModal({
                     <button
                       onClick={handleEnroll}
                       disabled={!selectedCohort || !selectedSession}
-                      className="h-10 px-5 bg-[#0A0A0A] text-white font-mono text-[11px] uppercase tracking-widest disabled:opacity-40 hover:bg-[#1C1C1C] transition-colors rounded-none w-full sm:w-auto justify-center"
+                      className="h-10 px-5 bg-primary text-primary-foreground font-mono text-[11px] uppercase tracking-widest disabled:opacity-40 hover:bg-primary-hover transition-all rounded-xl w-full sm:w-auto justify-center active:scale-[0.98] shadow-sm"
                     >
                       Enroll
                     </button>
@@ -820,7 +820,7 @@ function EditStudentModal({
                         setSelectedCohort('');
                         setSelectedSession('');
                       }}
-                      className="hidden sm:block h-10 px-4 border border-[#E5E5E4] text-[#878786] font-mono text-[11px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-none w-full sm:w-auto justify-center"
+                      className="hidden sm:block h-10 px-4 border border-border text-muted font-mono text-[11px] uppercase tracking-widest hover:bg-surface-hover transition-colors rounded-xl w-full sm:w-auto justify-center active:scale-[0.98]"
                     >
                       Cancel
                     </button>
@@ -830,7 +830,7 @@ function EditStudentModal({
             )}
           </AnimatePresence>
           {localMemberships.length > 0 ? (
-            <div className="divide-y divide-border border border-border">
+            <div className="divide-y divide-border border border-border rounded-xl overflow-hidden">
               {localMemberships.map((m: any) => {
                 const cohort = cohortData?.listCohorts?.find(
                   (c: any) => c.id === m.cohortId,
@@ -838,10 +838,10 @@ function EditStudentModal({
                 return (
                   <div
                     key={m.cohortId}
-                    className="flex flex-col md:flex-row md:items-center justify-between p-4 gap-3 bg-white hover:bg-background transition-colors"
+                    className="flex flex-col md:flex-row md:items-center justify-between p-4 gap-3 bg-surface hover:bg-surface-hover/80 transition-colors"
                   >
                     <div>
-                      <p className="font-medium text-[14px] text-secondary">
+                      <p className="font-medium text-[14px] text-foreground">
                         {m.cohort?.name || cohort?.name || 'Unknown Cohort'}
                       </p>
                       <p className="font-mono text-[11px] text-muted uppercase tracking-wide mt-0.5">
@@ -852,7 +852,7 @@ function EditStudentModal({
                       <div className="relative w-full md:w-36">
                         <select
                           disabled={updatingSessionFor === m.cohortId}
-                          className="h-9 px-2 w-full border border-[#E5E5E4] bg-[#F9F9F8] text-[13px] font-sans text-[#0A0A0A] outline-none focus:border-[#0A0A0A] transition-colors rounded-none disabled:opacity-60 appearance-none"
+                          className="h-9 px-2.5 w-full border border-border bg-surface-subtle text-[13px] font-sans text-foreground outline-none focus:border-primary transition-colors rounded-xl disabled:opacity-60 appearance-none"
                           value={m.sessionId}
                           onChange={(e) =>
                             handleUpdateSession(m.cohortId, e.target.value)
@@ -864,7 +864,7 @@ function EditStudentModal({
                             </option>
                           ))}
                         </select>
-                        <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-[#878786]">
+                        <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-muted">
                           {updatingSessionFor === m.cohortId ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
                           ) : (
@@ -876,7 +876,7 @@ function EditStudentModal({
                       </div>
                       <button
                         onClick={() => handleRemoveCohort(m.cohortId)}
-                        className="h-9 px-3 border border-[#E54D2E]/30 text-[#E54D2E] font-mono text-[10px] uppercase tracking-widest hover:bg-[#E54D2E]/5 hover:border-[#E54D2E] transition-colors rounded-none flex-1 md:flex-none"
+                        className="h-9 px-3 border border-danger/30 text-danger font-mono text-[10px] uppercase tracking-widest hover:bg-danger-surface hover:border-danger transition-colors rounded-xl flex-1 md:flex-none active:scale-[0.98]"
                       >
                         Remove
                       </button>
@@ -949,21 +949,21 @@ export default function StudentsPage() {
     <div className="p-6 sm:p-10 space-y-8 min-h-screen bg-background">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h1 className="font-serif text-4xl mb-1 text-secondary">Students</h1>
+          <h1 className="font-serif text-4xl mb-1 text-foreground">Students</h1>
           <p className="font-mono text-[11px] text-muted uppercase tracking-widest">
             Manage enrolled trainees
           </p>
         </div>
         <button
           onClick={() => setShowCreate(true)}
-          className="h-11 px-5 bg-[#0A0A0A] text-white font-mono text-[11px] uppercase tracking-widest hover:bg-[#1C1C1C] transition-colors rounded-none flex items-center gap-2 self-start sm:self-auto"
+          className="h-11 px-5 bg-primary text-primary-foreground font-mono text-[11px] uppercase tracking-widest hover:bg-primary-hover transition-all rounded-xl flex items-center gap-2 self-start sm:self-auto active:scale-[0.98] shadow-sm"
         >
           <Plus className="w-4 h-4" /> Register Student
         </button>
       </div>
 
       <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
         <input
           value={search}
           onChange={(e) => {
@@ -971,14 +971,14 @@ export default function StudentsPage() {
             setPage(1);
           }}
           placeholder="Search by name, email, username..."
-          className="w-full h-11 pl-10 pr-3 border border-[#E5E5E4] bg-[#FFFFFF] text-[14px] font-sans text-[#0A0A0A] placeholder:text-[#878786]/50 outline-none focus:border-[#0A0A0A] transition-colors rounded-none"
+          className="w-full h-11 pl-10 pr-3.5 border border-border bg-surface text-[14px] font-sans text-foreground placeholder:text-muted/50 outline-none focus:border-primary transition-colors rounded-xl shadow-sm"
         />
       </div>
 
-      <div className="border border-[#E5E5E4] bg-white rounded-none overflow-hidden">
+      <div className="border border-border/80 bg-surface/85 backdrop-blur-xl rounded-2xl overflow-hidden shadow-sm">
         <Table>
           <TableHeader>
-            <TableRow className="border-b border-border bg-background">
+            <TableRow className="border-b border-border/80 bg-surface-subtle/50">
               <TableHead className="font-mono text-[10px] uppercase tracking-widest text-muted h-11">
                 Name and Email
               </TableHead>
@@ -993,18 +993,18 @@ export default function StudentsPage() {
           <TableBody>
             {loading && !data ? (
               [...Array(5)].map((_, i) => (
-                <TableRow key={i} className="border-b border-border">
+                <TableRow key={i} className="border-b border-border/80">
                   <TableCell className="py-4">
-                    <div className="h-4 w-32 bg-background animate-pulse mb-2" />
-                    <div className="h-3 w-48 bg-background animate-pulse" />
+                    <div className="h-4 w-32 bg-surface-subtle animate-pulse rounded-md mb-2" />
+                    <div className="h-3 w-48 bg-surface-subtle animate-pulse rounded-md" />
                   </TableCell>
                   <TableCell>
-                    <div className="h-5 w-24 bg-background animate-pulse" />
+                    <div className="h-5 w-24 bg-surface-subtle animate-pulse rounded-full" />
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <div className="h-8 w-8 bg-background animate-pulse" />
-                      <div className="h-8 w-8 bg-background animate-pulse" />
+                      <div className="h-8 w-8 bg-surface-subtle animate-pulse rounded-xl" />
+                      <div className="h-8 w-8 bg-surface-subtle animate-pulse rounded-xl" />
                     </div>
                   </TableCell>
                 </TableRow>
@@ -1014,10 +1014,10 @@ export default function StudentsPage() {
                 {pagedStudents.map((student: any) => (
                   <TableRow
                     key={student.id}
-                    className="border-b border-border hover:bg-background transition-colors"
+                    className="border-b border-border/80 hover:bg-surface-hover/80 transition-colors"
                   >
                     <TableCell className="py-4">
-                      <div className="font-medium text-[15px] text-secondary">
+                      <div className="font-medium text-[15px] text-foreground">
                         {student.name}
                       </div>
                       <div className="font-mono text-[12px] text-muted mt-0.5">
@@ -1030,7 +1030,7 @@ export default function StudentsPage() {
                           student.memberships.map((m: any) => (
                             <span
                               key={m.cohortId}
-                              className="font-mono text-[10px] uppercase tracking-wide bg-background border border-border px-2 py-1 text-secondary"
+                              className="font-mono text-[10px] uppercase tracking-wide bg-primary/10 border border-primary/20 px-2.5 py-0.5 rounded-full text-primary"
                             >
                               {m.cohort?.name || '-'}
                             </span>
@@ -1046,7 +1046,7 @@ export default function StudentsPage() {
                       <div className="flex justify-end gap-2">
                         <button
                           onClick={() => setEditingStudent(student)}
-                          className="h-8 w-8 border border-[#E5E5E4] flex items-center justify-center text-[#0A0A0A] hover:bg-[#F9F9F8] hover:border-[#0A0A0A] transition-colors rounded-none"
+                          className="h-8 w-8 border border-border bg-surface flex items-center justify-center text-foreground hover:bg-surface-hover transition-all rounded-xl active:scale-95 shadow-sm"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
@@ -1057,7 +1057,7 @@ export default function StudentsPage() {
                               name: student.name,
                             })
                           }
-                          className="h-8 w-8 border border-[#E54D2E]/20 flex items-center justify-center text-[#E54D2E] hover:bg-[#E54D2E]/5 hover:border-[#E54D2E]/50 transition-colors rounded-none"
+                          className="h-8 w-8 border border-danger/30 bg-danger-surface/50 flex items-center justify-center text-danger hover:bg-danger-surface hover:border-danger transition-all rounded-xl active:scale-95 shadow-sm"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -1066,7 +1066,7 @@ export default function StudentsPage() {
                   </TableRow>
                 ))}
                 {totalPages > 1 && (
-                  <TableRow className="border-t border-border">
+                  <TableRow className="border-t border-border/80">
                     <TableCell colSpan={3}>
                       <div className="flex items-center justify-between py-2">
                         <span className="font-mono text-[10px] uppercase tracking-widest text-muted">
@@ -1077,7 +1077,7 @@ export default function StudentsPage() {
                           <button
                             disabled={page === 1}
                             onClick={() => setPage((p) => Math.max(1, p - 1))}
-                            className="h-8 w-8 border border-[#E5E5E4] flex items-center justify-center text-[#0A0A0A] hover:bg-[#F9F9F8] disabled:opacity-30 transition-colors rounded-none"
+                            className="h-8 w-8 border border-border bg-surface flex items-center justify-center text-foreground hover:bg-surface-hover disabled:opacity-30 transition-all rounded-xl active:scale-95"
                           >
                             <ChevronLeft className="w-4 h-4" />
                           </button>
@@ -1086,7 +1086,7 @@ export default function StudentsPage() {
                             onClick={() =>
                               setPage((p) => Math.min(totalPages, p + 1))
                             }
-                            className="h-8 w-8 border border-[#E5E5E4] flex items-center justify-center text-[#0A0A0A] hover:bg-[#F9F9F8] disabled:opacity-30 transition-colors rounded-none"
+                            className="h-8 w-8 border border-border bg-surface flex items-center justify-center text-foreground hover:bg-surface-hover disabled:opacity-30 transition-all rounded-xl active:scale-95"
                           >
                             <ChevronRight className="w-4 h-4" />
                           </button>

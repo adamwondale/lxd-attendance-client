@@ -160,130 +160,132 @@ export default function AttendancePage() {
           </p>
         </div>
         <div className="print:hidden flex flex-wrap gap-2">
-          <Button onClick={exportToExcel} variant="outline" className="flex items-center gap-2 rounded-none">
+          <Button onClick={exportToExcel} variant="outline" className="flex items-center gap-2 rounded-xl active:scale-[0.98]">
             <FileSpreadsheet className="w-4 h-4" /> Export Excel
           </Button>
-          <Button onClick={exportToPDF} variant="outline" className="flex items-center gap-2 rounded-none">
+          <Button onClick={exportToPDF} variant="outline" className="flex items-center gap-2 rounded-xl active:scale-[0.98]">
             <FileText className="w-4 h-4" /> Export PDF
           </Button>
         </div>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Student</TableHead>
-            <TableHead>Date & Time</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {loading && attendanceLogs.length === 0 ? (
-            <>
-              {[...Array(5)].map((_, i) => (
-                <TableRow key={i} className="animate-pulse">
-                  <TableCell>
-                    <div className="h-4 w-32 bg-surface-subtle rounded-none mb-2"></div>
-                    <div className="h-3 w-48 bg-surface-subtle rounded-none"></div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="h-4 w-24 bg-surface-subtle rounded-none mb-2"></div>
-                    <div className="h-3 w-16 bg-surface-subtle rounded-none"></div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="h-5 w-20 bg-surface-subtle rounded-none"></div>
-                  </TableCell>
-                  <TableCell className="text-right flex justify-end">
-                    <div className="h-8 w-8 bg-surface-subtle rounded-none"></div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </>
-          ) : attendanceLogs.length > 0 ? (
-            <>
-              {(printing ? attendanceLogs : pagedLogs).map((log: any) => (
-                <TableRow key={log.id}>
-                  <TableCell>
-                    <div className="font-medium text-[15px] text-foreground">
-                      {log.user.name}
-                    </div>
-                    <div className="text-[13px] text-muted">
-                      {log.user.email}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-[14px] text-foreground">
-                      <div>
-                        {new Date(log.scannedAt).toLocaleDateString('en-US', { weekday: 'long' })}, {log.date || new Date(log.scannedAt).toLocaleDateString()}
-                      </div>
-                      <div className="text-[12px] text-muted font-mono">
-                        {new Date(log.scannedAt).toLocaleTimeString()}
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <span
-                      className={`inline-flex px-2 py-1 text-[12px] font-mono uppercase border ${
-                        log.isLate
-                          ? 'border-danger text-danger bg-danger-surface'
-                          : 'border-success/30 text-success bg-success-surface'
-                      }`}
-                    >
-                      {log.isLate
-                        ? `Late · ${log.latenessMinutes || 0} min`
-                        : 'Present'}
-                    </span>
-                    {log.penalty && (
-                      <div className="text-[11px] font-mono mt-1 text-muted">
-                        Fee: {log.penalty.amount} ETB ({log.penalty.status})
-                      </div>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right flex justify-end">
-                    {log.penalty && log.penalty.status === 'UNPAID' && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleWaive(log.penalty.id)}
-                        disabled={waiving && waivingId === log.penalty.id}
-                        className="h-8 text-[12px] border-border text-foreground hover:bg-surface-hover"
-                      >
-                        {waiving && waivingId === log.penalty.id ? (
-                          <Loader2 className="w-3 h-3 animate-spin" />
-                        ) : (
-                          'Waive Fee'
-                        )}
-                      </Button>
-                    )}
-                    {log.penalty && log.penalty.status === 'WAIVED' && (
-                      <span className="flex items-center gap-1 text-[12px] font-mono text-success bg-success-surface px-2 py-1 rounded-none border border-success/20">
-                        <Check className="w-3 h-3" /> Waived
-                      </span>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </>
-          ) : (
-            <TableRow>
-              <TableCell
-                colSpan={4}
-                className="text-center p-8 text-muted font-mono text-[13px] uppercase"
-              >
-                No attendance records found.
-              </TableCell>
+      <div className="border border-border/80 bg-surface/85 backdrop-blur-xl rounded-2xl overflow-hidden shadow-sm">
+        <Table>
+          <TableHeader>
+            <TableRow className="border-b border-border/80 bg-surface-subtle/50">
+              <TableHead className="font-mono text-[10px] uppercase tracking-widest text-muted h-11">Student</TableHead>
+              <TableHead className="font-mono text-[10px] uppercase tracking-widest text-muted h-11">Date & Time</TableHead>
+              <TableHead className="font-mono text-[10px] uppercase tracking-widest text-muted h-11">Status</TableHead>
+              <TableHead className="font-mono text-[10px] uppercase tracking-widest text-muted h-11 text-right">Action</TableHead>
             </TableRow>
-          )}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {loading && attendanceLogs.length === 0 ? (
+              <>
+                {[...Array(5)].map((_, i) => (
+                  <TableRow key={i} className="animate-pulse border-b border-border/80">
+                    <TableCell>
+                      <div className="h-4 w-32 bg-surface-subtle rounded-md mb-2"></div>
+                      <div className="h-3 w-48 bg-surface-subtle rounded-md"></div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-4 w-24 bg-surface-subtle rounded-md mb-2"></div>
+                      <div className="h-3 w-16 bg-surface-subtle rounded-md"></div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-5 w-20 bg-surface-subtle rounded-full"></div>
+                    </TableCell>
+                    <TableCell className="text-right flex justify-end">
+                      <div className="h-8 w-8 bg-surface-subtle rounded-xl"></div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </>
+            ) : attendanceLogs.length > 0 ? (
+              <>
+                {(printing ? attendanceLogs : pagedLogs).map((log: any) => (
+                  <TableRow key={log.id} className="border-b border-border/80 hover:bg-surface-hover/80 transition-colors">
+                    <TableCell>
+                      <div className="font-medium text-[15px] text-foreground">
+                        {log.user.name}
+                      </div>
+                      <div className="text-[13px] text-muted">
+                        {log.user.email}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-[14px] text-foreground">
+                        <div>
+                          {new Date(log.scannedAt).toLocaleDateString('en-US', { weekday: 'long' })}, {log.date || new Date(log.scannedAt).toLocaleDateString()}
+                        </div>
+                        <div className="text-[12px] text-muted font-mono">
+                          {new Date(log.scannedAt).toLocaleTimeString()}
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 text-[11px] font-mono uppercase rounded-full border ${
+                          log.isLate
+                            ? 'border-danger/30 text-danger bg-danger-surface'
+                            : 'border-primary/30 text-primary bg-primary/10'
+                        }`}
+                      >
+                        {log.isLate
+                          ? `Late · ${log.latenessMinutes || 0} min`
+                          : 'Present'}
+                      </span>
+                      {log.penalty && (
+                        <div className="text-[11px] font-mono mt-1 text-muted">
+                          Fee: {log.penalty.amount} ETB ({log.penalty.status})
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right flex justify-end">
+                      {log.penalty && log.penalty.status === 'UNPAID' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleWaive(log.penalty.id)}
+                          disabled={waiving && waivingId === log.penalty.id}
+                          className="h-8 text-[12px] border-border text-foreground hover:bg-surface-hover rounded-xl active:scale-[0.98]"
+                        >
+                          {waiving && waivingId === log.penalty.id ? (
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                          ) : (
+                            'Waive Fee'
+                          )}
+                        </Button>
+                      )}
+                      {log.penalty && log.penalty.status === 'WAIVED' && (
+                        <span className="flex items-center gap-1 text-[11px] font-mono text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
+                          <Check className="w-3 h-3" /> Waived
+                        </span>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </>
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={4}
+                  className="text-center p-8 text-muted font-mono text-[13px] uppercase"
+                >
+                  No attendance records found.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
 
       {attendanceLogs.length > PAGE_SIZE && (
-        <div className="print:hidden flex flex-col sm:flex-row items-center justify-between gap-3 rounded-none border border-border bg-surface px-4 py-3">
+        <div className="print:hidden flex flex-col sm:flex-row items-center justify-between gap-3 rounded-2xl border border-border/80 bg-surface/85 backdrop-blur-xl px-4 py-3 shadow-sm">
           <span className="font-mono text-[10px] uppercase tracking-widest text-muted">Page {safePage} of {totalPages} · {attendanceLogs.length} records</span>
           <div className="flex items-center gap-2">
-            <button aria-label="Previous page" disabled={safePage === 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className="h-9 w-9 rounded-none border border-border bg-surface text-foreground hover:bg-surface-hover disabled:opacity-30 transition-all"><ChevronLeft className="w-4 h-4 mx-auto" /></button>
-            <button aria-label="Next page" disabled={safePage === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))} className="h-9 w-9 rounded-none border border-border bg-surface text-foreground hover:bg-surface-hover disabled:opacity-30 transition-all"><ChevronRight className="w-4 h-4 mx-auto" /></button>
+            <button aria-label="Previous page" disabled={safePage === 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className="h-9 w-9 rounded-xl border border-border bg-surface text-foreground hover:bg-surface-hover disabled:opacity-30 transition-all active:scale-95"><ChevronLeft className="w-4 h-4 mx-auto" /></button>
+            <button aria-label="Next page" disabled={safePage === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))} className="h-9 w-9 rounded-xl border border-border bg-surface text-foreground hover:bg-surface-hover disabled:opacity-30 transition-all active:scale-95"><ChevronRight className="w-4 h-4 mx-auto" /></button>
           </div>
         </div>
       )}

@@ -50,13 +50,13 @@ export default function DashboardOverviewContent() {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mt-8">
         {[...Array(6)].map((_, i) => (
-          <Card key={i} className="rounded-none border-border bg-surface shadow-sm">
+          <Card key={i} className="border-border/80 bg-surface/85 backdrop-blur-xl shadow-sm">
             <CardHeader className="pb-2">
-              <div className="h-3 w-20 bg-surface-subtle rounded-none animate-pulse"></div>
+              <div className="h-3 w-20 bg-surface-subtle rounded-md animate-pulse"></div>
             </CardHeader>
             <CardContent>
-              <div className="h-8 w-16 bg-surface-subtle rounded-none animate-pulse"></div>
-              <div className="h-3 w-32 bg-surface-subtle rounded-none mt-3 animate-pulse"></div>
+              <div className="h-8 w-16 bg-surface-subtle rounded-md animate-pulse"></div>
+              <div className="h-3 w-32 bg-surface-subtle rounded-md mt-3 animate-pulse"></div>
             </CardContent>
           </Card>
         ))}
@@ -73,12 +73,12 @@ export default function DashboardOverviewContent() {
         {[
           ['Active Cohorts', metrics?.activeCohorts || 0, 'Currently running', 'text-foreground'],
           ['Total Students', metrics?.totalStudents || 0, 'Across active cohorts', 'text-foreground'],
-          ['Present Today', metrics?.presentToday || 0, 'Checked in', 'text-success'],
-          ['Late Today', metrics?.lateToday || 0, 'Arrived after grace', 'text-amber-500'],
+          ['Present Today', metrics?.presentToday || 0, 'Checked in', 'text-primary'],
+          ['Late Today', metrics?.lateToday || 0, 'Arrived after grace', 'text-secondary'],
           ['Absent Today', metrics?.absentToday || 0, 'No check-in recorded', 'text-danger'],
           ["Today's Penalties", `${metrics?.todayRevenue?.toFixed(2) || '0.00'} ETB`, 'Calculated automatically', 'text-danger'],
         ].map(([title, value, caption, valueClass]) => (
-          <Card key={String(title)} className="surface-lift rounded-none border-border bg-surface shadow-sm">
+          <Card key={String(title)} className="surface-lift border-border/80 bg-surface/85 backdrop-blur-xl shadow-sm hover:shadow-md transition-all">
             <CardHeader className="pb-2">
               <CardTitle className="text-[11px] uppercase tracking-widest text-muted font-mono">{title}</CardTitle>
             </CardHeader>
@@ -92,7 +92,7 @@ export default function DashboardOverviewContent() {
 
       <div className="pt-8 border-t border-border mt-8">
         <Link href="/dashboard/cohorts">
-          <Button>Manage Cohorts</Button>
+          <Button variant="default">Manage Cohorts</Button>
         </Link>
       </div>
     </>

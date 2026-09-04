@@ -20,7 +20,7 @@ export function ThemeToggle({ className = '', showLabel = false }: ThemeTogglePr
   if (!mounted) {
     return (
       <div
-        className={`w-9 h-9 rounded-none border border-border bg-surface flex items-center justify-center opacity-50 ${className}`}
+        className={`w-9 h-9 rounded-xl border border-border/80 bg-surface/80 flex items-center justify-center opacity-50 ${className}`}
         aria-hidden="true"
       >
         <span className="w-4 h-4" />
@@ -36,7 +36,7 @@ export function ThemeToggle({ className = '', showLabel = false }: ThemeTogglePr
       onClick={toggleTheme}
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-      className={`inline-flex items-center justify-center gap-2 px-2.5 h-9 border border-border bg-surface text-foreground hover:bg-surface-hover transition-colors rounded-none font-mono text-[11px] uppercase tracking-widest ${className}`}
+      className={`inline-flex items-center justify-center gap-2 px-2.5 h-9 border border-border/80 bg-surface/80 backdrop-blur-md text-foreground hover:bg-surface-hover transition-all rounded-xl font-mono text-[11px] uppercase tracking-widest active:scale-[0.95] shadow-sm ${className}`}
     >
       {isDark ? (
         <Sun className="w-4 h-4 text-accent transition-transform duration-200 rotate-0" />

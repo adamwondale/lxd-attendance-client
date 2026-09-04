@@ -90,7 +90,7 @@ export function StudentProfile() {
         </div>
         <button 
           onClick={handleEdit}
-          className="opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 h-10 px-4 border border-border bg-surface text-foreground font-mono text-[10px] uppercase tracking-widest hover:bg-surface-hover rounded-none shrink-0"
+          className="opacity-100 md:opacity-0 group-hover:opacity-100 transition-all flex items-center gap-2 h-9 px-3.5 border border-border bg-surface text-foreground font-mono text-[11px] uppercase tracking-widest hover:bg-surface-hover rounded-xl active:scale-[0.98] shrink-0 shadow-sm"
           aria-label="Edit Profile"
         >
           <Edit2 className="w-3 h-3" />
@@ -114,7 +114,7 @@ export function StudentProfile() {
                 value={editName}
                 onChange={e => setEditName(e.target.value)}
                 disabled={saving}
-                className="w-full h-11 px-3 bg-surface-subtle border border-border text-[14px] font-sans text-foreground placeholder:text-muted/50 outline-none transition-[border-color] duration-150 focus:border-foreground disabled:opacity-40 rounded-none"
+                className="w-full h-11 px-3.5 bg-surface-subtle border border-border text-[14px] font-sans text-foreground placeholder:text-muted/50 outline-none transition-[border-color] duration-150 focus:border-foreground disabled:opacity-40 rounded-xl"
               />
             </div>
             
@@ -123,7 +123,7 @@ export function StudentProfile() {
                 Username
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-muted">@</span>
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-muted">@</span>
                 <input
                   id="edit-username"
                   type="text"
@@ -131,7 +131,7 @@ export function StudentProfile() {
                   value={editUsername}
                   onChange={e => setEditUsername(e.target.value)}
                   disabled={saving}
-                  className="w-full h-11 pl-8 pr-3 bg-surface-subtle border border-border text-[14px] font-sans text-foreground placeholder:text-muted/50 outline-none transition-[border-color] duration-150 focus:border-foreground disabled:opacity-40 rounded-none"
+                  className="w-full h-11 pl-8 pr-3.5 bg-surface-subtle border border-border text-[14px] font-sans text-foreground placeholder:text-muted/50 outline-none transition-[border-color] duration-150 focus:border-foreground disabled:opacity-40 rounded-xl"
                 />
               </div>
             </div>
@@ -141,7 +141,7 @@ export function StudentProfile() {
           <button 
             type="button" 
             onClick={() => setIsEditing(false)} 
-            className="hidden sm:flex flex-1 sm:flex-none min-h-[56px] shrink-0 px-6 border border-border bg-surface text-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-surface-hover transition-colors rounded-none order-2 sm:order-1 items-center justify-center"
+            className="hidden sm:flex flex-1 sm:flex-none h-12 shrink-0 px-5 border border-border bg-surface text-foreground font-mono text-[12px] uppercase tracking-widest hover:bg-surface-hover transition-colors rounded-xl order-2 sm:order-1 items-center justify-center active:scale-[0.98]"
           >
             Cancel
           </button>
@@ -149,7 +149,7 @@ export function StudentProfile() {
             type="button" 
             onClick={handleSave}
             disabled={saving || (!editName.trim() && !editUsername.trim())}
-            className="flex-1 sm:flex-auto min-h-[56px] shrink-0 py-3 px-6 bg-primary text-primary-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-primary-hover disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2"
+            className="flex-1 sm:flex-auto h-12 shrink-0 px-5 bg-primary text-primary-foreground font-mono text-[12px] uppercase tracking-widest hover:bg-primary-hover disabled:opacity-50 transition-all rounded-xl flex items-center justify-center gap-2 order-1 sm:order-2 active:scale-[0.98] shadow-sm"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Changes"}
           </button>

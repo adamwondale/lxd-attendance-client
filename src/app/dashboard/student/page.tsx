@@ -49,37 +49,35 @@ export default function StudentDashboardPage() {
     });
 
   return (
-    <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 space-y-10 sm:space-y-12 text-foreground bg-background min-h-full font-sans">
-      <div className="mx-auto space-y-12 text-foreground bg-background min-h-screen font-sans">
-      
+    <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 space-y-10 sm:space-y-12 text-foreground bg-background min-h-screen font-sans">
       {/* Stats Summary */}
       <section className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-          {[
-            {
-              label: 'Present',
-              value: summaryData?.myAttendanceSummary?.presentDays ?? 0,
-              colorClass: 'text-foreground',
-            },
-            {
-              label: 'Late',
-              value: summaryData?.myAttendanceSummary?.lateDays ?? 0,
-              colorClass: 'text-foreground',
-            },
-            {
-              label: 'Penalties',
-              value: `${summaryData?.myAttendanceSummary?.totalPenalty ?? 0} ETB`,
-              colorClass: 'text-danger',
-            },
-          ].map(({ label, value, colorClass }) => (
+        {[
+          {
+            label: 'Present',
+            value: summaryData?.myAttendanceSummary?.presentDays ?? 0,
+            colorClass: 'text-primary',
+          },
+          {
+            label: 'Late',
+            value: summaryData?.myAttendanceSummary?.lateDays ?? 0,
+            colorClass: 'text-foreground',
+          },
+          {
+            label: 'Penalties',
+            value: `${summaryData?.myAttendanceSummary?.totalPenalty ?? 0} ETB`,
+            colorClass: 'text-danger',
+          },
+        ].map(({ label, value, colorClass }) => (
           <div
             key={String(label)}
-            className="p-8 sm:p-10 flex flex-col items-center sm:items-start justify-center text-center sm:text-left border border-border bg-surface shadow-sm"
+            className="p-6 sm:p-8 flex flex-col items-center sm:items-start justify-center text-center sm:text-left rounded-2xl border border-border/80 bg-surface/85 backdrop-blur-xl shadow-sm hover:shadow-md transition-all"
           >
             <p className="text-[11px] sm:text-[12px] uppercase tracking-widest text-muted font-mono mb-2 sm:mb-4">
               {label}
             </p>
             {summaryLoading && !summaryData?.myAttendanceSummary ? (
-              <div className="h-16 w-32 bg-surface-subtle animate-pulse mt-1" />
+              <div className="h-16 w-32 bg-surface-subtle animate-pulse mt-1 rounded-xl" />
             ) : (
               <p
                 className={`text-4xl sm:text-6xl lg:text-7xl font-serif tracking-tight ${colorClass}`}
@@ -96,7 +94,7 @@ export default function StudentDashboardPage() {
         <div className="flex items-center justify-between">
           <h3 className="font-serif text-2xl text-foreground">Attendance Record</h3>
         </div>
-        <div className="bg-surface border border-border rounded-none shadow-sm">
+        <div className="bg-surface/85 backdrop-blur-xl border border-border/80 rounded-2xl shadow-sm overflow-hidden">
           {summaryLoading && !summaryData?.myAttendanceSummary ? (
             <div className="divide-y divide-border">
               {[1, 2, 3, 4, 5].map((i) => (
@@ -105,11 +103,11 @@ export default function StudentDashboardPage() {
                   className="p-4 sm:p-5 flex items-center justify-between gap-2 sm:gap-4"
                 >
                   <div className="space-y-2">
-                    <div className="h-5 w-24 bg-surface-subtle animate-pulse" />
-                    <div className="h-4 w-32 bg-surface-subtle animate-pulse" />
+                    <div className="h-5 w-24 bg-surface-subtle animate-pulse rounded-md" />
+                    <div className="h-4 w-32 bg-surface-subtle animate-pulse rounded-md" />
                   </div>
                   <div className="space-y-2 flex flex-col items-end">
-                    <div className="h-6 w-16 bg-surface-subtle animate-pulse" />
+                    <div className="h-6 w-16 bg-surface-subtle animate-pulse rounded-md" />
                   </div>
                 </div>
               ))}
@@ -121,7 +119,7 @@ export default function StudentDashboardPage() {
                 .map((log) => (
                   <div
                     key={log.id}
-                    className="p-4 sm:p-5 flex items-center justify-between gap-2 sm:gap-4 hover:bg-surface-hover transition-colors"
+                    className="p-4 sm:p-5 flex items-center justify-between gap-2 sm:gap-4 hover:bg-surface-hover/80 transition-colors"
                   >
                     <div>
                       <p className="font-medium text-[14px] sm:text-[15px] text-foreground">
@@ -162,7 +160,6 @@ export default function StudentDashboardPage() {
           )}
         </div>
       </section>
-    </div>
     </div>
   );
 }
