@@ -134,7 +134,8 @@ export default function ReportsPage() {
       page,
       limit: PAGE_SIZE,
     },
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: 'network-only',
+    notifyOnNetworkStatusChange: true,
   });
 
   useSubscription(ON_ATTENDANCE_UPDATED, { onData: () => refetch() });
@@ -142,13 +143,16 @@ export default function ReportsPage() {
   const cohorts = cohortData?.listCohorts || [];
   const selectedCohort = cohorts.find((c: any) => c.id === cohortId);
   const reportData = data?.attendanceReport;
-  const rows = reportData?.data || [];
+  const rawRows = reportData?.data || [];
   
-  const totalCount = reportData?.totalCount || 0;
+  const totalCount = reportData?.totalCount || rawRows.length;
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
-  const safePage = Math.min(page, totalPages);
+  const safePage = Math.min(Math.max(1, page), totalPages);
   
-  const pagedRows = rows; // Already paginated from the server
+  // Resilient pagination: handles both server-paginated and full-array server responses
+  const displayRows = rawRows.length > PAGE_SIZE 
+    ? rawRows.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE) 
+    : rawRows;
 
   useEffect(() => {
     if (page > totalPages && totalPages > 0) setPage(totalPages);
@@ -196,14 +200,14 @@ export default function ReportsPage() {
             `<tr><td>${escape(r.date)}</td><td>${escape(r.traineeName)}</td><td>${escape(r.cohortName)}</td><td>${escape(r.sessionName)}</td><td>${escape(r.status)}</td><td>${r.latenessMinutes || 0}</td><td>${r.penalty || 0}</td></tr>`,
         )
         .join('');
-      const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:Arial,sans-serif;color:#111}h1{font-size:22px;margin:0 0 6px}p{color:#666;margin:0 0 18px;font-size:12px}table{border-collapse:collapse;width:100%}th{background:#0A0A0A;color:#fff;font-weight:700;text-align:left;padding:10px;border:1px solid #ddd}td{padding:9px;border:1px solid #ddd}tr:nth-child(even){background:#f7f7f5}</style></head><body><h1>LXD Attendance Report</h1><p>${escape(startDate)} → ${escape(endDate)} · ${allRows.length} records</p><table><thead><tr><th>Date</th><th>Trainee</th><th>Cohort</th><th>Session</th><th>Status</th><th>Late Minutes</th><th>Penalty (ETB)</th></tr></thead><tbody>${body}</tbody></table></body></html>`;
+      const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:Arial,sans-serif;color:#111}h1{font-size:22px;margin:0 0 6px}p{color:#666;margin:0 0 18px;font-size:12px}table{border-collapse:collapse;width:100%}th{background:#0A0A0A;color:#fff;font-weight:700;text-align:left;padding:10px;border:1px solid #ddd}td{padding:9px;border:1px solid #ddd}tr:nth-child(even){background:#f7f7f5}</style></head><body><h1>Hulu Track Attendance Report</h1><p><strong>From:</strong> ${escape(startDate)} &nbsp;&nbsp;|&nbsp;&nbsp; <strong>To:</strong> ${escape(endDate)} · ${allRows.length} records</p><table><thead><tr><th>Date</th><th>Trainee</th><th>Cohort</th><th>Session</th><th>Status</th><th>Late Minutes</th><th>Penalty (ETB)</th></tr></thead><tbody>${body}</tbody></table></body></html>`;
       const blob = new Blob([html], {
         type: 'application/vnd.ms-excel;charset=utf-8',
       });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `attendance-report-${startDate}-to-${endDate}.xls`;
+      a.download = `attendance-report-from-${startDate}-to-${endDate}.xls`;
       a.click();
       URL.revokeObjectURL(url);
     } catch (e) {
@@ -240,28 +244,37 @@ export default function ReportsPage() {
         .join('');
         
       const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
-        <title>Attendance Report</title>
+        <title>Hulu Track Attendance Report</title>
         <style>
           @page { size: auto; margin: 15mm; }
           body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #0A0A0A; line-height: 1.4; font-size: 11px; }
           .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; border-bottom: 2px solid #0A0A0A; padding-bottom: 12px; }
-          .title { margin: 0; font-size: 24px; font-weight: 700; font-family: serif; }
-          .meta { margin: 0; color: #666; font-family: monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
-          table { border-collapse: collapse; width: 100%; text-align: left; }
-          th { padding: 8px 4px; border-bottom: 1px solid #0A0A0A; font-family: monospace; font-size: 9px; text-transform: uppercase; color: #666; letter-spacing: 0.5px; font-weight: normal; }
-          td { padding: 10px 4px; border-bottom: 1px solid #E5E5E4; }
-          .summary { display: flex; gap: 24px; margin-bottom: 24px; }
-          .summary-item { border: 1px solid #E5E5E4; padding: 12px 20px; flex: 1; }
-          .summary-label { font-family: monospace; font-size: 9px; text-transform: uppercase; color: #666; letter-spacing: 0.5px; margin-bottom: 4px; }
-          .summary-value { font-size: 20px; font-weight: 600; font-family: serif; margin: 0; }
+          .title { margin: 0; font-size: 24px; font-weight: 700; font-family: sans-serif; }
+          .range-box { display: inline-flex; gap: 14px; margin-top: 6px; font-size: 11px; color: #334155; }
+          .meta { margin: 0; color: #64748B; font-size: 10px; font-family: monospace; text-transform: uppercase; letter-spacing: 0.5px; }
+          table { border-collapse: collapse; width: 100%; text-align: left; margin-top: 10px; }
+          th { padding: 8px 6px; border-bottom: 2px solid #0A0A0A; font-family: monospace; font-size: 9px; text-transform: uppercase; color: #475569; letter-spacing: 0.5px; font-weight: 600; }
+          td { padding: 10px 6px; border-bottom: 1px solid #E2E8F0; }
+          .summary { display: flex; gap: 16px; margin-bottom: 24px; }
+          .summary-item { border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px 18px; flex: 1; }
+          .summary-label { font-family: monospace; font-size: 9px; text-transform: uppercase; color: #64748B; letter-spacing: 0.5px; margin-bottom: 4px; font-weight: 600; }
+          .summary-value { font-size: 20px; font-weight: 700; margin: 0; color: #0F172A; }
         </style>
         </head><body>
           <div class="header">
             <div>
-              <h1 class="title">Attendance Report</h1>
-              <p class="meta">${escape(startDate)} &rarr; ${escape(endDate)}</p>
+              <h1 class="title">Hulu Track &middot; Attendance Report</h1>
+              <div class="range-box">
+                <span><strong>From:</strong> ${escape(startDate)}</span>
+                <span>&bull;</span>
+                <span><strong>To:</strong> ${escape(endDate)}</span>
+                ${selectedCohort ? `<span>&bull;</span><span><strong>Cohort:</strong> ${escape(selectedCohort.name)}</span>` : ''}
+              </div>
             </div>
-            <div class="meta">${allRows.length} RECORDS GENERATED</div>
+            <div class="meta" style="text-align: right;">
+              <div><strong>${allRows.length}</strong> TOTAL RECORDS</div>
+              <div style="font-size: 9px; color: #94A3B8; margin-top: 4px;">Generated on ${new Date().toLocaleDateString()}</div>
+            </div>
           </div>
           <div class="summary">
             <div class="summary-item"><div class="summary-label">Present</div><div class="summary-value">${totals.present}</div></div>
@@ -305,10 +318,10 @@ export default function ReportsPage() {
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
         <div>
-          <h1 className="font-serif text-4xl mb-2 tracking-tight text-foreground">
+          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-foreground mb-2">
             Attendance Reports
           </h1>
-          <p className="font-mono text-[13px] text-muted uppercase">
+          <p className="text-sm text-muted-foreground">
             Daily, monthly and yearly views across cohorts and sessions
           </p>
         </div>
@@ -316,14 +329,14 @@ export default function ReportsPage() {
           <button
             onClick={printFullReport}
             disabled={printing}
-            className="h-11 px-5 border border-border bg-surface text-foreground hover:bg-surface-hover transition-all rounded-xl flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest disabled:opacity-50 active:scale-[0.98] shadow-sm"
+            className="h-11 px-5 border border-border bg-surface text-foreground hover:bg-surface-hover transition-all rounded-xl flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest disabled:opacity-50 active:scale-[0.98] shadow-sm cursor-pointer"
           >
             {printing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Printer className="w-4 h-4" />} Print
           </button>
           <button
             onClick={exportExcel}
             disabled={exporting}
-            className="h-11 px-5 bg-primary text-primary-foreground hover:bg-primary-hover transition-all rounded-xl flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest disabled:opacity-50 active:scale-[0.98] shadow-sm"
+            className="h-11 px-5 bg-primary text-primary-foreground hover:bg-primary-hover transition-all rounded-xl flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest disabled:opacity-50 active:scale-[0.98] shadow-sm cursor-pointer"
           >
             {exporting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <FileSpreadsheet className="w-4 h-4" />} Export Excel
           </button>
@@ -331,74 +344,113 @@ export default function ReportsPage() {
       </div>
 
       {/* Filters (Print Hidden) */}
-      <div className="print:hidden bg-surface/85 backdrop-blur-xl border border-border/80 p-6 rounded-2xl shadow-sm grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
-        <select
-          value={period}
-          onChange={(e) => setPreset(e.target.value)}
-          className="h-11 border border-border bg-surface-subtle text-foreground px-3.5 text-[14px] font-sans focus:border-primary outline-none transition-colors rounded-xl appearance-none cursor-pointer"
-        >
-          <option value="week">Last 7 days</option>
-          <option value="month">This month</option>
-          <option value="year">This year</option>
-          <option value="custom">Custom</option>
-        </select>
-        <input
-          type="date"
-          value={startDate}
-          onChange={(e) => {
-            setPeriod('custom');
-            setStartDate(e.target.value);
-          }}
-          className="h-11 border border-border bg-surface-subtle text-foreground px-3.5 text-[14px] font-sans focus:border-primary outline-none transition-colors rounded-xl"
-        />
-        <input
-          type="date"
-          value={endDate}
-          onChange={(e) => {
-            setPeriod('custom');
-            setEndDate(e.target.value);
-          }}
-          className="h-11 border border-border bg-surface-subtle text-foreground px-3.5 text-[14px] font-sans focus:border-primary outline-none transition-colors rounded-xl"
-        />
-        <select
-          value={cohortId}
-          onChange={(e) => {
-            setCohortId(e.target.value);
-            setSessionId('');
-          }}
-          className="h-11 border border-border bg-surface-subtle text-foreground px-3.5 text-[14px] font-sans focus:border-primary outline-none transition-colors rounded-xl appearance-none cursor-pointer"
-        >
-          <option value="">All Cohorts</option>
-          {cohorts.map((c: any) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-        <div className="flex gap-2">
+      <div className="print:hidden bg-surface/85 backdrop-blur-xl border border-border/80 p-6 rounded-2xl shadow-sm grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
+        <div>
+          <label className="text-xs font-semibold text-muted-foreground block mb-2">
+            Period
+          </label>
           <select
-            value={sessionId}
-            onChange={(e) => setSessionId(e.target.value)}
-            className="h-11 border border-border bg-surface-subtle text-foreground px-3.5 text-[14px] font-sans focus:border-primary outline-none transition-colors rounded-xl appearance-none cursor-pointer flex-1"
+            value={period}
+            onChange={(e) => setPreset(e.target.value)}
+            className="w-full h-11 border border-border bg-surface-subtle text-foreground px-3.5 text-[14px] font-sans focus:border-primary outline-none transition-colors rounded-xl appearance-none cursor-pointer"
           >
-            <option value="">All Sessions</option>
-            {(
-              selectedCohort?.sessions ||
-              cohorts.flatMap((c: any) => c.sessions || [])
-            ).map((s: any) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
+            <option value="week">Last 7 days</option>
+            <option value="month">This month</option>
+            <option value="year">This year</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="text-xs font-semibold text-muted-foreground block mb-2">
+            From
+          </label>
+          <input
+            type="date"
+            aria-label="From Date"
+            value={startDate}
+            onChange={(e) => {
+              setPeriod('custom');
+              setPage(1);
+              setStartDate(e.target.value);
+            }}
+            className="w-full h-11 border border-border bg-surface-subtle text-foreground px-3.5 text-[14px] font-sans focus:border-primary outline-none transition-colors rounded-xl cursor-pointer"
+          />
+        </div>
+
+        <div>
+          <label className="text-xs font-semibold text-muted-foreground block mb-2">
+            To
+          </label>
+          <input
+            type="date"
+            aria-label="To Date"
+            value={endDate}
+            onChange={(e) => {
+              setPeriod('custom');
+              setPage(1);
+              setEndDate(e.target.value);
+            }}
+            className="w-full h-11 border border-border bg-surface-subtle text-foreground px-3.5 text-[14px] font-sans focus:border-primary outline-none transition-colors rounded-xl cursor-pointer"
+          />
+        </div>
+
+        <div>
+          <label className="text-xs font-semibold text-muted-foreground block mb-2">
+            Cohort
+          </label>
+          <select
+            value={cohortId}
+            onChange={(e) => {
+              setCohortId(e.target.value);
+              setSessionId('');
+              setPage(1);
+            }}
+            className="w-full h-11 border border-border bg-surface-subtle text-foreground px-3.5 text-[14px] font-sans focus:border-primary outline-none transition-colors rounded-xl appearance-none cursor-pointer"
+          >
+            <option value="">All Cohorts</option>
+            {cohorts.map((c: any) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
               </option>
             ))}
           </select>
-          <button
-            onClick={() => refetch()}
-            className="h-11 w-11 border border-border bg-surface hover:bg-surface-hover text-muted hover:text-foreground transition-all rounded-xl flex items-center justify-center shrink-0 active:scale-95 shadow-sm"
-          >
-            <RefreshCw
-              className={`w-4 h-4 ${loading ? 'animate-spin text-primary' : ''}`}
-            />
-          </button>
+        </div>
+
+        <div>
+          <label className="text-xs font-semibold text-muted-foreground block mb-2">
+            Session
+          </label>
+          <div className="flex gap-2">
+            <select
+              value={sessionId}
+              onChange={(e) => {
+                setSessionId(e.target.value);
+                setPage(1);
+              }}
+              className="h-11 border border-border bg-surface-subtle text-foreground px-3.5 text-[14px] font-sans focus:border-primary outline-none transition-colors rounded-xl appearance-none cursor-pointer flex-1"
+            >
+              <option value="">All Sessions</option>
+              {(
+                selectedCohort?.sessions ||
+                cohorts.flatMap((c: any) => c.sessions || [])
+              ).map((s: any) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={() => refetch()}
+              title="Refresh report data"
+              aria-label="Refresh report data"
+              className="h-11 w-11 border border-border bg-surface hover:bg-surface-hover text-muted hover:text-foreground transition-all rounded-xl flex items-center justify-center shrink-0 active:scale-95 shadow-sm cursor-pointer"
+            >
+              <RefreshCw
+                className={`w-4 h-4 ${loading ? 'animate-spin text-primary' : ''}`}
+              />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -414,9 +466,9 @@ export default function ReportsPage() {
       <div className="bg-surface/85 backdrop-blur-xl border border-border/80 rounded-2xl overflow-hidden shadow-sm">
         <div className="p-6 border-b border-border/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="font-serif text-2xl text-foreground">Detailed Report</h2>
-            <p className="text-[13px] text-muted font-mono mt-1 uppercase tracking-widest">
-              {startDate} → {endDate}
+            <h2 className="text-2xl font-semibold tracking-tight text-foreground">Detailed Report</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              From: <span className="text-foreground font-semibold">{startDate}</span> &nbsp;&bull;&nbsp; To: <span className="text-foreground font-semibold">{endDate}</span>
             </p>
           </div>
           <div className="text-[11px] font-mono text-muted uppercase tracking-widest border border-border/80 px-4 py-2 bg-surface-subtle rounded-xl">
@@ -452,7 +504,7 @@ export default function ReportsPage() {
               </tr>
             </thead>
             <tbody>
-              {loading ? (
+              {loading && displayRows.length === 0 ? (
                 <tr>
                   <td
                     colSpan={7}
@@ -461,7 +513,7 @@ export default function ReportsPage() {
                     Generating report...
                   </td>
                 </tr>
-              ) : rows.length === 0 ? (
+              ) : displayRows.length === 0 ? (
                 <tr>
                   <td
                     colSpan={7}
@@ -471,21 +523,21 @@ export default function ReportsPage() {
                   </td>
                 </tr>
               ) : (
-                rows.map((r: any) => (
+                displayRows.map((r: any) => (
                   <tr
                     key={r.id}
-                    className="border-b border-[#E5E5E4] last:border-0 hover:bg-[#F9F9F8] transition-colors"
+                    className="border-b border-border/70 last:border-0 hover:bg-surface-hover/80 transition-colors"
                   >
-                    <td className="p-4 font-mono text-[13px] whitespace-nowrap">
+                    <td className="p-4 font-mono text-[13px] whitespace-nowrap text-foreground">
                       {r.date}
                     </td>
-                    <td className="p-4 font-medium text-[15px]">
+                    <td className="p-4 font-medium text-[15px] text-foreground">
                       {r.traineeName}
                     </td>
-                    <td className="p-4 text-muted text-[14px]">
+                    <td className="p-4 text-muted-foreground text-[14px]">
                       {r.cohortName}
                     </td>
-                    <td className="p-4 text-muted text-[14px]">
+                    <td className="p-4 text-muted-foreground text-[14px]">
                       {r.sessionName}
                     </td>
                     <td className="p-4">
@@ -503,20 +555,20 @@ export default function ReportsPage() {
                     </td>
                     <td className="p-4 text-[14px]">
                       {r.latenessMinutes ? (
-                        <span className="font-mono text-primary">
+                        <span className="font-mono text-primary font-medium">
                           {r.latenessMinutes} min
                         </span>
                       ) : (
-                        <span className="text-muted">--</span>
+                        <span className="text-muted-foreground">--</span>
                       )}
                     </td>
                     <td className="p-4 text-right">
                       {r.penalty ? (
-                        <span className="font-mono text-primary text-[14px]">
+                        <span className="font-mono text-danger font-medium text-[14px]">
                           {r.penalty} ETB
                         </span>
                       ) : (
-                        <span className="text-muted">--</span>
+                        <span className="text-muted-foreground">--</span>
                       )}
                     </td>
                   </tr>
@@ -528,24 +580,27 @@ export default function ReportsPage() {
       </div>
 
       {totalCount > PAGE_SIZE && (
-        <div className="print:hidden flex flex-col sm:flex-row items-center justify-between gap-3 rounded-2xl border border-border/80 bg-surface/85 backdrop-blur-xl px-4 py-3 shadow-sm">
-          <span className="font-mono text-[10px] uppercase tracking-widest text-muted">
-            Page {safePage} of {totalPages} · {totalCount} records
+        <div className="print:hidden flex flex-col sm:flex-row items-center justify-between gap-3 rounded-2xl border border-border/80 bg-surface/85 backdrop-blur-xl px-5 py-3.5 shadow-sm">
+          <span className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+            Page {safePage} of {totalPages} &nbsp;&bull;&nbsp; {totalCount} records
           </span>
           <div className="flex items-center gap-2">
             <button
               aria-label="Previous page"
-              disabled={safePage === 1}
+              disabled={safePage <= 1 || loading}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="h-9 w-9 rounded-xl border border-border bg-surface text-foreground hover:bg-surface-hover disabled:opacity-30 transition-all active:scale-95"
+              className="h-9 w-9 rounded-xl border border-border bg-surface text-foreground hover:bg-surface-hover disabled:opacity-30 transition-all active:scale-95 flex items-center justify-center cursor-pointer disabled:cursor-not-allowed shadow-xs"
             >
               <ChevronLeft className="w-4 h-4 mx-auto" />
             </button>
+            <span className="text-xs font-mono font-medium px-2 text-foreground">
+              {safePage} / {totalPages}
+            </span>
             <button
               aria-label="Next page"
-              disabled={safePage === totalPages}
+              disabled={safePage >= totalPages || loading}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="h-9 w-9 rounded-xl border border-border bg-surface text-foreground hover:bg-surface-hover disabled:opacity-30 transition-all active:scale-95"
+              className="h-9 w-9 rounded-xl border border-border bg-surface text-foreground hover:bg-surface-hover disabled:opacity-30 transition-all active:scale-95 flex items-center justify-center cursor-pointer disabled:cursor-not-allowed shadow-xs"
             >
               <ChevronRight className="w-4 h-4 mx-auto" />
             </button>
