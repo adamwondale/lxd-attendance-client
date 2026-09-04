@@ -41,7 +41,7 @@ export function LoginInput({
           onChange={(event) => onChange(event.target.value)}
           onBlur={onBlur}
           placeholder={placeholder}
-          className={`w-full h-11 px-3 ${isPassword ? "pr-10" : ""} bg-surface border text-[14px] font-sans text-foreground placeholder:text-muted/50 outline-none transition-[border-color] duration-[150ms] focus:border-foreground rounded-none ${error ? "border-danger" : "border-border"}`}
+          className={`w-full h-11 px-3 ${isPassword ? "pr-10" : ""} bg-surface border text-[14px] font-sans text-foreground placeholder:text-muted/50 outline-none transition-[border-color] duration-[150ms] focus:border-foreground rounded-xl ${error ? "border-danger" : "border-border"}`}
         />
         {isPassword && (
           <button

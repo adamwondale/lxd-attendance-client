@@ -132,7 +132,7 @@ export default function StudentCohortsPage() {
           <Users className="w-4 h-4" />
           Enrolled Cohorts
         </h3>
-        <div className="bg-surface border border-border rounded-none shadow-sm">
+        <div className="glass-surface border shadow-sm">
           {myCohortsLoading && !myCohortsData?.myCohorts ? (
             <div className="divide-y divide-border">
               {[1, 2].map((i) => (
@@ -185,7 +185,7 @@ export default function StudentCohortsPage() {
           <Search className="w-4 h-4" />
           Available to Join
         </h3>
-        <div className="bg-surface border border-border rounded-none shadow-sm">
+        <div className="glass-surface border shadow-sm">
           {availableCohortsLoading &&
           !availableCohortsData?.availableCohorts ? (
             <div className="divide-y divide-border">
@@ -214,7 +214,7 @@ export default function StudentCohortsPage() {
                   </div>
                   <button
                     onClick={() => setJoiningCohort(cohort)}
-                    className="h-8 px-4 rounded-none bg-primary text-primary-foreground text-[11px] font-mono uppercase tracking-widest hover:bg-primary-hover flex items-center gap-1 active:scale-95 transition-all"
+                    className="h-8 px-4 rounded-xl bg-primary text-primary-foreground text-[11px] font-mono uppercase tracking-widest hover:bg-primary-hover flex items-center gap-1 active:scale-95 transition-all"
                   >
                     Join
                   </button>
@@ -262,7 +262,7 @@ export default function StudentCohortsPage() {
                 value={selectedSessionId}
                 onChange={(e) => setSelectedSessionId(e.target.value)}
                 required
-                className="w-full h-11 px-3 border border-border bg-surface-subtle text-foreground text-[14px] focus:border-foreground outline-none transition-colors rounded-none"
+                className="w-full h-11 px-3 border border-border bg-surface-subtle text-foreground text-[14px] focus:border-foreground outline-none transition-colors rounded-xl"
               >
                 <option value="" disabled>
                   Choose a session...
@@ -286,7 +286,7 @@ export default function StudentCohortsPage() {
                 onChange={(e) => setPin(e.target.value)}
                 required
                 placeholder="Enter PIN"
-                className="w-full h-11 px-3 border border-border bg-surface-subtle text-foreground text-[14px] focus:border-foreground outline-none transition-colors rounded-none text-center tracking-widest"
+                className="w-full h-11 px-3 border border-border bg-surface-subtle text-foreground text-[14px] focus:border-foreground outline-none transition-colors rounded-xl text-center tracking-widest"
               />
             </div>
           </form>
@@ -295,7 +295,7 @@ export default function StudentCohortsPage() {
           <button
             type="button"
             onClick={() => setJoiningCohort(null)}
-            className="hidden sm:flex flex-1 sm:flex-none min-h-[56px] shrink-0 px-6 border border-border bg-surface text-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-surface-hover transition-colors rounded-none order-2 sm:order-1 items-center justify-center"
+            className="hidden sm:flex flex-1 sm:flex-none min-h-[56px] shrink-0 px-6 border border-border bg-surface text-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-surface-hover transition-colors rounded-xl order-2 sm:order-1 items-center justify-center"
           >
             Cancel
           </button>
@@ -303,7 +303,7 @@ export default function StudentCohortsPage() {
             type="submit"
             form="join-cohort-form"
             disabled={joining || !pin}
-            className="flex-1 sm:flex-auto min-h-[56px] shrink-0 py-3 px-6 bg-primary text-primary-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-primary-hover disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2"
+            className="flex-1 sm:flex-auto min-h-[56px] shrink-0 py-3 px-6 bg-primary text-primary-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-primary-hover disabled:opacity-50 transition-colors rounded-xl flex items-center justify-center gap-2 order-1 sm:order-2"
           >
             {joining ? (
               <Loader2 className="w-4 h-4 animate-spin" />

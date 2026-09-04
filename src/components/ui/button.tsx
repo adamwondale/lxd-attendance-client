@@ -14,7 +14,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         className={cn(
           "inline-flex items-center justify-center whitespace-nowrap text-[14px] font-medium leading-none ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 button",
-          "h-10 px-4 py-2 rounded-none transition-colors",
+          "h-10 px-4 py-2 rounded-xl transition-colors",
           
           // Variants
           variant === "default" && "bg-primary text-primary-foreground hover:bg-primary-hover",

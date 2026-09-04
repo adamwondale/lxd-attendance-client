@@ -23,7 +23,7 @@ export default function CompanyProfilePage() {
         <div className="h-10 w-64 bg-black/10 rounded mb-4"></div>
         <div className="h-4 w-96 bg-black/5 rounded"></div>
       </div>
-      <div className="bg-white rounded-3xl border border-black/5 shadow-sm p-5 md:p-8 space-y-5">
+      <div className="glass-surface bg-white rounded-3xl border border-black/5 shadow-sm p-5 md:p-8 space-y-5">
         <div className="h-14 w-14 rounded-2xl bg-black/10"></div>
         <div className="grid sm:grid-cols-2 gap-4">
           {[...Array(6)].map((_, i) => (
@@ -39,7 +39,7 @@ export default function CompanyProfilePage() {
   )
   return <div className="p-5 md:p-10 max-w-3xl mx-auto space-y-7">
     <div><p className="font-mono text-[10px] uppercase tracking-[.2em] text-black/40">Administration</p><h1 className="font-serif text-4xl md:text-5xl mt-2">Company Profile</h1><p className="text-sm text-black/50 mt-2">Keep the organization and administrator details used by the attendance system up to date.</p></div>
-    <form onSubmit={async e => { e.preventDefault(); try { await update({variables:form}); toast.success("Company profile updated") } catch(err:any) { toast.error(err.message || "Unable to update profile") } }} className="bg-white rounded-3xl border border-black/5 shadow-sm p-5 md:p-8 space-y-5">
+    <form onSubmit={async e => { e.preventDefault(); try { await update({variables:form}); toast.success("Company profile updated") } catch(err:any) { toast.error(err.message || "Unable to update profile") } }} className="glass-surface bg-white rounded-3xl border border-black/5 shadow-sm p-5 md:p-8 space-y-5">
       <div className="h-14 w-14 rounded-2xl bg-black text-white flex items-center justify-center"><Building2 className="w-6 h-6"/></div>
       <div className="grid sm:grid-cols-2 gap-4">
         <Field label="Company Name" value={form.companyName} onChange={v=>setForm({...form,companyName:v})}/><Field label="Company Email" type="email" value={form.companyEmail} onChange={v=>setForm({...form,companyEmail:v})}/><Field label="Company Phone" value={form.companyPhone} onChange={v=>setForm({...form,companyPhone:v})}/><Field label="Admin Name" value={form.adminName} onChange={v=>setForm({...form,adminName:v})}/><Field label="Username" value={form.username} onChange={v=>setForm({...form,username:v})}/><Field label="Timezone" value={data?.companyProfile?.timezone || "Africa/Addis_Ababa"} onChange={()=>{}} disabled/>

@@ -316,14 +316,14 @@ export default function ReportsPage() {
           <button
             onClick={printFullReport}
             disabled={printing}
-            className="h-11 px-5 border border-[#E5E5E4] bg-white text-[#0A0A0A] hover:bg-[#F9F9F8] transition-colors rounded-none flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest disabled:opacity-50"
+            className="h-11 px-5 border border-[#E5E5E4] bg-white text-[#0A0A0A] hover:bg-[#F9F9F8] transition-colors rounded-xl flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest disabled:opacity-50"
           >
             {printing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Printer className="w-4 h-4" />} Print
           </button>
           <button
             onClick={exportExcel}
             disabled={exporting}
-            className="h-11 px-5 bg-[#0A0A0A] text-white hover:bg-[#1C1C1C] transition-colors rounded-none flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest disabled:opacity-50"
+            className="h-11 px-5 bg-[#0A0A0A] text-white hover:bg-[#1C1C1C] transition-colors rounded-xl flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest disabled:opacity-50"
           >
             {exporting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <FileSpreadsheet className="w-4 h-4" />} Export Excel
           </button>
@@ -331,11 +331,11 @@ export default function ReportsPage() {
       </div>
 
       {/* Filters (Print Hidden) */}
-      <div className="print:hidden bg-[#FFFFFF] border border-[#E5E5E4] p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
+      <div className="print:hidden glass-surface border p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
         <select
           value={period}
           onChange={(e) => setPreset(e.target.value)}
-          className="h-11 border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none appearance-none cursor-pointer"
+          className="h-11 border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-xl appearance-none cursor-pointer"
         >
           <option value="week">Last 7 days</option>
           <option value="month">This month</option>
@@ -349,7 +349,7 @@ export default function ReportsPage() {
             setPeriod('custom');
             setStartDate(e.target.value);
           }}
-          className="h-11 border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+          className="h-11 border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-xl"
         />
         <input
           type="date"
@@ -358,7 +358,7 @@ export default function ReportsPage() {
             setPeriod('custom');
             setEndDate(e.target.value);
           }}
-          className="h-11 border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+          className="h-11 border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-xl"
         />
         <select
           value={cohortId}
@@ -366,7 +366,7 @@ export default function ReportsPage() {
             setCohortId(e.target.value);
             setSessionId('');
           }}
-          className="h-11 border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none appearance-none cursor-pointer"
+          className="h-11 border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-xl appearance-none cursor-pointer"
         >
           <option value="">All Cohorts</option>
           {cohorts.map((c: any) => (
@@ -379,7 +379,7 @@ export default function ReportsPage() {
           <select
             value={sessionId}
             onChange={(e) => setSessionId(e.target.value)}
-            className="h-11 border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none appearance-none cursor-pointer flex-1"
+            className="h-11 border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-xl appearance-none cursor-pointer flex-1"
           >
             <option value="">All Sessions</option>
             {(
@@ -393,7 +393,7 @@ export default function ReportsPage() {
           </select>
           <button
             onClick={() => refetch()}
-            className="h-11 w-11 border border-[#E5E5E4] bg-white hover:bg-[#F9F9F8] hover:text-[#0A0A0A] text-[#878786] transition-colors rounded-none flex items-center justify-center shrink-0"
+            className="h-11 w-11 border border-[#E5E5E4] bg-white hover:bg-[#F9F9F8] hover:text-[#0A0A0A] text-[#878786] transition-colors rounded-xl flex items-center justify-center shrink-0"
           >
             <RefreshCw
               className={`w-4 h-4 ${loading ? 'animate-spin text-[#0A0A0A]' : ''}`}
@@ -403,7 +403,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Stats Summary */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 border border-border bg-surface">
+      <div className="glass-surface grid grid-cols-2 lg:grid-cols-4 gap-0 border">
         <Stat label="Present" value={totals.present} />
         <Stat label="Late" value={totals.late} />
         <Stat label="Absent" value={totals.absent} />
@@ -411,7 +411,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Detailed Report Table */}
-      <div className="bg-[#FFFFFF] border border-[#E5E5E4] rounded-none overflow-hidden">
+      <div className="glass-surface border overflow-hidden">
         <div className="p-6 border-b border-[#E5E5E4] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 className="font-serif text-2xl">Detailed Report</h2>

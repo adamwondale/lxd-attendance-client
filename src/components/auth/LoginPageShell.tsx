@@ -44,7 +44,7 @@ export function LoginPageShell({
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4, ease: EASE, delay: 0.08 }}
-          className="bg-surface border border-border shadow-sm"
+          className="glass-surface glass-interactive border shadow-sm"
         >
           <div className="p-6">{children}</div>
           <div className="p-4 text-center font-sans text-[13px] text-muted border-t border-border bg-surface-subtle">

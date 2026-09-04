@@ -1,6 +1,8 @@
 "use client"
 
 import { useState } from "react"
+
+
 import { useQuery } from "@apollo/client/react/index.js"
 import { gql } from "@apollo/client/core/index.js"
 import { QrCode, Loader2 } from "lucide-react"
@@ -21,7 +23,7 @@ const LIST_PUBLIC_COHORTS = gql`
   }
 `
 
-export function ProjectorLauncher() {
+export function ProjectorLauncher({ collapsed = false }: { collapsed?: boolean }) {
   const [isOpen, setIsOpen] = useState(false)
   const [activeSession, setActiveSession] = useState<{ cohortId: string; sessionId: string; sessionName: string } | null>(null)
 
@@ -54,15 +56,15 @@ export function ProjectorLauncher() {
     <>
       <button
         onClick={openLauncher}
-        className="flex items-center space-x-3 w-full px-3 py-2 rounded-xl text-text hover:bg-black/5 font-medium text-[14px] transition-colors"
+        className={`glass-control flex items-center ${collapsed ? "justify-center" : "gap-3"} w-full px-3 py-2.5 rounded-xl text-muted hover:text-foreground hover:bg-surface-hover font-medium text-[14px] transition-all`}
       >
         <QrCode className="w-4 h-4" />
-        <span>Launch Projector</span>
+        <span className={collapsed ? "sr-only" : ""}>Launch Projector</span>
       </button>
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden">
+          <div className="glass-surface w-full max-w-md overflow-hidden">
             <div className="p-4 border-b border-black/10 flex justify-between items-center">
               <h2 className="font-serif text-xl">Launch Projector</h2>
               <button onClick={() => setIsOpen(false)} className="text-gray-500 hover:text-black font-bold px-2 py-1">&times;</button>
@@ -100,7 +102,7 @@ export function ProjectorLauncher() {
                         <button
                           key={session.id}
                           onClick={() => handleSessionClick(cohort.id, session.id, session.name)}
-                          className="block w-full text-left px-3 py-2 text-sm hover:bg-black/5 rounded"
+                          className="glass-control block w-full text-left px-3 py-2 text-sm hover:bg-surface-hover rounded-xl"
                         >
                           Launch {session.name}
                         </button>

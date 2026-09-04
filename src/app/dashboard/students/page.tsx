@@ -306,7 +306,7 @@ function SelectField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        className="w-full h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] text-[14px] font-sans text-[#0A0A0A] outline-none focus:border-[#0A0A0A] transition-[border-color] duration-150 rounded-none disabled:opacity-40 appearance-none"
+        className="w-full h-11 px-3 bg-[#F9F9F8] border border-[#E5E5E4] text-[14px] font-sans text-[#0A0A0A] outline-none focus:border-[#0A0A0A] transition-[border-color] duration-150 rounded-xl disabled:opacity-40 appearance-none"
       >
         {children}
       </select>
@@ -521,7 +521,7 @@ function CreateStudentModal({
         <button
           type="button"
           onClick={onClose}
-          className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-none order-2 sm:order-1"
+          className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-xl order-2 sm:order-1"
         >
           Cancel
         </button>
@@ -529,7 +529,7 @@ function CreateStudentModal({
           type="submit"
           form="create-student-form"
           disabled={loading}
-          className="flex-1 sm:flex-auto h-14 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2"
+          className="flex-1 sm:flex-auto h-14 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-xl flex items-center justify-center gap-2 order-1 sm:order-2"
         >
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -743,7 +743,7 @@ function EditStudentModal({
             <button
               type="submit"
               disabled={updating}
-              className="h-10 px-6 bg-[#0A0A0A] text-white font-mono text-[11px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-none flex items-center gap-2 w-full sm:w-auto justify-center"
+              className="h-10 px-6 bg-[#0A0A0A] text-white font-mono text-[11px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-xl flex items-center gap-2 w-full sm:w-auto justify-center"
             >
               {updating ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -761,7 +761,7 @@ function EditStudentModal({
             {!newEnrollment && (
               <button
                 onClick={() => setNewEnrollment(true)}
-                className="h-8 px-3 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[10px] uppercase tracking-widest hover:bg-[#F9F9F8] hover:border-[#0A0A0A] transition-colors rounded-none flex items-center gap-1.5"
+                className="h-8 px-3 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[10px] uppercase tracking-widest hover:bg-[#F9F9F8] hover:border-[#0A0A0A] transition-colors rounded-xl flex items-center gap-1.5"
               >
                 <Plus className="w-3 h-3" /> Add Enrollment
               </button>
@@ -810,7 +810,7 @@ function EditStudentModal({
                     <button
                       onClick={handleEnroll}
                       disabled={!selectedCohort || !selectedSession}
-                      className="h-10 px-5 bg-[#0A0A0A] text-white font-mono text-[11px] uppercase tracking-widest disabled:opacity-40 hover:bg-[#1C1C1C] transition-colors rounded-none w-full sm:w-auto justify-center"
+                      className="h-10 px-5 bg-[#0A0A0A] text-white font-mono text-[11px] uppercase tracking-widest disabled:opacity-40 hover:bg-[#1C1C1C] transition-colors rounded-xl w-full sm:w-auto justify-center"
                     >
                       Enroll
                     </button>
@@ -820,7 +820,7 @@ function EditStudentModal({
                         setSelectedCohort('');
                         setSelectedSession('');
                       }}
-                      className="hidden sm:block h-10 px-4 border border-[#E5E5E4] text-[#878786] font-mono text-[11px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-none w-full sm:w-auto justify-center"
+                      className="hidden sm:block h-10 px-4 border border-[#E5E5E4] text-[#878786] font-mono text-[11px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-xl w-full sm:w-auto justify-center"
                     >
                       Cancel
                     </button>
@@ -852,7 +852,7 @@ function EditStudentModal({
                       <div className="relative w-full md:w-36">
                         <select
                           disabled={updatingSessionFor === m.cohortId}
-                          className="h-9 px-2 w-full border border-[#E5E5E4] bg-[#F9F9F8] text-[13px] font-sans text-[#0A0A0A] outline-none focus:border-[#0A0A0A] transition-colors rounded-none disabled:opacity-60 appearance-none"
+                          className="h-9 px-2 w-full border border-[#E5E5E4] bg-[#F9F9F8] text-[13px] font-sans text-[#0A0A0A] outline-none focus:border-[#0A0A0A] transition-colors rounded-xl disabled:opacity-60 appearance-none"
                           value={m.sessionId}
                           onChange={(e) =>
                             handleUpdateSession(m.cohortId, e.target.value)
@@ -876,7 +876,7 @@ function EditStudentModal({
                       </div>
                       <button
                         onClick={() => handleRemoveCohort(m.cohortId)}
-                        className="h-9 px-3 border border-[#E54D2E]/30 text-[#E54D2E] font-mono text-[10px] uppercase tracking-widest hover:bg-[#E54D2E]/5 hover:border-[#E54D2E] transition-colors rounded-none flex-1 md:flex-none"
+                        className="h-9 px-3 border border-[#E54D2E]/30 text-[#E54D2E] font-mono text-[10px] uppercase tracking-widest hover:bg-[#E54D2E]/5 hover:border-[#E54D2E] transition-colors rounded-xl flex-1 md:flex-none"
                       >
                         Remove
                       </button>
@@ -956,7 +956,7 @@ export default function StudentsPage() {
         </div>
         <button
           onClick={() => setShowCreate(true)}
-          className="h-11 px-5 bg-[#0A0A0A] text-white font-mono text-[11px] uppercase tracking-widest hover:bg-[#1C1C1C] transition-colors rounded-none flex items-center gap-2 self-start sm:self-auto"
+          className="h-11 px-5 bg-[#0A0A0A] text-white font-mono text-[11px] uppercase tracking-widest hover:bg-[#1C1C1C] transition-colors rounded-xl flex items-center gap-2 self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" /> Register Student
         </button>
@@ -971,11 +971,11 @@ export default function StudentsPage() {
             setPage(1);
           }}
           placeholder="Search by name, email, username..."
-          className="w-full h-11 pl-10 pr-3 border border-[#E5E5E4] bg-[#FFFFFF] text-[14px] font-sans text-[#0A0A0A] placeholder:text-[#878786]/50 outline-none focus:border-[#0A0A0A] transition-colors rounded-none"
+          className="w-full h-11 pl-10 pr-3 border border-[#E5E5E4] bg-[#FFFFFF] text-[14px] font-sans text-[#0A0A0A] placeholder:text-[#878786]/50 outline-none focus:border-[#0A0A0A] transition-colors rounded-xl"
         />
       </div>
 
-      <div className="border border-[#E5E5E4] bg-white rounded-none overflow-hidden">
+      <div className="glass-surface border border-[#E5E5E4] bg-white rounded-xl overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="border-b border-border bg-background">
@@ -1046,7 +1046,7 @@ export default function StudentsPage() {
                       <div className="flex justify-end gap-2">
                         <button
                           onClick={() => setEditingStudent(student)}
-                          className="h-8 w-8 border border-[#E5E5E4] flex items-center justify-center text-[#0A0A0A] hover:bg-[#F9F9F8] hover:border-[#0A0A0A] transition-colors rounded-none"
+                          className="h-8 w-8 border border-[#E5E5E4] flex items-center justify-center text-[#0A0A0A] hover:bg-[#F9F9F8] hover:border-[#0A0A0A] transition-colors rounded-xl"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
@@ -1057,7 +1057,7 @@ export default function StudentsPage() {
                               name: student.name,
                             })
                           }
-                          className="h-8 w-8 border border-[#E54D2E]/20 flex items-center justify-center text-[#E54D2E] hover:bg-[#E54D2E]/5 hover:border-[#E54D2E]/50 transition-colors rounded-none"
+                          className="h-8 w-8 border border-[#E54D2E]/20 flex items-center justify-center text-[#E54D2E] hover:bg-[#E54D2E]/5 hover:border-[#E54D2E]/50 transition-colors rounded-xl"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -1077,7 +1077,7 @@ export default function StudentsPage() {
                           <button
                             disabled={page === 1}
                             onClick={() => setPage((p) => Math.max(1, p - 1))}
-                            className="h-8 w-8 border border-[#E5E5E4] flex items-center justify-center text-[#0A0A0A] hover:bg-[#F9F9F8] disabled:opacity-30 transition-colors rounded-none"
+                            className="h-8 w-8 border border-[#E5E5E4] flex items-center justify-center text-[#0A0A0A] hover:bg-[#F9F9F8] disabled:opacity-30 transition-colors rounded-xl"
                           >
                             <ChevronLeft className="w-4 h-4" />
                           </button>
@@ -1086,7 +1086,7 @@ export default function StudentsPage() {
                             onClick={() =>
                               setPage((p) => Math.min(totalPages, p + 1))
                             }
-                            className="h-8 w-8 border border-[#E5E5E4] flex items-center justify-center text-[#0A0A0A] hover:bg-[#F9F9F8] disabled:opacity-30 transition-colors rounded-none"
+                            className="h-8 w-8 border border-[#E5E5E4] flex items-center justify-center text-[#0A0A0A] hover:bg-[#F9F9F8] disabled:opacity-30 transition-colors rounded-xl"
                           >
                             <ChevronRight className="w-4 h-4" />
                           </button>

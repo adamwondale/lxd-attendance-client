@@ -337,7 +337,7 @@ export default function CohortDetailsPage({
                     onChange={(e: any) => setSessionName(e.target.value)}
                     placeholder="e.g. Day 1: React Basics"
                     required
-                    className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans placeholder:text-[#878786]/50 focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                    className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans placeholder:text-[#878786]/50 focus:border-[#0A0A0A] outline-none transition-colors rounded-xl"
                   />
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
@@ -354,7 +354,7 @@ export default function CohortDetailsPage({
                       value={startTime}
                       onChange={(e: any) => setStartTime(e.target.value)}
                       required
-                      className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                      className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-xl"
                     />
                   </div>
                   <div className="space-y-2">
@@ -370,7 +370,7 @@ export default function CohortDetailsPage({
                       value={lateTime}
                       onChange={(e: any) => setLateTime(e.target.value)}
                       required
-                      className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                      className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-xl"
                     />
                   </div>
                 </div>
@@ -390,7 +390,7 @@ export default function CohortDetailsPage({
                       setLatePenaltyAmount(parseInt(e.target.value))
                     }
                     required
-                    className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                    className="flex h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 py-2 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-xl"
                   />
                   <p className="text-[11px] text-muted font-mono uppercase tracking-wide">
                     Scans after the late time will automatically receive the
@@ -414,7 +414,7 @@ export default function CohortDetailsPage({
                         onChange={(e) =>
                           setEscalationThresholdMinutes(Number(e.target.value))
                         }
-                        className="h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                        className="h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-xl"
                       />
                     </label>
                     <label className="space-y-1">
@@ -428,7 +428,7 @@ export default function CohortDetailsPage({
                         onChange={(e) =>
                           setEscalationRate(Number(e.target.value))
                         }
-                        className="h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                        className="h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-xl"
                       />
                     </label>
                     <label className="space-y-1">
@@ -442,7 +442,7 @@ export default function CohortDetailsPage({
                         onChange={(e) =>
                           setEscalationIntervalMinutes(Number(e.target.value))
                         }
-                        className="h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-none"
+                        className="h-11 w-full border border-[#E5E5E4] bg-[#F9F9F8] px-3 text-[14px] font-sans focus:border-[#0A0A0A] outline-none transition-colors rounded-xl"
                       />
                     </label>
                   </div>
@@ -515,7 +515,7 @@ export default function CohortDetailsPage({
               <button
                 type="button"
                 onClick={closeDialog}
-                className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-none order-2 sm:order-1"
+                className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-[#E5E5E4] bg-white text-[#0A0A0A] font-mono text-[13px] uppercase tracking-widest hover:bg-[#F9F9F8] transition-colors rounded-xl order-2 sm:order-1"
               >
                 Cancel
               </button>
@@ -523,7 +523,7 @@ export default function CohortDetailsPage({
                 type="submit"
                 form="session-form"
                 disabled={creating || updating}
-                className="flex-1 sm:flex-auto h-14 px-6 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2"
+                className="flex-1 sm:flex-auto h-14 px-6 bg-[#0A0A0A] text-white font-mono text-[13px] uppercase tracking-widest hover:bg-[#1C1C1C] disabled:opacity-50 transition-colors rounded-xl flex items-center justify-center gap-2 order-1 sm:order-2"
               >
                 {creating || updating ? 'Saving...' : 'Save Session'}
               </button>
@@ -542,7 +542,7 @@ export default function CohortDetailsPage({
         loading={deleting}
       />
 
-      <div className="rounded-2xl border border-[#E5E5E4] bg-white overflow-hidden">
+      <div className="glass-surface rounded-2xl border border-[#E5E5E4] bg-white overflow-hidden">
         <Table>
           <TableHeader className="hidden sm:table-header-group">
             <TableRow>
@@ -638,7 +638,7 @@ export default function CohortDetailsPage({
         </Table>
       </div>
       {sessions.length > SESSION_PAGE_SIZE && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 rounded-2xl border border-[#E5E5E4] bg-white px-4 py-3">
+        <div className="glass-surface flex flex-col sm:flex-row items-center justify-between gap-3 rounded-2xl border border-[#E5E5E4] bg-white px-4 py-3">
           <span className="font-mono text-[10px] uppercase tracking-widest text-[#878786]">
             Page {safeSessionPage} of {sessionTotalPages} · {sessions.length}{' '}
             sessions

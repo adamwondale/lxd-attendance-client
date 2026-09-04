@@ -103,7 +103,7 @@ export default function AdminSignupPage() {
         </div>
 
         {/* Form Container */}
-        <div className="bg-surface border border-border p-8 rounded-none shadow-sm">
+        <div className="glass-surface bg-surface border border-border p-8 rounded-xl shadow-sm">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <AnimatePresence>
               {globalError && (
@@ -111,7 +111,7 @@ export default function AdminSignupPage() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="p-4 bg-danger-surface border border-danger/20 text-danger text-sm flex gap-3 items-start rounded-none"
+                  className="p-4 bg-danger-surface border border-danger/20 text-danger text-sm flex gap-3 items-start rounded-xl"
                 >
                   <AlertCircle className="w-5 h-5 shrink-0" />
                   <p className="mt-0.5">{globalError}</p>
@@ -126,7 +126,7 @@ export default function AdminSignupPage() {
                 </label>
                 <input
                   {...register('companyName')}
-                  className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 text-foreground ${
+                  className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-xl placeholder:text-muted/50 text-foreground ${
                     errors.companyName
                       ? 'border-danger focus:border-danger'
                       : 'border-border focus:border-foreground'
@@ -155,7 +155,7 @@ export default function AdminSignupPage() {
                       e.target.value = e.target.value.replace(/[^\d+]/g, '');
                     },
                   })}
-                  className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 text-foreground ${
+                  className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-xl placeholder:text-muted/50 text-foreground ${
                     errors.companyPhone
                       ? 'border-danger focus:border-danger'
                       : 'border-border focus:border-foreground'
@@ -179,7 +179,7 @@ export default function AdminSignupPage() {
                 <input
                   type="email"
                   {...register('companyEmail')}
-                  className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 text-foreground ${
+                  className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-xl placeholder:text-muted/50 text-foreground ${
                     errors.companyEmail
                       ? 'border-danger focus:border-danger'
                       : 'border-border focus:border-foreground'
@@ -203,7 +203,7 @@ export default function AdminSignupPage() {
                   </label>
                   <input
                     {...register('adminName')}
-                    className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 text-foreground ${
+                    className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-xl placeholder:text-muted/50 text-foreground ${
                       errors.adminName
                         ? 'border-danger focus:border-danger'
                         : 'border-border focus:border-foreground'
@@ -226,7 +226,7 @@ export default function AdminSignupPage() {
                   </label>
                   <input
                     {...register('username')}
-                    className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 text-foreground ${
+                    className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-xl placeholder:text-muted/50 text-foreground ${
                       errors.username
                         ? 'border-danger focus:border-danger'
                         : 'border-border focus:border-foreground'
@@ -251,7 +251,7 @@ export default function AdminSignupPage() {
                 <input
                   type="password"
                   {...register('password')}
-                  className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 text-foreground ${
+                  className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-xl placeholder:text-muted/50 text-foreground ${
                     errors.password
                       ? 'border-danger focus:border-danger'
                       : 'border-border focus:border-foreground'
@@ -275,7 +275,7 @@ export default function AdminSignupPage() {
                 <input
                   type="password"
                   {...register('confirmPassword')}
-                  className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-none placeholder:text-muted/50 text-foreground ${
+                  className={`w-full h-[44px] px-3 bg-surface-subtle border text-sm outline-none transition-colors rounded-xl placeholder:text-muted/50 text-foreground ${
                     errors.confirmPassword
                       ? 'border-danger focus:border-danger'
                       : 'border-border focus:border-foreground'
@@ -296,7 +296,7 @@ export default function AdminSignupPage() {
             <button
               type="submit"
               disabled={isSubmitting || (isDirty && !isValid)}
-              className="w-full h-[48px] bg-primary text-primary-foreground rounded-none hover:bg-primary-hover transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium mt-8 tracking-widest"
+              className="w-full h-[48px] bg-primary text-primary-foreground rounded-xl hover:bg-primary-hover transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium mt-8 tracking-widest"
             >
               {isSubmitting ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

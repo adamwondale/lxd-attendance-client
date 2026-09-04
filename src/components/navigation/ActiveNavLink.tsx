@@ -19,7 +19,7 @@ export function ActiveNavLink({ href, className, activeClassName, inactiveClassN
 
   const classes = [
     typeof className === "string" ? className : "",
-    "relative transition-colors",
+    "relative transition-colors glass-control",
     isActive ? (activeClassName || "bg-surface-subtle text-foreground font-medium") : (inactiveClassName || "text-muted hover:text-foreground hover:bg-surface-hover"),
   ].filter(Boolean).join(" ")
 

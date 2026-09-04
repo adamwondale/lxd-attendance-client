@@ -212,7 +212,7 @@ export default function CohortsPage() {
         </div>
         <Button
           onClick={openCreateDialog}
-          className="bg-primary text-primary-foreground hover:bg-primary-hover font-mono text-[11px] uppercase tracking-widest h-11 px-5 rounded-none flex items-center gap-2"
+          className="bg-primary text-primary-foreground hover:bg-primary-hover font-mono text-[11px] uppercase tracking-widest h-11 px-5 rounded-xl flex items-center gap-2"
         >
           <Plus className="w-4 h-4" /> New Cohort
         </Button>
@@ -245,7 +245,7 @@ export default function CohortsPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
-                className="h-11 px-3 bg-surface-subtle border border-border focus:border-foreground outline-none font-sans text-[14px] text-foreground transition-colors rounded-none"
+                className="h-11 px-3 bg-surface-subtle border border-border focus:border-foreground outline-none font-sans text-[14px] text-foreground transition-colors rounded-xl"
                 placeholder="e.g. Summer 2026 Batch"
               />
             </div>
@@ -261,7 +261,7 @@ export default function CohortsPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, pin: e.target.value })
                 }
-                className="h-11 px-3 bg-surface-subtle border border-border focus:border-foreground outline-none font-sans text-[14px] text-foreground transition-colors rounded-none mb-3"
+                className="h-11 px-3 bg-surface-subtle border border-border focus:border-foreground outline-none font-sans text-[14px] text-foreground transition-colors rounded-xl mb-3"
                 placeholder="e.g. LXD-26"
               />
 
@@ -278,7 +278,7 @@ export default function CohortsPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, startDate: e.target.value })
                 }
-                className="h-11 px-3 bg-surface-subtle border border-border focus:border-foreground outline-none font-sans text-[14px] text-foreground transition-colors rounded-none"
+                className="h-11 px-3 bg-surface-subtle border border-border focus:border-foreground outline-none font-sans text-[14px] text-foreground transition-colors rounded-xl"
               />
             </div>
 
@@ -293,7 +293,7 @@ export default function CohortsPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, endDate: e.target.value })
                 }
-                className="h-11 px-3 bg-surface-subtle border border-border focus:border-foreground outline-none font-sans text-[14px] text-foreground transition-colors rounded-none"
+                className="h-11 px-3 bg-surface-subtle border border-border focus:border-foreground outline-none font-sans text-[14px] text-foreground transition-colors rounded-xl"
               />
             </div>
 
@@ -306,7 +306,7 @@ export default function CohortsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, isActive: e.target.checked })
                   }
-                  className="w-4 h-4 accent-primary rounded-none"
+                  className="w-4 h-4 accent-primary rounded-xl"
                 />
                 <label
                   htmlFor="isActive"
@@ -322,7 +322,7 @@ export default function CohortsPage() {
           <button
             type="button"
             onClick={() => setIsDialogOpen(false)}
-            className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-border bg-surface text-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-surface-hover transition-colors rounded-none order-2 sm:order-1"
+            className="hidden sm:block flex-1 sm:flex-none h-14 px-6 border border-border bg-surface text-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-surface-hover transition-colors rounded-xl order-2 sm:order-1"
           >
             Cancel
           </button>
@@ -330,7 +330,7 @@ export default function CohortsPage() {
             type="submit"
             form="cohort-form"
             disabled={creating || updating}
-            className="flex-1 sm:flex-auto h-14 px-6 bg-primary text-primary-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-primary-hover disabled:opacity-50 transition-colors rounded-none flex items-center justify-center gap-2 order-1 sm:order-2"
+            className="flex-1 sm:flex-auto h-14 px-6 bg-primary text-primary-foreground font-mono text-[13px] uppercase tracking-widest hover:bg-primary-hover disabled:opacity-50 transition-colors rounded-xl flex items-center justify-center gap-2 order-1 sm:order-2"
           >
             {creating || updating
               ? 'Saving...'
@@ -360,14 +360,14 @@ export default function CohortsPage() {
                 className="animate-pulse relative overflow-hidden h-full border-border bg-surface"
               >
                 <CardHeader>
-                  <div className="h-8 w-48 bg-surface-subtle rounded-none mb-2"></div>
-                  <div className="h-3 w-20 bg-surface-subtle rounded-none"></div>
+                  <div className="h-8 w-48 bg-surface-subtle rounded-xl mb-2"></div>
+                  <div className="h-3 w-20 bg-surface-subtle rounded-xl"></div>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-4 w-40 bg-surface-subtle rounded-none mt-2 mb-6"></div>
+                  <div className="h-4 w-40 bg-surface-subtle rounded-xl mt-2 mb-6"></div>
                   <div className="flex gap-2">
-                    <div className="flex-1 h-8 bg-surface-subtle rounded-none"></div>
-                    <div className="flex-1 h-8 bg-surface-subtle rounded-none"></div>
+                    <div className="flex-1 h-8 bg-surface-subtle rounded-xl"></div>
+                    <div className="flex-1 h-8 bg-surface-subtle rounded-xl"></div>
                   </div>
                 </CardContent>
               </Card>

@@ -160,10 +160,10 @@ export default function AttendancePage() {
           </p>
         </div>
         <div className="print:hidden flex flex-wrap gap-2">
-          <Button onClick={exportToExcel} variant="outline" className="flex items-center gap-2 rounded-none">
+          <Button onClick={exportToExcel} variant="outline" className="flex items-center gap-2 rounded-xl">
             <FileSpreadsheet className="w-4 h-4" /> Export Excel
           </Button>
-          <Button onClick={exportToPDF} variant="outline" className="flex items-center gap-2 rounded-none">
+          <Button onClick={exportToPDF} variant="outline" className="flex items-center gap-2 rounded-xl">
             <FileText className="w-4 h-4" /> Export PDF
           </Button>
         </div>
@@ -184,18 +184,18 @@ export default function AttendancePage() {
               {[...Array(5)].map((_, i) => (
                 <TableRow key={i} className="animate-pulse">
                   <TableCell>
-                    <div className="h-4 w-32 bg-surface-subtle rounded-none mb-2"></div>
-                    <div className="h-3 w-48 bg-surface-subtle rounded-none"></div>
+                    <div className="h-4 w-32 bg-surface-subtle rounded-xl mb-2"></div>
+                    <div className="h-3 w-48 bg-surface-subtle rounded-xl"></div>
                   </TableCell>
                   <TableCell>
-                    <div className="h-4 w-24 bg-surface-subtle rounded-none mb-2"></div>
-                    <div className="h-3 w-16 bg-surface-subtle rounded-none"></div>
+                    <div className="h-4 w-24 bg-surface-subtle rounded-xl mb-2"></div>
+                    <div className="h-3 w-16 bg-surface-subtle rounded-xl"></div>
                   </TableCell>
                   <TableCell>
-                    <div className="h-5 w-20 bg-surface-subtle rounded-none"></div>
+                    <div className="h-5 w-20 bg-surface-subtle rounded-xl"></div>
                   </TableCell>
                   <TableCell className="text-right flex justify-end">
-                    <div className="h-8 w-8 bg-surface-subtle rounded-none"></div>
+                    <div className="h-8 w-8 bg-surface-subtle rounded-xl"></div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -257,7 +257,7 @@ export default function AttendancePage() {
                       </Button>
                     )}
                     {log.penalty && log.penalty.status === 'WAIVED' && (
-                      <span className="flex items-center gap-1 text-[12px] font-mono text-success bg-success-surface px-2 py-1 rounded-none border border-success/20">
+                      <span className="flex items-center gap-1 text-[12px] font-mono text-success bg-success-surface px-2 py-1 rounded-xl border border-success/20">
                         <Check className="w-3 h-3" /> Waived
                       </span>
                     )}
@@ -279,11 +279,11 @@ export default function AttendancePage() {
       </Table>
 
       {attendanceLogs.length > PAGE_SIZE && (
-        <div className="print:hidden flex flex-col sm:flex-row items-center justify-between gap-3 rounded-none border border-border bg-surface px-4 py-3">
+        <div className="print:hidden glass-surface flex flex-col sm:flex-row items-center justify-between gap-3 border px-4 py-3">
           <span className="font-mono text-[10px] uppercase tracking-widest text-muted">Page {safePage} of {totalPages} · {attendanceLogs.length} records</span>
           <div className="flex items-center gap-2">
-            <button aria-label="Previous page" disabled={safePage === 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className="h-9 w-9 rounded-none border border-border bg-surface text-foreground hover:bg-surface-hover disabled:opacity-30 transition-all"><ChevronLeft className="w-4 h-4 mx-auto" /></button>
-            <button aria-label="Next page" disabled={safePage === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))} className="h-9 w-9 rounded-none border border-border bg-surface text-foreground hover:bg-surface-hover disabled:opacity-30 transition-all"><ChevronRight className="w-4 h-4 mx-auto" /></button>
+            <button aria-label="Previous page" disabled={safePage === 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className="h-9 w-9 rounded-xl border border-border bg-surface text-foreground hover:bg-surface-hover disabled:opacity-30 transition-all"><ChevronLeft className="w-4 h-4 mx-auto" /></button>
+            <button aria-label="Next page" disabled={safePage === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))} className="h-9 w-9 rounded-xl border border-border bg-surface text-foreground hover:bg-surface-hover disabled:opacity-30 transition-all"><ChevronRight className="w-4 h-4 mx-auto" /></button>
           </div>
         </div>
       )}

@@ -73,7 +73,7 @@ export default function StudentDashboardPage() {
           ].map(({ label, value, colorClass }) => (
           <div
             key={String(label)}
-            className="p-8 sm:p-10 flex flex-col items-center sm:items-start justify-center text-center sm:text-left border border-border bg-surface shadow-sm"
+            className="glass-surface glass-interactive p-8 sm:p-10 flex flex-col items-center sm:items-start justify-center text-center sm:text-left border border-border shadow-sm"
           >
             <p className="text-[11px] sm:text-[12px] uppercase tracking-widest text-muted font-mono mb-2 sm:mb-4">
               {label}
@@ -96,7 +96,7 @@ export default function StudentDashboardPage() {
         <div className="flex items-center justify-between">
           <h3 className="font-serif text-2xl text-foreground">Attendance Record</h3>
         </div>
-        <div className="bg-surface border border-border rounded-none shadow-sm">
+        <div className="glass-surface glass-interactive border shadow-sm">
           {summaryLoading && !summaryData?.myAttendanceSummary ? (
             <div className="divide-y divide-border">
               {[1, 2, 3, 4, 5].map((i) => (
