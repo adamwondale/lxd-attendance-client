@@ -125,7 +125,7 @@ export default function ReportsPage() {
   const { data: cohortData } = useQuery<ReportCohortsData>(COHORTS, {
     fetchPolicy: 'cache-first',
   });
-  const { data, loading, refetch } = useQuery<ReportData>(REPORT, {
+  const { data, previousData, loading, error, refetch } = useQuery<ReportData>(REPORT, {
     variables: {
       startDate,
       endDate,
@@ -134,7 +134,7 @@ export default function ReportsPage() {
       page,
       limit: PAGE_SIZE,
     },
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'cache-and-network',
     notifyOnNetworkStatusChange: true,
   });
 
@@ -142,10 +142,11 @@ export default function ReportsPage() {
 
   const cohorts = cohortData?.listCohorts || [];
   const selectedCohort = cohorts.find((c: any) => c.id === cohortId);
-  const reportData = data?.attendanceReport;
+  const activeData = data ?? previousData;
+  const reportData = activeData?.attendanceReport;
   const rawRows = reportData?.data || [];
   
-  const totalCount = reportData?.totalCount || rawRows.length;
+  const totalCount = reportData?.totalCount ?? rawRows.length;
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const safePage = Math.min(Math.max(1, page), totalPages);
   
@@ -155,8 +156,11 @@ export default function ReportsPage() {
     : rawRows;
 
   useEffect(() => {
-    if (page > totalPages && totalPages > 0) setPage(totalPages);
-  }, [page, totalPages]);
+    // Only clamp if not loading, data exists, and page strictly exceeds totalPages
+    if (!loading && reportData && page > totalPages && totalPages > 0) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages, loading, reportData]);
 
   const totals = reportData?.summary || { present: 0, late: 0, absent: 0, penalty: 0 };
 
@@ -504,13 +508,29 @@ export default function ReportsPage() {
               </tr>
             </thead>
             <tbody>
-              {loading && displayRows.length === 0 ? (
+              {loading && !activeData ? (
                 <tr>
                   <td
                     colSpan={7}
                     className="p-12 text-center text-muted font-mono text-[11px] uppercase tracking-widest animate-pulse"
                   >
                     Generating report...
+                  </td>
+                </tr>
+              ) : error ? (
+                <tr>
+                  <td
+                    colSpan={7}
+                    className="p-12 text-center text-danger font-mono text-xs"
+                  >
+                    Failed to load report: {error.message}
+                    <button
+                      type="button"
+                      onClick={() => refetch()}
+                      className="mt-3 block mx-auto px-3 py-1.5 rounded-lg border border-border bg-surface text-foreground font-sans text-xs hover:bg-surface-hover cursor-pointer"
+                    >
+                      Retry
+                    </button>
                   </td>
                 </tr>
               ) : displayRows.length === 0 ? (
@@ -526,7 +546,9 @@ export default function ReportsPage() {
                 displayRows.map((r: any) => (
                   <tr
                     key={r.id}
-                    className="border-b border-border/70 last:border-0 hover:bg-surface-hover/80 transition-colors"
+                    className={`border-b border-border/70 last:border-0 hover:bg-surface-hover/80 transition-colors ${
+                      loading ? 'opacity-60' : 'opacity-100'
+                    }`}
                   >
                     <td className="p-4 font-mono text-[13px] whitespace-nowrap text-foreground">
                       {r.date}

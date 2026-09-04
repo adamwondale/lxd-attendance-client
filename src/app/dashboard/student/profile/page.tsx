@@ -5,6 +5,7 @@ import { gql } from "@apollo/client/core/index.js"
 import QRCode from "react-qr-code"
 import { StudentProfile } from "@/components/StudentProfile"
 import { LogOut, ChevronRight, Download, Loader2 } from "lucide-react"
+import { useSignOutModal } from "@/components/navigation/SignOutContext"
 
 const MY_QR_QUERY = gql`
   query MyQrBadge {
@@ -13,6 +14,7 @@ const MY_QR_QUERY = gql`
 `
 
 export default function StudentProfilePage() {
+  const { openSignOut } = useSignOutModal()
   const { data: qrData, loading: qrLoading } = useQuery<{ myQrBadge: string }>(MY_QR_QUERY, { fetchPolicy: "cache-first" })
 
   const handleDownload = () => {
@@ -100,7 +102,11 @@ export default function StudentProfilePage() {
         <div className="bg-surface/85 backdrop-blur-xl border border-border/80 rounded-2xl overflow-hidden shadow-sm">
           <ul className="divide-y divide-border">
             <li>
-              <a href="/api/auth/signout" className="flex items-center justify-between p-4 hover:bg-surface-hover/80 transition-colors group">
+              <button
+                type="button"
+                onClick={openSignOut}
+                className="w-full text-left flex items-center justify-between p-4 hover:bg-surface-hover/80 transition-colors group cursor-pointer"
+              >
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-xl bg-danger-surface flex items-center justify-center border border-danger/20">
                     <LogOut className="w-4 h-4 text-danger" />
@@ -108,7 +114,7 @@ export default function StudentProfilePage() {
                   <span className="font-medium text-[15px] text-danger">Sign Out</span>
                 </div>
                 <ChevronRight className="w-4 h-4 text-muted group-hover:text-foreground transition-colors" />
-              </a>
+              </button>
             </li>
           </ul>
         </div>
