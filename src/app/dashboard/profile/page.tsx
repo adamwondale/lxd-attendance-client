@@ -40,17 +40,17 @@ export default function CompanyProfilePage() {
   )
 
   return (
-    <div className="p-5 md:p-10 max-w-3xl mx-auto space-y-7">
+    <div className="px-4 py-6 sm:p-8 md:p-10 max-w-3xl mx-auto space-y-6 sm:space-y-7 text-foreground">
       <div>
         <span className="text-[11px] font-mono uppercase tracking-[.2em] text-primary font-medium">Administration</span>
         <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-foreground mt-2">Company Profile</h1>
         <p className="text-sm text-muted-foreground mt-2">Keep the organization and administrator details used by the attendance system up to date.</p>
       </div>
-      <form onSubmit={async e => { e.preventDefault(); try { await update({variables:form}); toast.success("Company profile updated") } catch(err:any) { toast.error(err.message || "Unable to update profile") } }} className="bg-surface/85 backdrop-blur-xl rounded-3xl border border-border/80 shadow-sm p-5 md:p-8 space-y-6">
+      <form onSubmit={async e => { e.preventDefault(); try { await update({variables:form}); toast.success("Company profile updated") } catch(err:any) { toast.error(err.message || "Unable to update profile") } }} className="bg-surface/85 backdrop-blur-xl rounded-3xl border border-border/80 shadow-sm p-4 sm:p-6 md:p-8 space-y-6">
         <div className="h-14 w-14 rounded-2xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shadow-xs">
           <Building2 className="w-6 h-6"/>
         </div>
-        <div className="grid sm:grid-cols-2 gap-5">
+        <div className="grid sm:grid-cols-2 gap-4 sm:gap-5">
           <Field label="Company Name" value={form.companyName} onChange={v=>setForm({...form,companyName:v})}/>
           <Field label="Company Email" type="email" value={form.companyEmail} onChange={v=>setForm({...form,companyEmail:v})}/>
           <Field label="Company Phone" value={form.companyPhone} onChange={v=>setForm({...form,companyPhone:v})}/>
@@ -60,7 +60,7 @@ export default function CompanyProfilePage() {
         </div>
         <button 
           disabled={saving} 
-          className="h-12 px-6 rounded-xl bg-primary text-primary-foreground font-medium flex items-center gap-2 hover:bg-primary-hover shadow-sm active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
+          className="w-full sm:w-auto justify-center h-12 px-6 rounded-xl bg-primary text-primary-foreground font-medium flex items-center gap-2 hover:bg-primary-hover shadow-sm active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin"/> : <Save className="w-4 h-4"/>} 
           Save changes

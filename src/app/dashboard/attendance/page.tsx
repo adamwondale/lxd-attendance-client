@@ -152,25 +152,26 @@ export default function AttendancePage() {
 
   return (
     <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 space-y-8 bg-background text-foreground">
-      <div className="flex justify-between items-end">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
         <div>
-          <h1 className="font-serif text-4xl mb-2 text-foreground">Attendance</h1>
-          <p className="font-mono text-[13px] text-muted uppercase">
+          <h1 className="font-serif text-3xl sm:text-4xl mb-2 text-foreground">Attendance</h1>
+          <p className="font-mono text-[12px] sm:text-[13px] text-muted uppercase tracking-wider">
             All Cohort Scans
           </p>
         </div>
-        <div className="print:hidden flex flex-wrap gap-2">
-          <Button onClick={exportToExcel} variant="outline" className="flex items-center gap-2 rounded-xl active:scale-[0.98]">
+        <div className="print:hidden flex flex-wrap sm:flex-nowrap gap-2 w-full sm:w-auto">
+          <Button onClick={exportToExcel} variant="outline" className="flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-xl active:scale-[0.98]">
             <FileSpreadsheet className="w-4 h-4" /> Export Excel
           </Button>
-          <Button onClick={exportToPDF} variant="outline" className="flex items-center gap-2 rounded-xl active:scale-[0.98]">
+          <Button onClick={exportToPDF} variant="outline" className="flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-xl active:scale-[0.98]">
             <FileText className="w-4 h-4" /> Export PDF
           </Button>
         </div>
       </div>
 
       <div className="border border-border/80 bg-surface/85 backdrop-blur-xl rounded-2xl overflow-hidden shadow-sm">
-        <Table>
+        <div className="overflow-x-auto">
+          <Table>
           <TableHeader>
             <TableRow className="border-b border-border/80 bg-surface-subtle/50">
               <TableHead className="font-mono text-[10px] uppercase tracking-widest text-muted h-11">Student</TableHead>
@@ -277,7 +278,8 @@ export default function AttendancePage() {
               </TableRow>
             )}
           </TableBody>
-        </Table>
+          </Table>
+        </div>
       </div>
 
       {attendanceLogs.length > PAGE_SIZE && (

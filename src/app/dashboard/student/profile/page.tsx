@@ -46,15 +46,15 @@ export default function StudentProfilePage() {
   }
 
   return (
-    <div className="p-6 max-w-2xl mx-auto space-y-8 bg-background min-h-[calc(100vh-68px)] font-sans text-foreground">
+    <div className="px-4 py-6 sm:p-8 max-w-2xl mx-auto space-y-6 sm:space-y-8 bg-background min-h-[calc(100vh-68px)] font-sans text-foreground">
       
       {/* Header Area */}
       <div>
-        <h2 className="font-serif text-3xl mb-1 text-foreground">Your Profile</h2>
+        <h2 className="font-serif text-2xl sm:text-3xl mb-1 text-foreground">Your Profile</h2>
         <p className="text-[13px] text-muted">Manage your account and view your badge.</p>
       </div>
 
-      <section className="bg-surface/85 backdrop-blur-xl border border-border/80 rounded-2xl p-6 shadow-sm">
+      <section className="bg-surface/85 backdrop-blur-xl border border-border/80 rounded-2xl p-4 sm:p-6 shadow-sm">
         <StudentProfile />
       </section>
 
@@ -62,7 +62,7 @@ export default function StudentProfilePage() {
       <section className="space-y-4">
         <h3 className="font-serif text-2xl text-foreground">Identity Badge</h3>
         
-        <div className="border border-border/80 bg-surface/85 backdrop-blur-xl p-6 sm:p-10 flex flex-col items-center justify-center gap-6 sm:gap-8 rounded-2xl shadow-sm text-center">
+        <div className="border border-border/80 bg-surface/85 backdrop-blur-xl p-4 sm:p-8 md:p-10 flex flex-col items-center justify-center gap-6 sm:gap-8 rounded-2xl shadow-sm text-center">
           <p className="font-sans text-[14px] sm:text-[15px] text-muted leading-relaxed max-w-sm">
             Present this badge to the coordinator to log your attendance.
           </p>

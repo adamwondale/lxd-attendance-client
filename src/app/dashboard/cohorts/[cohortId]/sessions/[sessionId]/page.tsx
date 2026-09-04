@@ -88,74 +88,78 @@ export default function SessionLiveView({ params }: { params: Promise<{ cohortId
             Listening for scans on {sessionDetails?.startTime}...
           </p>
         </div>
-        <div className="flex gap-4">
-          <Link href={`/scan/projector?cohortId=${unwrappedParams.cohortId}&sessionId=${unwrappedParams.sessionId}`} target="_blank" rel="noopener noreferrer">
-            <Button variant="brand" className="rounded-xl active:scale-[0.98]">Launch Projector</Button>
+        <div className="flex gap-4 w-full sm:w-auto">
+          <Link href={`/scan/projector?cohortId=${unwrappedParams.cohortId}&sessionId=${unwrappedParams.sessionId}`} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+            <Button variant="brand" className="w-full sm:w-auto rounded-xl active:scale-[0.98] justify-center">Launch Projector</Button>
           </Link>
         </div>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Time</TableHead>
-            <TableHead>Penalty</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {logsLoading ? (
-            <>
-              {[...Array(5)].map((_, i) => (
-                <TableRow key={i} className="animate-pulse">
-                  <TableCell>
-                    <div className="h-4 w-32 bg-border/50 rounded-lg"></div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="h-6 w-16 bg-border/50 rounded-full"></div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="h-4 w-20 bg-border/50 rounded-lg"></div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="h-4 w-16 bg-border/50 rounded-lg"></div>
+      <div className="rounded-2xl border border-border/80 bg-surface/85 backdrop-blur-xl overflow-hidden shadow-sm">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-b border-border/80 bg-surface-subtle/50">
+                <TableHead className="font-mono text-[10px] uppercase tracking-widest text-muted h-11">Name</TableHead>
+                <TableHead className="font-mono text-[10px] uppercase tracking-widest text-muted h-11">Status</TableHead>
+                <TableHead className="font-mono text-[10px] uppercase tracking-widest text-muted h-11">Time</TableHead>
+                <TableHead className="font-mono text-[10px] uppercase tracking-widest text-muted h-11">Penalty</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {logsLoading ? (
+                <>
+                  {[...Array(5)].map((_, i) => (
+                    <TableRow key={i} className="animate-pulse border-b border-border/80">
+                      <TableCell>
+                        <div className="h-4 w-32 bg-surface-subtle rounded-lg"></div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="h-6 w-16 bg-surface-subtle rounded-full"></div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="h-4 w-20 bg-surface-subtle rounded-lg"></div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="h-4 w-16 bg-surface-subtle rounded-lg"></div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </>
+              ) : logs.length > 0 ? (
+                <>
+                  {logs.map((log: any) => (
+                    <TableRow key={log.id} className="border-b border-border/80 hover:bg-surface-hover/80 transition-colors">
+                      <TableCell className="font-medium text-foreground">{log.user.name}</TableCell>
+                      <TableCell>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono uppercase border ${
+                          log.isLate 
+                            ? 'border-secondary/20 bg-secondary/10 text-secondary' 
+                            : 'border-primary/20 bg-primary/10 text-primary'
+                        }`}>
+                          {log.isLate ? 'Late' : 'Present'}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-muted text-sm font-mono">
+                        {new Date(log.scannedAt).toLocaleTimeString()}
+                      </TableCell>
+                      <TableCell className="text-danger font-mono font-medium text-sm">
+                        {log.penalty ? `${log.penalty.amount} ETB` : "-"}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </>
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center p-8 text-muted font-mono text-[13px] uppercase">
+                    No scans recorded yet
                   </TableCell>
                 </TableRow>
-              ))}
-            </>
-          ) : logs.length > 0 ? (
-            <>
-              {logs.map((log: any) => (
-                <TableRow key={log.id}>
-                  <TableCell className="font-medium text-foreground">{log.user.name}</TableCell>
-                  <TableCell>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
-                      log.isLate 
-                        ? 'border-secondary/20 bg-secondary/10 text-secondary' 
-                        : 'border-primary/20 bg-primary/10 text-primary'
-                    }`}>
-                      {log.isLate ? 'Late' : 'Present'}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground text-sm">
-                    {new Date(log.scannedAt).toLocaleTimeString()}
-                  </TableCell>
-                  <TableCell className="text-danger font-mono font-medium text-sm">
-                    {log.penalty ? `${log.penalty.amount} ETB` : "-"}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </>
-          ) : (
-            <TableRow>
-              <TableCell colSpan={4} className="text-center p-8 text-muted-foreground text-sm">
-                No scans recorded yet
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
     </div>
   )
 }

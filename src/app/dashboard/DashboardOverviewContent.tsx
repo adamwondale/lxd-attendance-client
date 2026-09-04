@@ -174,12 +174,12 @@ export default function DashboardOverviewContent() {
         ))}
       </div>
 
-      <div className="pt-8 border-t border-border mt-8 flex items-center justify-between">
-        <Link href="/dashboard/cohorts">
-          <Button variant="default">Manage Cohorts</Button>
+      <div className="pt-8 border-t border-border mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <Link href="/dashboard/cohorts" className="w-full sm:w-auto">
+          <Button variant="default" className="w-full sm:w-auto justify-center">Manage Cohorts</Button>
         </Link>
-        <Link href="/dashboard/attendance">
-          <Button variant="outline" className="border-border hover:bg-surface-hover">Live Attendance Log</Button>
+        <Link href="/dashboard/attendance" className="w-full sm:w-auto">
+          <Button variant="outline" className="w-full sm:w-auto justify-center border-border hover:bg-surface-hover">Live Attendance Log</Button>
         </Link>
       </div>
     </>

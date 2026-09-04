@@ -946,17 +946,17 @@ export default function StudentsPage() {
   };
 
   return (
-    <div className="p-6 sm:p-10 space-y-8 min-h-screen bg-background">
+    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 space-y-6 sm:space-y-8 min-h-screen bg-background text-foreground">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h1 className="font-serif text-4xl mb-1 text-foreground">Students</h1>
+          <h1 className="font-serif text-3xl sm:text-4xl mb-1 text-foreground">Students</h1>
           <p className="font-mono text-[11px] text-muted uppercase tracking-widest">
             Manage enrolled trainees
           </p>
         </div>
         <button
           onClick={() => setShowCreate(true)}
-          className="h-11 px-5 bg-primary text-primary-foreground font-mono text-[11px] uppercase tracking-widest hover:bg-primary-hover transition-all rounded-xl flex items-center gap-2 self-start sm:self-auto active:scale-[0.98] shadow-sm"
+          className="h-11 px-5 bg-primary text-primary-foreground font-mono text-[11px] uppercase tracking-widest hover:bg-primary-hover transition-all rounded-xl flex items-center justify-center gap-2 w-full sm:w-auto active:scale-[0.98] shadow-sm"
         >
           <Plus className="w-4 h-4" /> Register Student
         </button>
@@ -976,7 +976,8 @@ export default function StudentsPage() {
       </div>
 
       <div className="border border-border/80 bg-surface/85 backdrop-blur-xl rounded-2xl overflow-hidden shadow-sm">
-        <Table>
+        <div className="overflow-x-auto">
+          <Table>
           <TableHeader>
             <TableRow className="border-b border-border/80 bg-surface-subtle/50">
               <TableHead className="font-mono text-[10px] uppercase tracking-widest text-muted h-11">
@@ -1106,7 +1107,8 @@ export default function StudentsPage() {
               </TableRow>
             )}
           </TableBody>
-        </Table>
+          </Table>
+        </div>
       </div>
 
       <AnimatePresence>

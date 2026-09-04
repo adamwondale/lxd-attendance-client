@@ -179,14 +179,14 @@ export default function AdminScanPage() {
   }, [])
 
   return (
-    <div className="p-10 space-y-8 h-full flex flex-col">
+    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 space-y-6 sm:space-y-8 h-full flex flex-col">
       <div>
         <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-foreground mb-2">Scan Badge</h1>
         <p className="text-sm text-muted-foreground">Scan a student ID QR code. The student&apos;s active session is detected automatically.</p>
       </div>
 
       <div className="flex-1 flex flex-col gap-6 max-w-lg mx-auto w-full">
-        <Card className="flex-1 bg-black overflow-hidden flex flex-col border-black relative rounded-xl shadow-2xl min-h-[450px]">
+        <Card className="flex-1 bg-black overflow-hidden flex flex-col border-border/80 relative rounded-2xl shadow-2xl min-h-[350px] sm:min-h-[450px]">
           <CardContent className="p-0 flex-1 relative w-full h-full">
             <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-30">
               <div className="text-white/80 font-mono text-[10px] uppercase tracking-widest bg-black/60 px-3 py-1 rounded-full">
@@ -205,7 +205,7 @@ export default function AdminScanPage() {
               )}
             </div>
 
-            <div id={SCANNER_ID} className="w-full h-full min-h-[450px] bg-zinc-950 [&>video]:w-full [&>video]:h-full [&>video]:object-cover" />
+            <div id={SCANNER_ID} className="w-full h-full min-h-[350px] sm:min-h-[450px] bg-zinc-950 [&>video]:w-full [&>video]:h-full [&>video]:object-cover" />
 
             {!isActive && !cameraLoading && !scanStatus.includes("loading") && (
               <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-white/55 pointer-events-none">
@@ -253,12 +253,12 @@ export default function AdminScanPage() {
           </CardContent>
         </Card>
 
-        <div className="flex gap-4 pb-10">
+        <div className="flex flex-col sm:flex-row gap-3 pb-8">
           {!isActive ? (
             <Button
               onClick={() => void startScanner()}
               disabled={cameraLoading}
-              className="flex-1 h-12 bg-primary text-primary-foreground hover:bg-primary-hover font-sans text-[14px] rounded-xl active:scale-[0.98] shadow-sm"
+              className="flex-1 h-12 bg-primary text-primary-foreground hover:bg-primary-hover font-sans text-[14px] rounded-xl active:scale-[0.98] shadow-sm justify-center"
             >
               {cameraLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Camera className="w-4 h-4 mr-2" />}
               {cameraLoading ? "Starting..." : "Start Scanner"}
@@ -266,7 +266,7 @@ export default function AdminScanPage() {
           ) : (
             <Button
               onClick={() => void stopScanner()}
-              className="flex-1 h-12 bg-surface text-foreground border border-border hover:bg-surface-hover font-sans text-[14px] rounded-xl active:scale-[0.98] shadow-sm"
+              className="flex-1 h-12 bg-surface text-foreground border border-border hover:bg-surface-hover font-sans text-[14px] rounded-xl active:scale-[0.98] shadow-sm justify-center"
             >
               Stop Scanner
             </Button>

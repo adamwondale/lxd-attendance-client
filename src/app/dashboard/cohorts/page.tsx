@@ -203,16 +203,16 @@ export default function CohortsPage() {
 
   return (
     <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 space-y-8 bg-background text-foreground">
-      <div className="flex justify-between items-end">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
         <div>
-          <h1 className="font-serif text-4xl mb-2 text-foreground">Cohorts</h1>
-          <p className="font-mono text-[13px] text-muted uppercase">
+          <h1 className="font-serif text-3xl sm:text-4xl mb-2 text-foreground">Cohorts</h1>
+          <p className="font-mono text-[12px] sm:text-[13px] text-muted uppercase tracking-wider">
             Manage training programs
           </p>
         </div>
         <Button
           onClick={openCreateDialog}
-          className="bg-primary text-primary-foreground hover:bg-primary-hover font-mono text-[11px] uppercase tracking-widest h-11 px-5 rounded-xl flex items-center gap-2 active:scale-[0.98] shadow-sm"
+          className="w-full sm:w-auto justify-center bg-primary text-primary-foreground hover:bg-primary-hover font-mono text-[11px] uppercase tracking-widest h-11 px-5 rounded-xl flex items-center gap-2 active:scale-[0.98] shadow-sm"
         >
           <Plus className="w-4 h-4" /> New Cohort
         </Button>
@@ -401,7 +401,7 @@ export default function CohortsPage() {
                   </p>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center gap-4 mt-2 mb-6 text-sm text-muted">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2 mb-6 text-sm text-muted">
                     <span>{formatDate(cohort.startDate)}</span>
                     <span>→</span>
                     <span>{formatDate(cohort.endDate)}</span>

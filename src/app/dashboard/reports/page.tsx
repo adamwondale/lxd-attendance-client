@@ -329,18 +329,18 @@ export default function ReportsPage() {
             Daily, monthly and yearly views across cohorts and sessions
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap sm:flex-nowrap gap-2 sm:gap-3 w-full sm:w-auto">
           <button
             onClick={printFullReport}
             disabled={printing}
-            className="h-11 px-5 border border-border bg-surface text-foreground hover:bg-surface-hover transition-all rounded-xl flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest disabled:opacity-50 active:scale-[0.98] shadow-sm cursor-pointer"
+            className="flex-1 sm:flex-none justify-center h-11 px-5 border border-border bg-surface text-foreground hover:bg-surface-hover transition-all rounded-xl flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest disabled:opacity-50 active:scale-[0.98] shadow-sm cursor-pointer"
           >
             {printing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Printer className="w-4 h-4" />} Print
           </button>
           <button
             onClick={exportExcel}
             disabled={exporting}
-            className="h-11 px-5 bg-primary text-primary-foreground hover:bg-primary-hover transition-all rounded-xl flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest disabled:opacity-50 active:scale-[0.98] shadow-sm cursor-pointer"
+            className="flex-1 sm:flex-none justify-center h-11 px-5 bg-primary text-primary-foreground hover:bg-primary-hover transition-all rounded-xl flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest disabled:opacity-50 active:scale-[0.98] shadow-sm cursor-pointer"
           >
             {exporting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <FileSpreadsheet className="w-4 h-4" />} Export Excel
           </button>
@@ -348,7 +348,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Filters (Print Hidden) */}
-      <div className="print:hidden bg-surface/85 backdrop-blur-xl border border-border/80 p-6 rounded-2xl shadow-sm grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
+      <div className="print:hidden bg-surface/85 backdrop-blur-xl border border-border/80 p-4 sm:p-6 rounded-2xl shadow-sm grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3 sm:gap-4">
         <div>
           <label className="text-xs font-semibold text-muted-foreground block mb-2">
             Period
@@ -461,9 +461,9 @@ export default function ReportsPage() {
       {/* Stats Summary */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 border border-border/80 bg-surface/85 backdrop-blur-xl rounded-2xl overflow-hidden shadow-sm">
         <Stat label="Present" value={totals.present} />
-        <Stat label="Late" value={totals.late} />
+        <Stat label="Late" value={totals.late} isSecond />
         <Stat label="Absent" value={totals.absent} />
-        <Stat label="Total Penalties" value={`${totals.penalty} ETB`} />
+        <Stat label="Total Penalties" value={`${totals.penalty} ETB`} isLast />
       </div>
 
       {/* Detailed Report Table */}
@@ -633,13 +633,13 @@ export default function ReportsPage() {
   );
 }
 
-function Stat({ label, value }: { label: string; value: any }) {
+function Stat({ label, value, isLast = false, isSecond = false }: { label: string; value: any; isLast?: boolean; isSecond?: boolean }) {
   return (
-    <div className="p-6 border-r border-border/80 last:border-r-0 flex flex-col justify-center">
-      <p className="text-[11px] font-mono uppercase tracking-widest text-muted mb-2">
+    <div className={`p-4 sm:p-6 flex flex-col justify-center ${isSecond ? 'border-r-0 lg:border-r border-border/80' : isLast ? '' : 'border-r border-border/80'} ${isSecond || !isLast ? 'border-b lg:border-b-0 border-border/80' : ''}`}>
+      <p className="text-[10px] sm:text-[11px] font-mono uppercase tracking-widest text-muted mb-1.5 sm:mb-2">
         {label}
       </p>
-      <p className="text-3xl font-serif text-foreground">{value}</p>
+      <p className="text-2xl sm:text-3xl font-serif text-foreground truncate">{value}</p>
     </div>
   );
 }

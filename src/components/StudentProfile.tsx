@@ -81,7 +81,7 @@ export function StudentProfile() {
       
       <div className="flex items-center gap-3 group mt-1">
         <div className="flex flex-col gap-1 flex-1">
-          <h2 className="font-serif text-4xl text-foreground tracking-tight break-all sm:break-normal">
+          <h2 className="font-serif text-2xl sm:text-4xl text-foreground tracking-tight break-all sm:break-normal">
             {data.me.name}
           </h2>
           {data.me.username && (

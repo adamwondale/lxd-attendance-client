@@ -280,16 +280,16 @@ export default function CohortDetailsPage({
         </Link>
       </div>
 
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 md:gap-0">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 md:gap-4">
         <div>
-          <h1 className="font-serif text-3xl md:text-4xl mb-2 break-words max-w-[200px] sm:max-w-none text-foreground">
+          <h1 className="font-serif text-3xl md:text-4xl mb-2 break-words text-foreground">
             {cohort?.name}
           </h1>
-          <p className="font-mono text-[13px] text-muted uppercase">
+          <p className="font-mono text-[12px] sm:text-[13px] text-muted uppercase tracking-wider">
             PIN: {cohort?.pin}
           </p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
           <Link
             href={`/scan/projector?cohortId=${unwrappedParams.cohortId}${sessions[0]?.id ? `&sessionId=${sessions[0].id}` : ''}`}
             target="_blank"
@@ -307,6 +307,8 @@ export default function CohortDetailsPage({
           >
             <Plus className="w-4 h-4" /> New Session
           </Button>
+        </div>
+      </div>
 
           <Modal
             isOpen={isDialogOpen}
@@ -530,8 +532,6 @@ export default function CohortDetailsPage({
               </button>
             </ModalFooter>
           </Modal>
-        </div>
-      </div>
 
       <AlertModal
         isOpen={!!deletingSessionId}
@@ -543,100 +543,104 @@ export default function CohortDetailsPage({
         loading={deleting}
       />
 
-      <div className="rounded-2xl border border-[#E5E5E4] bg-white overflow-hidden">
-        <Table>
-          <TableHeader className="hidden sm:table-header-group">
-            <TableRow>
-              <TableHead>Session</TableHead>
-              <TableHead>Time</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {pagedSessions.map((session: any) => {
-              const [h, m] = session.startTime.split(':').map(Number);
-              const totalM = h * 60 + m + session.gracePeriodMinutes;
-              const lateH = Math.floor(totalM / 60) % 24;
-              const lateM = totalM % 60;
-              const lateTimeStr = `${lateH.toString().padStart(2, '0')}:${lateM.toString().padStart(2, '0')}`;
+      <div className="rounded-2xl border border-border/80 bg-surface/85 backdrop-blur-xl overflow-hidden shadow-sm">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader className="hidden sm:table-header-group">
+              <TableRow className="border-b border-border/80 bg-surface-subtle/50">
+                <TableHead className="font-mono text-[10px] uppercase tracking-widest text-muted h-11">Session</TableHead>
+                <TableHead className="font-mono text-[10px] uppercase tracking-widest text-muted h-11">Time</TableHead>
+                <TableHead className="font-mono text-[10px] uppercase tracking-widest text-muted h-11 text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pagedSessions.map((session: any) => {
+                const [h, m] = session.startTime.split(':').map(Number);
+                const totalM = h * 60 + m + session.gracePeriodMinutes;
+                const lateH = Math.floor(totalM / 60) % 24;
+                const lateM = totalM % 60;
+                const lateTimeStr = `${lateH.toString().padStart(2, '0')}:${lateM.toString().padStart(2, '0')}`;
 
-              return (
-                <TableRow key={session.id}>
-                  <TableCell>
-                    <Link
-                      href={`/dashboard/cohorts/${unwrappedParams.cohortId}/sessions/${session.id}`}
-                      className="font-medium hover:underline text-[15px]"
-                    >
-                      {session.name}
-                    </Link>
-                    <div className="sm:hidden text-[13px] text-muted-foreground flex flex-wrap items-center gap-2 mt-1">
-                      <span>
-                        {session.startTime} (Late: {lateTimeStr})
-                      </span>
-                      <span className="text-danger font-mono font-medium">
-                        {session.latePenaltyAmount} ETB
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="hidden sm:table-cell">
-                    <div className="text-[14px] text-muted-foreground flex items-center gap-2">
-                      <span>
-                        {session.startTime} (Late: {lateTimeStr})
-                      </span>
-                      <span className="text-danger text-xs font-mono font-medium">
-                        {session.latePenaltyAmount} ETB
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right flex flex-wrap justify-end gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => openEdit(session)}
-                      className="h-8 rounded-xl active:scale-[0.98]"
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-8 rounded-xl text-danger border-danger/30 hover:bg-danger-surface hover:text-danger active:scale-[0.98]"
-                      onClick={() => setDeletingSessionId(session.id)}
-                    >
-                      Delete
-                    </Button>
-                    <Link
-                      href={`/scan/projector?cohortId=${unwrappedParams.cohortId}&sessionId=${session.id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Button variant="outline" size="sm" className="h-8 rounded-xl active:scale-[0.98]">
-                        Projector
-                      </Button>
-                    </Link>
-                    <Link
-                      href={`/dashboard/cohorts/${unwrappedParams.cohortId}/sessions/${session.id}`}
-                    >
-                      <Button variant="outline" size="sm" className="h-8 rounded-xl active:scale-[0.98]">
-                        Live View
-                      </Button>
-                    </Link>
+                return (
+                  <TableRow key={session.id} className="border-b border-border/80 hover:bg-surface-hover/80 transition-colors">
+                    <TableCell>
+                      <Link
+                        href={`/dashboard/cohorts/${unwrappedParams.cohortId}/sessions/${session.id}`}
+                        className="font-medium hover:underline text-[15px] text-foreground"
+                      >
+                        {session.name}
+                      </Link>
+                      <div className="sm:hidden text-[13px] text-muted flex flex-wrap items-center gap-2 mt-1">
+                        <span>
+                          {session.startTime} (Late: {lateTimeStr})
+                        </span>
+                        <span className="text-danger font-mono font-medium">
+                          {session.latePenaltyAmount} ETB
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="hidden sm:table-cell">
+                      <div className="text-[14px] text-muted flex items-center gap-2">
+                        <span>
+                          {session.startTime} (Late: {lateTimeStr})
+                        </span>
+                        <span className="text-danger text-xs font-mono font-medium">
+                          {session.latePenaltyAmount} ETB
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex flex-wrap justify-end gap-1.5 sm:gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openEdit(session)}
+                          className="h-8 rounded-xl active:scale-[0.98]"
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 rounded-xl text-danger border-danger/30 hover:bg-danger-surface hover:text-danger active:scale-[0.98]"
+                          onClick={() => setDeletingSessionId(session.id)}
+                        >
+                          Delete
+                        </Button>
+                        <Link
+                          href={`/scan/projector?cohortId=${unwrappedParams.cohortId}&sessionId=${session.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Button variant="outline" size="sm" className="h-8 rounded-xl active:scale-[0.98]">
+                            Projector
+                          </Button>
+                        </Link>
+                        <Link
+                          href={`/dashboard/cohorts/${unwrappedParams.cohortId}/sessions/${session.id}`}
+                        >
+                          <Button variant="outline" size="sm" className="h-8 rounded-xl active:scale-[0.98]">
+                            Live View
+                          </Button>
+                        </Link>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+              {sessions.length === 0 && (
+                <TableRow>
+                  <TableCell
+                    colSpan={3}
+                    className="text-center p-8 text-muted font-mono text-[13px] uppercase"
+                  >
+                    No sessions created yet
                   </TableCell>
                 </TableRow>
-              );
-            })}
-            {sessions.length === 0 && (
-              <TableRow>
-                <TableCell
-                  colSpan={3}
-                  className="text-center p-8 text-muted font-mono text-[13px] uppercase"
-                >
-                  No sessions created yet
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
       {sessions.length > SESSION_PAGE_SIZE && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 rounded-2xl border border-border/80 bg-surface/85 backdrop-blur-xl px-4 py-3 shadow-sm">

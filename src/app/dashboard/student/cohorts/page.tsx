@@ -150,7 +150,7 @@ export default function StudentCohortsPage() {
               {myCohortsData?.myCohorts?.map((cohort: any) => (
                 <li
                   key={cohort.id}
-                  className="p-4 flex items-center justify-between hover:bg-surface-hover/80 transition-colors"
+                  className="p-4 sm:p-5 flex items-center justify-between gap-3 hover:bg-surface-hover/80 transition-colors"
                 >
                   <div>
                     <h4 className="font-medium text-[15px] text-foreground">{cohort.name}</h4>
@@ -204,7 +204,7 @@ export default function StudentCohortsPage() {
               {availableCohortsData?.availableCohorts?.map((cohort: any) => (
                 <li
                   key={cohort.id}
-                  className="p-4 flex items-center justify-between hover:bg-surface-hover/80 transition-colors group"
+                  className="p-4 sm:p-5 flex items-center justify-between gap-3 hover:bg-surface-hover/80 transition-colors group"
                 >
                   <div>
                     <h4 className="font-medium text-[15px] text-foreground">{cohort.name}</h4>

@@ -51,7 +51,7 @@ export default function StudentDashboardPage() {
   return (
     <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-10 space-y-10 sm:space-y-12 text-foreground bg-background min-h-screen font-sans">
       {/* Stats Summary */}
-      <section className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+      <section className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 [&>*:last-child]:col-span-2 sm:[&>*:last-child]:col-span-1">
         {[
           {
             label: 'Present',
@@ -71,16 +71,16 @@ export default function StudentDashboardPage() {
         ].map(({ label, value, colorClass }) => (
           <div
             key={String(label)}
-            className="p-6 sm:p-8 flex flex-col items-center sm:items-start justify-center text-center sm:text-left rounded-2xl border border-border/80 bg-surface/85 backdrop-blur-xl shadow-sm hover:shadow-md transition-all"
+            className="p-4 sm:p-6 lg:p-8 flex flex-col items-center sm:items-start justify-center text-center sm:text-left rounded-2xl border border-border/80 bg-surface/85 backdrop-blur-xl shadow-sm hover:shadow-md transition-all"
           >
-            <p className="text-[11px] sm:text-[12px] uppercase tracking-widest text-muted font-mono mb-2 sm:mb-4">
+            <p className="text-[10px] sm:text-[12px] uppercase tracking-widest text-muted font-mono mb-1.5 sm:mb-4">
               {label}
             </p>
             {summaryLoading && !summaryData?.myAttendanceSummary ? (
-              <div className="h-16 w-32 bg-surface-subtle animate-pulse mt-1 rounded-xl" />
+              <div className="h-12 sm:h-16 w-24 sm:w-32 bg-surface-subtle animate-pulse mt-1 rounded-xl" />
             ) : (
               <p
-                className={`text-4xl sm:text-6xl lg:text-7xl font-serif tracking-tight ${colorClass}`}
+                className={`text-3xl sm:text-5xl lg:text-6xl font-serif tracking-tight ${colorClass} truncate max-w-full`}
               >
                 {value}
               </p>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useSession, signIn } from "next-auth/react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
@@ -32,6 +32,8 @@ export default function StudentScanPage() {
 
   const [scanStatus, setScanStatus] = useState<"idle" | "success" | "error" | "loading">("idle")
   const [errorMsg, setErrorMsg] = useState("")
+  const [isUserStopped, setIsUserStopped] = useState(false)
+  const isUserStoppedRef = useRef(false)
 
   const {
     qrResults,
@@ -45,12 +47,46 @@ export default function StudentScanPage() {
     switchCamera,
     clearResults,
     videoRef,
-    canvasRef
+    canvasRef,
+    retry,
   } = useQRScanner({
     facingMode: 'environment',
     scanInterval: 100, // Make it super fast!
     maxResults: 1
   })
+
+  const handleStopScanner = useCallback(async () => {
+    isUserStoppedRef.current = true
+    setIsUserStopped(true)
+    await stopScanning()
+  }, [stopScanning])
+
+  const handleStartScanner = useCallback(async () => {
+    isUserStoppedRef.current = false
+    setIsUserStopped(false)
+    setErrorMsg("")
+    clearResults()
+    if (cameraErrorObj?.type === "permission") {
+      try {
+        await retry()
+      } catch {
+        // Handled by hook
+      }
+    } else {
+      await startScanning()
+    }
+  }, [clearResults, cameraErrorObj, retry, startScanning])
+
+  const handleAskPermissionAgain = useCallback(async () => {
+    isUserStoppedRef.current = false
+    setIsUserStopped(false)
+    setErrorMsg("")
+    try {
+      await retry()
+    } catch {
+      // Handled by hook
+    }
+  }, [retry])
 
   const handleScan = useCallback(async (decodedText: string) => {
     if (scanStatus !== "idle") return
@@ -80,7 +116,9 @@ export default function StudentScanPage() {
       setTimeout(() => {
         setScanStatus("idle")
         clearResults()
-        void startScanning()
+        if (!isUserStoppedRef.current) {
+          void startScanning()
+        }
       }, 2200)
     }
   }, [logAttendance, scanStatus, status, stopScanning, clearResults, startScanning])
@@ -100,23 +138,42 @@ export default function StudentScanPage() {
     window.history.replaceState({}, "", window.location.pathname)
   }, [handleScan])
 
-  useEffect(() => {
-    if (status === "authenticated" && canStartScanning && !isActive && scanStatus === "idle") {
-      void startScanning()
-    }
-  }, [status, canStartScanning, isActive, scanStatus, startScanning])
-
   const cameraError = cameraErrorObj?.message || ""
   const isPermissionDenied = cameraErrorObj?.type === "permission"
 
+  // Only auto-start if the user hasn't explicitly stopped the scanner,
+  // and there's no permission denial or active camera error
+  useEffect(() => {
+    if (
+      status === "authenticated" &&
+      canStartScanning &&
+      !isActive &&
+      scanStatus === "idle" &&
+      !isUserStopped &&
+      !isPermissionDenied &&
+      !cameraErrorObj
+    ) {
+      void startScanning()
+    }
+  }, [
+    status,
+    canStartScanning,
+    isActive,
+    scanStatus,
+    isUserStopped,
+    isPermissionDenied,
+    cameraErrorObj,
+    startScanning,
+  ])
+
   return (
-    <div className="p-6 space-y-8 h-full flex flex-col max-w-lg mx-auto text-foreground">
+    <div className="px-4 py-6 sm:p-8 space-y-6 sm:space-y-8 h-full flex flex-col max-w-lg mx-auto text-foreground">
       <div>
         <h1 className="font-serif text-3xl text-foreground">Scan Badge</h1>
       </div>
 
       <div className="flex-1 flex flex-col gap-6 w-full">
-        <Card className="flex-1 bg-black overflow-hidden flex flex-col border border-border/80 relative rounded-2xl shadow-2xl min-h-[450px]">
+        <Card className="flex-1 bg-black overflow-hidden flex flex-col border border-border/80 relative rounded-2xl shadow-2xl min-h-[350px] sm:min-h-[450px]">
           <CardContent className="p-0 flex-1 relative w-full h-full">
             <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-30">
               <div className="text-white/80 font-mono text-[10px] uppercase tracking-widest bg-black/60 px-3 py-1 rounded-full">
@@ -142,7 +199,7 @@ export default function StudentScanPage() {
 
             <video 
               ref={videoRef} 
-              className="w-full h-full min-h-[450px] bg-zinc-950 object-cover"
+              className="w-full h-full min-h-[350px] sm:min-h-[450px] bg-zinc-950 object-cover"
               playsInline
               muted
             />
@@ -159,16 +216,52 @@ export default function StudentScanPage() {
             {isPermissionDenied && (
               <div className="absolute inset-0 z-20 bg-black/90 text-white flex flex-col items-center justify-center p-6 text-center">
                 <AlertCircle className="w-16 h-16 mb-4 text-danger" />
-                <p className="font-serif text-2xl mb-2">Camera Access Denied</p>
-                <p className="font-mono text-[10px] uppercase tracking-widest text-white/60 mb-5 max-w-xs">Please allow camera permissions in your browser settings to scan your badge.</p>
-                <Button onClick={() => window.location.reload()} className="bg-white text-black hover:bg-white/90 rounded-xl">Reload Page</Button>
+                <p className="font-serif text-2xl mb-2">Camera Permission Denied</p>
+                <p className="font-mono text-[10px] uppercase tracking-widest text-white/60 mb-6 max-w-xs leading-relaxed">
+                  Camera access is required to scan your badge. Click &ldquo;Ask Again&rdquo; below or enable camera access in your browser settings.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
+                  <Button
+                    type="button"
+                    onClick={handleAskPermissionAgain}
+                    disabled={cameraLoading}
+                    className="flex-1 bg-white text-black hover:bg-white/90 rounded-xl font-sans text-sm h-11 cursor-pointer active:scale-[0.98]"
+                  >
+                    {cameraLoading ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Camera className="w-4 h-4 mr-2" />
+                    )}
+                    Ask Again
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => window.location.reload()}
+                    variant="outline"
+                    className="flex-1 border-white/30 text-white hover:bg-white/10 rounded-xl font-sans text-sm h-11 cursor-pointer active:scale-[0.98]"
+                  >
+                    Reload Page
+                  </Button>
+                </div>
               </div>
             )}
 
             {!isActive && !cameraLoading && !scanStatus.includes("loading") && !isPermissionDenied && (
-              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-white/55 pointer-events-none">
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-white/55">
                 <Scan className="w-16 h-16 mb-4 opacity-50" />
-                <p className="font-mono text-[11px] uppercase tracking-widest">Camera is Paused</p>
+                <p className="font-mono text-[11px] uppercase tracking-widest">
+                  {isUserStopped ? "Scanner is Stopped" : "Camera is Paused"}
+                </p>
+                {isUserStopped && (
+                  <Button
+                    type="button"
+                    onClick={handleStartScanner}
+                    disabled={cameraLoading}
+                    className="mt-4 bg-white/15 hover:bg-white/25 text-white border border-white/20 rounded-xl text-xs font-mono uppercase tracking-wider h-9 px-4 cursor-pointer active:scale-[0.98]"
+                  >
+                    Start Scanner
+                  </Button>
+                )}
               </div>
             )}
 
@@ -211,20 +304,26 @@ export default function StudentScanPage() {
           </CardContent>
         </Card>
 
-        <div className="flex gap-4 pb-10">
+        <div className="flex flex-col sm:flex-row gap-3 pb-8">
           {!isActive ? (
             <Button
-              onClick={() => void startScanning()}
+              type="button"
+              onClick={handleStartScanner}
               disabled={!canStartScanning || cameraLoading}
-              className="flex-1 h-12 bg-primary text-primary-foreground hover:bg-primary-hover font-sans text-[14px] rounded-xl active:scale-[0.98] shadow-sm"
+              className="flex-1 h-12 bg-primary text-primary-foreground hover:bg-primary-hover font-sans text-[14px] rounded-xl active:scale-[0.98] shadow-sm cursor-pointer justify-center"
             >
-              {cameraLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Camera className="w-4 h-4 mr-2" />}
-              {cameraLoading ? "Starting..." : "Start Scanner"}
+              {cameraLoading ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Camera className="w-4 h-4 mr-2" />
+              )}
+              {cameraLoading ? "Starting..." : isUserStopped ? "Resume Scanner" : "Start Scanner"}
             </Button>
           ) : (
             <Button
-              onClick={() => void stopScanning()}
-              className="flex-1 h-12 bg-surface text-foreground border border-border hover:bg-surface-hover font-sans text-[14px] rounded-xl active:scale-[0.98] shadow-sm"
+              type="button"
+              onClick={handleStopScanner}
+              className="flex-1 h-12 bg-surface text-foreground border border-border hover:bg-surface-hover font-sans text-[14px] rounded-xl active:scale-[0.98] shadow-sm cursor-pointer justify-center"
             >
               Stop Scanner
             </Button>
