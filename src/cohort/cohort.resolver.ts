@@ -25,7 +25,9 @@ export class CohortResolver {
     @Args('pin') pin: string,
     @Args('startDate') startDate: string,
     @Args('endDate') endDate: string,
-    @Args('durationMonths', { type: () => Int, nullable: true }) durationMonths?: number,
+    @Args('durationMonths,
+      user.tenantId', { type: () => Int, nullable: true }) durationMonths,
+      user.tenantId?: number,
   ) {
     const cohort = await this.cohortService.createCohort(
       user.userId,
@@ -33,7 +35,8 @@ export class CohortResolver {
       pin,
       new Date(startDate),
       new Date(endDate),
-      durationMonths
+      durationMonths,
+      user.tenantId
     );
     this.pubSub.publish('cohortsUpdated', { onCohortsUpdated: true });
     return cohort.id;
@@ -43,13 +46,16 @@ export class CohortResolver {
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles('COORDINATOR', 'SUPER_ADMIN', 'ADMIN')
   async updateCohort(
+    @CurrentUser() user: any,
     @Args('cohortId') cohortId: string,
     @Args('name', { nullable: true }) name?: string,
     @Args('pin', { nullable: true }) pin?: string,
     @Args('startDate', { nullable: true }) startDate?: string,
     @Args('endDate', { nullable: true }) endDate?: string,
     @Args('isActive', { nullable: true }) isActive?: boolean,
-    @Args('durationMonths', { type: () => Int, nullable: true }) durationMonths?: number,
+    @Args('durationMonths,
+      user.tenantId', { type: () => Int, nullable: true }) durationMonths,
+      user.tenantId?: number,
   ) {
     const cohort = await this.cohortService.updateCohort(
       cohortId,
@@ -58,7 +64,8 @@ export class CohortResolver {
       startDate ? new Date(startDate) : undefined,
       endDate ? new Date(endDate) : undefined,
       isActive,
-      durationMonths
+      durationMonths,
+      user.tenantId
     );
     this.pubSub.publish('cohortsUpdated', { onCohortsUpdated: true });
     return cohort.id;
@@ -68,9 +75,10 @@ export class CohortResolver {
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles('COORDINATOR', 'SUPER_ADMIN', 'ADMIN')
   async deleteCohort(
+    @CurrentUser() user: any,
     @Args('cohortId') cohortId: string,
   ) {
-    const deleted = await this.cohortService.deleteCohort(cohortId);
+    const deleted = await this.cohortService.deleteCohort(cohortId, user.tenantId);
     if (deleted) {
       this.pubSub.publish('cohortsUpdated', { onCohortsUpdated: true });
     }
@@ -81,6 +89,7 @@ export class CohortResolver {
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles('COORDINATOR', 'SUPER_ADMIN', 'ADMIN')
   async createCohortSession(
+    @CurrentUser() user: any,
     @Args('cohortId') cohortId: string,
     @Args('name') name: string,
     @Args('startTime') startTime: string,
@@ -89,7 +98,9 @@ export class CohortResolver {
     @Args('latePenaltyAmount', { type: () => Int }) latePenaltyAmount: number,
     @Args('escalationThresholdMinutes', { type: () => Int, nullable: true }) escalationThresholdMinutes?: number,
     @Args('escalationRate', { type: () => Int, nullable: true }) escalationRate?: number,
-    @Args('escalationIntervalMinutes', { type: () => Int, nullable: true }) escalationIntervalMinutes?: number,
+    @Args('escalationIntervalMinutes,
+      user.tenantId', { type: () => Int, nullable: true }) escalationIntervalMinutes,
+      user.tenantId?: number,
   ) {
     const session = await this.cohortService.createCohortSession(
       cohortId,
@@ -100,7 +111,8 @@ export class CohortResolver {
       latePenaltyAmount,
       escalationThresholdMinutes,
       escalationRate,
-      escalationIntervalMinutes
+      escalationIntervalMinutes,
+      user.tenantId
     );
     this.pubSub.publish('cohortsUpdated', { onCohortsUpdated: true });
     return session.id;
@@ -110,6 +122,7 @@ export class CohortResolver {
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles('COORDINATOR', 'SUPER_ADMIN', 'ADMIN')
   async updateCohortSession(
+    @CurrentUser() user: any,
     @Args('sessionId') sessionId: string,
     @Args('name', { nullable: true }) name?: string,
     @Args('startTime', { nullable: true }) startTime?: string,
@@ -118,7 +131,9 @@ export class CohortResolver {
     @Args('latePenaltyAmount', { type: () => Int, nullable: true }) latePenaltyAmount?: number,
     @Args('escalationThresholdMinutes', { type: () => Int, nullable: true }) escalationThresholdMinutes?: number,
     @Args('escalationRate', { type: () => Int, nullable: true }) escalationRate?: number,
-    @Args('escalationIntervalMinutes', { type: () => Int, nullable: true }) escalationIntervalMinutes?: number,
+    @Args('escalationIntervalMinutes,
+      user.tenantId', { type: () => Int, nullable: true }) escalationIntervalMinutes,
+      user.tenantId?: number,
   ) {
     const session = await this.cohortService.updateCohortSession(
       sessionId,
@@ -129,7 +144,8 @@ export class CohortResolver {
       latePenaltyAmount,
       escalationThresholdMinutes,
       escalationRate,
-      escalationIntervalMinutes
+      escalationIntervalMinutes,
+      user.tenantId
     );
     this.pubSub.publish('cohortsUpdated', { onCohortsUpdated: true });
     return session.id;
@@ -139,9 +155,10 @@ export class CohortResolver {
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles('COORDINATOR', 'SUPER_ADMIN', 'ADMIN')
   async deleteCohortSession(
+    @CurrentUser() user: any,
     @Args('sessionId') sessionId: string,
   ) {
-    const deleted = await this.cohortService.deleteCohortSession(sessionId);
+    const deleted = await this.cohortService.deleteCohortSession(sessionId, user.tenantId);
     if (deleted) {
       this.pubSub.publish('cohortsUpdated', { onCohortsUpdated: true });
     }

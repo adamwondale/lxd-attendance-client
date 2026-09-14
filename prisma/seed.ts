@@ -16,7 +16,12 @@ async function main() {
 
   console.log('Seeding default Admin and Tenant...');
   
-  const hashedPassword = await bcrypt.hash('admin123', 10);
+  const adminPassword = process.env.ADMIN_SEED_PASSWORD;
+  if (!adminPassword) {
+    throw new Error('ADMIN_SEED_PASSWORD environment variable must be provided for seeding.');
+  }
+
+  const hashedPassword = await bcrypt.hash(adminPassword, 10);
   
   const tenant = await prisma.tenant.create({
     data: {
@@ -44,7 +49,7 @@ async function main() {
   console.log('✅ Seeding Complete!');
   console.log('Tenant:', tenant.name);
   console.log('Admin Email:', admin.email);
-  console.log('Admin Password: admin123');
+  console.log('Admin Password: (from environment)');
   console.log('----------------------------------------------------');
 }
 

@@ -43,6 +43,7 @@ export class UsersResolver {
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles('COORDINATOR', 'SUPER_ADMIN', 'ADMIN')
   async adminCreateStudent(
+    @CurrentUser() userCtx: any,
     @Args('name') name: string,
     @Args('email') email: string,
     @Args('phone') phone: string,
@@ -51,7 +52,7 @@ export class UsersResolver {
     @Args('cohortId', { nullable: true }) cohortId?: string,
     @Args('sessionId', { nullable: true }) sessionId?: string,
   ) {
-    const created = await this.usersService.adminCreateStudent(name, email, phone, username, password, cohortId, sessionId);
+    const created = await this.usersService.adminCreateStudent(name, email, userCtx.tenantId, phone, username, password, cohortId, sessionId, userCtx.tenantId);
     this.pubSub.publish('studentsUpdated', { onStudentsUpdated: true });
     return created;
   }
@@ -60,11 +61,12 @@ export class UsersResolver {
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles('COORDINATOR', 'SUPER_ADMIN', 'ADMIN')
   async adminUpdateStudent(
+    @CurrentUser() userCtx: any,
     @Args('id') id: string,
     @Args('name', { nullable: true }) name?: string,
     @Args('email', { nullable: true }) email?: string,
   ) {
-    const updated = await this.usersService.adminUpdateStudent(id, name, email);
+    const updated = await this.usersService.adminUpdateStudent(id, name, email, userCtx.tenantId);
     this.pubSub.publish('studentsUpdated', { onStudentsUpdated: true });
     return updated;
   }
@@ -72,8 +74,8 @@ export class UsersResolver {
   @Mutation(() => Boolean)
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles('COORDINATOR', 'SUPER_ADMIN', 'ADMIN')
-  async adminDeleteStudent(@Args('id') id: string) {
-    const deleted = await this.usersService.adminDeleteStudent(id);
+  async adminDeleteStudent(@CurrentUser() userCtx: any, @Args('id') id: string) {
+    const deleted = await this.usersService.adminDeleteStudent(id, userCtx.tenantId);
     if (deleted) {
       this.pubSub.publish('studentsUpdated', { onStudentsUpdated: true });
     }
@@ -84,11 +86,12 @@ export class UsersResolver {
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles('COORDINATOR', 'SUPER_ADMIN', 'ADMIN')
   async adminEnrollStudent(
+    @CurrentUser() userCtx: any,
     @Args('userId') userId: string,
     @Args('cohortId') cohortId: string,
     @Args('sessionId') sessionId: string,
   ) {
-    await this.usersService.adminEnrollStudent(userId, cohortId, sessionId);
+    await this.usersService.adminEnrollStudent(userId, cohortId, sessionId, userCtx.tenantId);
     this.pubSub.publish('studentsUpdated', { onStudentsUpdated: true });
     return true;
   }
@@ -97,11 +100,12 @@ export class UsersResolver {
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles('COORDINATOR', 'SUPER_ADMIN', 'ADMIN')
   async adminUpdateStudentMembership(
+    @CurrentUser() userCtx: any,
     @Args('userId') userId: string,
     @Args('cohortId') cohortId: string,
     @Args('sessionId') sessionId: string,
   ) {
-    await this.usersService.adminUpdateStudentMembership(userId, cohortId, sessionId);
+    await this.usersService.adminUpdateStudentMembership(userId, cohortId, sessionId, userCtx.tenantId);
     this.pubSub.publish('studentsUpdated', { onStudentsUpdated: true });
     return true;
   }
@@ -110,10 +114,11 @@ export class UsersResolver {
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles('COORDINATOR', 'SUPER_ADMIN', 'ADMIN')
   async adminRemoveStudentFromCohort(
+    @CurrentUser() userCtx: any,
     @Args('userId') userId: string,
     @Args('cohortId') cohortId: string,
   ) {
-    await this.usersService.adminRemoveStudentFromCohort(userId, cohortId);
+    await this.usersService.adminRemoveStudentFromCohort(userId, cohortId, userCtx.tenantId);
     this.pubSub.publish('studentsUpdated', { onStudentsUpdated: true });
     return true;
   }

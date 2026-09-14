@@ -5,25 +5,30 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Running MongoDB migration to backfill endDate...');
   
-  // Use raw MongoDB command to update documents that don't have endDate
-  const result = await prisma.$runCommandRaw({
-    update: 'Cohort',
-    updates: [
-      {
-        q: { endDate: { $exists: false } },
-        u: { $set: { endDate: { $date: new Date().toISOString() } } },
-        multi: true
-      }
-    ]
+  const cohortsWithoutEndDate = await prisma.cohort.findMany({
+    where: { endDate: { equals: undefined } } as any
   });
 
-  console.log('Migration complete:', result);
+  let updatedCount = 0;
+  for (const cohort of cohortsWithoutEndDate) {
+    const durationMonths = cohort.durationMonths || 6;
+    const endDate = new Date(cohort.startDate);
+    endDate.setMonth(endDate.getMonth() + durationMonths);
+
+    await prisma.cohort.update({
+      where: { id: cohort.id },
+      data: { endDate }
+    });
+    updatedCount++;
+  }
+
+  console.log(`Migration complete: Updated ${updatedCount} cohorts.`);
 }
 
 main()
   .catch(e => {
     console.error(e);
-    process.exit(1);
+    process.exitCode = 1;
   })
   .finally(async () => {
     await prisma.$disconnect();

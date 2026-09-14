@@ -1,36 +1,9 @@
 import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
 
 @ObjectType()
-export class CohortMembership {
-  @Field(() => ID)
-  id: string;
-
-  @Field()
-  userId: string;
-
-  @Field()
-  cohortId: string;
-
-  @Field({ nullable: true })
-  sessionId?: string;
-
-  @Field()
-  status: string;
-
-  @Field(() => Cohort, { nullable: true })
-  cohort?: any;
-
-  @Field(() => CohortSession, { nullable: true })
-  session?: any;
-}
-
-@ObjectType()
 export class CohortSession {
   @Field(() => ID)
   id: string;
-
-  @Field()
-  cohortId: string;
 
   @Field()
   name: string;
@@ -58,6 +31,30 @@ export class CohortSession {
 }
 
 @ObjectType()
+export class CohortMembership {
+  @Field(() => ID)
+  userId: string;
+
+  @Field(() => ID)
+  cohortId: string;
+
+  @Field(() => ID)
+  sessionId: string;
+
+  @Field()
+  status: string;
+
+  @Field(() => CohortSession, { nullable: true })
+  session?: CohortSession;
+
+  @Field(() => Cohort)
+  cohort?: any;
+
+  @Field(() => require('../../users/dto/user.type').User, { nullable: true })
+  user?: any;
+}
+
+@ObjectType()
 export class Cohort {
   @Field(() => ID)
   id: string;
@@ -71,17 +68,11 @@ export class Cohort {
   @Field()
   startDate: Date;
 
-  @Field()
-  pin: string;
-
   @Field(() => Date)
   endDate: Date;
 
   @Field()
   isActive: boolean;
-
-  @Field(() => Int, { nullable: true })
-  durationMonths?: number;
 
   @Field(() => [CohortSession], { nullable: true })
   sessions?: CohortSession[];
@@ -89,4 +80,3 @@ export class Cohort {
   @Field(() => CohortSession, { nullable: true })
   joinedSession?: CohortSession;
 }
-

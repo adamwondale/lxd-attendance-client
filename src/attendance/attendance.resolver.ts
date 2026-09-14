@@ -63,20 +63,21 @@ export class AttendanceResolver {
   ) {
     const parts = qrCode.split('.');
     const cohortId = parts[0] || '';
-    const log: any = await this.attendanceService.logAttendance(user.userId, qrCode, deviceSignature);
+    const log: any = await this.attendanceService.logAttendance(user.userId, qrCode, deviceSignature, user.tenantId);
     if (log) this.publishAttendance(log, cohortId);
     return log.id;
   }
 
   @Mutation(() => String)
   async logAttendanceById(
+    @CurrentUser() user: any,
     @Args('traineeId') traineeId: string,
     @Args('qrCode') qrCode: string,
     @Args('deviceSignature', { nullable: true }) deviceSignature?: string,
   ) {
     const parts = qrCode.split('.');
     const cohortId = parts[0] || '';
-    const log: any = await this.attendanceService.logAttendanceById(traineeId, qrCode, deviceSignature);
+    const log: any = await this.attendanceService.logAttendanceById(user.userId, qrCode, deviceSignature, user.tenantId);
     if (log) this.publishAttendance(log, cohortId);
     return log.id;
   }
@@ -84,8 +85,11 @@ export class AttendanceResolver {
   @Mutation(() => String)
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles('COORDINATOR', 'SUPER_ADMIN', 'ADMIN')
-  async adminLogAttendance(@Args('studentId') studentId: string, @Args('sessionId') sessionId: string) {
-    const log: any = await this.attendanceService.adminLogAttendance(studentId, sessionId);
+  async adminLogAttendance(
+    @CurrentUser() user: any,
+    @Args('studentId') studentId: string, @Args('sessionId') sessionId: string
+  ) {
+    const log: any = await this.attendanceService.adminLogAttendance(studentId, sessionId, user.tenantId);
     if (log) this.publishAttendance(log, log.session?.cohortId || '');
     return log.id;
   }
@@ -93,8 +97,11 @@ export class AttendanceResolver {
   @Mutation(() => String)
   @UseGuards(GqlAuthGuard, RolesGuard)
   @Roles('COORDINATOR', 'SUPER_ADMIN', 'ADMIN')
-  async adminScanStudentBadge(@Args('badgeCode') badgeCode: string) {
-    const log: any = await this.attendanceService.adminScanStudentBadge(badgeCode);
+  async adminScanStudentBadge(
+    @CurrentUser() user: any,
+    @Args('badgeCode') badgeCode: string
+  ) {
+    const log: any = await this.attendanceService.adminScanStudentBadge(badgeCode, user.tenantId);
     if (log) this.publishAttendance(log, log.session?.cohortId || '');
     return log.id;
   }
@@ -116,9 +123,16 @@ export class AttendanceResolver {
   }
 
   @Subscription(() => AttendanceEvent, {
-    filter: (payload: any, variables: any) => payload.attendanceLogged.sessionId === variables.sessionId,
+    filter: async (payload: any, variables: any, context: any) => {
+      if (payload.attendanceLogged.sessionId !== variables.sessionId) return false;
+      const user = context.req?.user;
+      if (!user) return false;
+      const hasAccess = await context.attendanceService?.checkSessionAccess(variables.sessionId, user.tenantId);
+      return !!hasAccess;
+    },
     resolve: (payload: any) => payload.attendanceLogged,
   })
+  @UseGuards(GqlAuthGuard)
   attendanceLogged(@Args('sessionId') sessionId: string) {
     return (this.pubSub as any).asyncIterableIterator('attendanceLogged');
   }

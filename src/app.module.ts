@@ -17,7 +17,7 @@ import { PubSubModule } from './pubsub/pubsub.module';
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
-      context: ({ req }: any) => ({ req }),
+      context: ({ req }: { req: import("express").Request }) => ({ req }),
       subscriptions: {
         'graphql-ws': true,
       },
